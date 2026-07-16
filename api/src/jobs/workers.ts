@@ -18,6 +18,7 @@ export interface WorkerDeps {
   notify: (html: string) => Promise<void>;
   sendDossier: (leadId: string, violations: string[]) => Promise<void>;
   digest: () => Promise<void>;
+  tick: (() => Promise<{ drained: number }>) | null; // slice 3: the gate & send scheduler
 }
 
 const MAX_POLLS = 25; // × 5s ≈ 2 min of vendor patience per enrichment
@@ -77,6 +78,13 @@ export async function registerWorkers(d: WorkerDeps): Promise<void> {
   await d.boss.work(QUEUES.digest, async () => {
     await d.digest();
   });
+
+  if (d.tick) {
+    const tick = d.tick;
+    await d.boss.work(QUEUES.sequenceTick, async () => {
+      await tick();
+    });
+  }
 }
 
 async function parkWithError(d: WorkerDeps, leadId: string, stage: string, e: unknown): Promise<void> {

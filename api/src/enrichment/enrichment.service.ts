@@ -4,6 +4,7 @@
 import { eq } from 'drizzle-orm';
 import type { Db } from '../db/db';
 import * as t from '../db/schema';
+import { geoFromRaw } from '../policy/send-policy';
 import { FullEnrichAdapter, nameGuessFromSlug } from './fullenrich.adapter';
 import { slugOf } from '../leads/leads.service';
 
@@ -61,6 +62,10 @@ export class EnrichmentService {
       company: polled.company,
       costUsd: cost != null ? String(cost) : null,
     });
+    const geo = geoFromRaw(polled.raw);
+    if (geo) {
+      await this.db.update(t.leads).set({ geo }).where(eq(t.leads.id, leadId));
+    }
     await this.db.insert(t.vendorCalls).values({
       provider: 'fullenrich',
       kind: 'enrich_done',

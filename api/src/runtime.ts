@@ -7,11 +7,15 @@ import { AnalysisService } from './analysis/analysis.service';
 import { OpenRouterClient } from './analysis/openrouter.client';
 import { EnrichmentService } from './enrichment/enrichment.service';
 import { FullEnrichAdapter } from './enrichment/fullenrich.adapter';
+import { SequenceService } from './channels/sequence.service';
+import { SmartleadAdapter } from './channels/smartlead.adapter';
 import { ApolloAdapter } from './enrichment/apollo.adapter';
 import { QUEUES, startBoss } from './jobs/boss';
+import { runTick } from './jobs/tick';
 import { registerWorkers } from './jobs/workers';
 import { LeadsService } from './leads/leads.service';
 import { SuggestionsService } from './leads/suggestions.service';
+import { PolicyService } from './policy/policy.service';
 import { buildDigest } from './telegram/digest';
 import { renderDossier } from './telegram/dossier';
 import { TelegramClient } from './telegram/telegram.client';
@@ -24,6 +28,9 @@ export interface Runtime {
   boss: PgBoss | null;
   leads: LeadsService | null;
   suggestions: SuggestionsService | null;
+  policy: PolicyService | null;
+  sequences: SequenceService | null;
+  requestTick: (() => Promise<void>) | null;
   telegram: TelegramService | null;
   workersActive: boolean;
 }
@@ -59,6 +66,9 @@ export async function buildRuntime(cfg: Config): Promise<Runtime> {
   let boss: PgBoss | null = null;
   let leads: LeadsService | null = null;
   let suggestions: SuggestionsService | null = null;
+  let policy: PolicyService | null = null;
+  let sequences: SequenceService | null = null;
+  let requestTick: (() => Promise<void>) | null = null;
   let telegram: TelegramService | null = null;
   let workersActive = false;
 
@@ -72,6 +82,13 @@ export async function buildRuntime(cfg: Config): Promise<Runtime> {
       ? new ApolloAdapter({ apiKey: cfg.APOLLO_API_KEY, baseUrl: cfg.APOLLO_BASE_URL })
       : null;
     suggestions = new SuggestionsService(db, apollo, leads);
+    policy = new PolicyService(db, {
+      dailyCap: cfg.MUNINN_DAILY_SEND_CAP,
+      quietHours: cfg.MUNINN_QUIET_HOURS,
+      utcOffset: cfg.MUNINN_UTC_OFFSET,
+      geoBlocked: cfg.MUNINN_GEO_BLOCKED,
+      senderReady: Boolean(cfg.SMARTLEAD_API_KEY),
+    });
   }
 
   const tgClient = cfg.TELEGRAM_BOT_TOKEN ? new TelegramClient({ token: cfg.TELEGRAM_BOT_TOKEN }) : null;
@@ -88,7 +105,14 @@ export async function buildRuntime(cfg: Config): Promise<Runtime> {
     console.log('[notify]', html.replace(/<[^>]+>/g, ''));
   };
 
-  if (db && boss && leads) {
+  if (db && boss && leads && policy) {
+    const orClient = cfg.OPENROUTER_API_KEY
+      ? new OpenRouterClient({
+          apiKey: cfg.OPENROUTER_API_KEY,
+          baseUrl: cfg.OPENROUTER_BASE_URL,
+          model: cfg.MUNINN_ANALYSIS_MODEL,
+        })
+      : null;
     const enrichment = cfg.FULLENRICH_API_KEY
       ? new EnrichmentService(
           db,
@@ -99,17 +123,18 @@ export async function buildRuntime(cfg: Config): Promise<Runtime> {
           }),
         )
       : null;
-    const analysis = cfg.OPENROUTER_API_KEY
-      ? new AnalysisService(
-          db,
-          new OpenRouterClient({
-            apiKey: cfg.OPENROUTER_API_KEY,
-            baseUrl: cfg.OPENROUTER_BASE_URL,
-            model: cfg.MUNINN_ANALYSIS_MODEL,
-          }),
-          cfg.MUNINN_FIT_THRESHOLD,
-        )
+    const analysis = orClient ? new AnalysisService(db, orClient, cfg.MUNINN_FIT_THRESHOLD) : null;
+
+    const smartlead = cfg.SMARTLEAD_API_KEY
+      ? new SmartleadAdapter({ apiKey: cfg.SMARTLEAD_API_KEY, baseUrl: cfg.SMARTLEAD_BASE_URL })
       : null;
+    sequences = new SequenceService(db, policy, smartlead, notify);
+
+    const tickDeps = { db, policy, sequences, smartlead, classifier: orClient, notify };
+    const bossRef = boss;
+    requestTick = async () => {
+      await bossRef.send(QUEUES.sequenceTick, {});
+    };
 
     if (enrichment && analysis) {
       const leadsSvc = leads;
@@ -129,8 +154,10 @@ export async function buildRuntime(cfg: Config): Promise<Runtime> {
         digest: async () => {
           await notify(await buildDigest(db!));
         },
+        tick: () => runTick(tickDeps),
       });
       await boss.schedule(QUEUES.digest, cfg.MUNINN_DIGEST_CRON);
+      await boss.schedule(QUEUES.sequenceTick, '* * * * *'); // the every-minute gate & send tick
       workersActive = true;
     } else {
       console.warn('[runtime] workers NOT registered — vendor keys missing (see /v1/health degraded list)');
@@ -151,5 +178,5 @@ export async function buildRuntime(cfg: Config): Promise<Runtime> {
     telegram.start();
   }
 
-  return { cfg, db, endDb, boss, leads, suggestions, telegram, workersActive };
+  return { cfg, db, endDb, boss, leads, suggestions, policy, sequences, requestTick, telegram, workersActive };
 }

@@ -9,6 +9,7 @@ export const leads = pgTable('leads', {
   linkedinUrl: text('linkedin_url').notNull().unique(),
   status: text('status').notNull().default('new'),
   source: text('source').notNull().default('manual'),
+  geo: text('geo'),
   lastError: text('last_error'),
   createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
   updatedAt: timestamp('updated_at', { withTimezone: true }).notNull().defaultNow(),
@@ -133,6 +134,31 @@ export const events = pgTable('events', {
   kind: text('kind').notNull(),
   payload: jsonb('payload'),
   at: timestamp('at', { withTimezone: true }).notNull().defaultNow(),
+  processedAt: timestamp('processed_at', { withTimezone: true }),
+});
+
+// slice-3 gate & send tables
+export const policyRefusals = pgTable('policy_refusals', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  leadId: uuid('lead_id'),
+  messageId: uuid('message_id'),
+  channel: text('channel').notNull(),
+  code: text('code').notNull(),
+  reason: text('reason').notNull(),
+  context: jsonb('context'),
+  at: timestamp('at', { withTimezone: true }).notNull().defaultNow(),
+});
+
+export const opsFlags = pgTable('ops_flags', {
+  key: text('key').primaryKey(),
+  value: jsonb('value').notNull(),
+  updatedAt: timestamp('updated_at', { withTimezone: true }).notNull().defaultNow(),
+});
+
+export const smartleadCampaigns = pgTable('smartlead_campaigns', {
+  angle: text('angle').primaryKey(),
+  campaignId: text('campaign_id').notNull(),
+  createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
 });
 
 export const waitlistMembers = pgTable('waitlist_members', {

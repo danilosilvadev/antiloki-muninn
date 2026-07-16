@@ -69,7 +69,7 @@ export interface LeadRow {
 }
 
 export interface LeadView {
-  lead: { id: string; linkedinUrl: string; status: string; source: string; lastError: string | null };
+  lead: { id: string; linkedinUrl: string; status: string; source: string; geo: string | null; lastError: string | null };
   enrichment: { email: string | null; emailStatus: string | null; company: unknown; raw: unknown } | null;
   analysis: {
     fitScore: number;
@@ -116,6 +116,25 @@ export interface Suggestion {
   company: string | null;
   linkedinUrl: string | null;
   state: string;
+}
+
+export interface ApproveResult {
+  ok: boolean;
+  code?: string;
+  reason?: string;
+  campaignId?: string;
+  notes?: string[];
+}
+
+export interface Control {
+  pauseAll: boolean;
+  healthPaused: { on: boolean; rates?: unknown; at?: string };
+  sentToday: number;
+  dailyCap: number;
+  health: { sent: number; bounceRate: number | null; complaintRate: number | null };
+  campaigns: { angle: string; campaignId: string }[];
+  refusals: { id: string; channel: string; code: string; reason: string; at: string; leadId: string | null }[];
+  senderReady: boolean;
 }
 
 function qs(params: Record<string, string | number | undefined>): string {
@@ -169,6 +188,17 @@ export const api = {
   acceptSuggestion: (id: string) =>
     http<{ ok: boolean; result: string }>(`/suggestions/${id}/accept`, { method: 'POST' }),
   dismissSuggestion: (id: string) => http<{ ok: boolean }>(`/suggestions/${id}/dismiss`, { method: 'POST' }),
+
+  reviewQueue: () => http<{ total: number; items: LeadView[] }>('/review/queue'),
+  approve: (id: string) => http<ApproveResult>(`/leads/${id}/approve`, { method: 'POST' }),
+  reject: (id: string, reason: string) =>
+    http<{ ok: boolean }>(`/leads/${id}/reject`, { method: 'POST', body: JSON.stringify({ reason }) }),
+  markSent: (messageId: string) => http<{ ok: boolean }>(`/messages/${messageId}/mark-sent`, { method: 'POST' }),
+
+  control: () => http<Control>('/control'),
+  pauseAll: (on: boolean) =>
+    http<{ ok: boolean; pauseAll: boolean }>('/control/pause-all', { method: 'POST', body: JSON.stringify({ on }) }),
+  clearHealthPause: () => http<{ ok: boolean; note: string }>('/control/clear-health-pause', { method: 'POST' }),
 };
 
 export function slugName(url: string): string {

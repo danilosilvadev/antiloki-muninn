@@ -13,3 +13,7 @@ verify_jwt = false
 
 [functions.r]
 verify_jwt = false
+
+[functions.webhook-sink]
+verify_jwt = false
+

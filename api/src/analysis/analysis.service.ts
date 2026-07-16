@@ -34,12 +34,27 @@ export class AnalysisService {
       .limit(1);
     if (!enr) throw new Error(`analysis: lead ${leadId} has no enrichment`);
 
+    // the D4 → C4 loop: recent reject reasons steer every future dossier
+    const rejections = await this.db
+      .select()
+      .from(t.events)
+      .where(eq(t.events.kind, 'draft_rejected'))
+      .orderBy(desc(t.events.at))
+      .limit(5);
+    const steering = rejections
+      .map((r) => {
+        const p = (r.payload ?? {}) as Record<string, unknown>;
+        return typeof p['reason'] === 'string' ? (p['reason'] as string) : null;
+      })
+      .filter((x): x is string => Boolean(x));
+
     const user = buildUserPrompt({
       linkedinUrl: lead.linkedinUrl,
       email: enr.email,
       emailStatus: enr.emailStatus,
       company: enr.company,
       raw: enr.raw,
+      steering,
     });
     const jsonSchema = analysisJsonSchema();
 

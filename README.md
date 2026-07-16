@@ -17,9 +17,9 @@ six-slice plan this repo implements).
 
 ```
 site/       the public static site — landing (index.html), paper, manual, deck, privacy
-supabase/   migrations (waitlist + full engine schema) + edge functions (waitlist-join · unsub · r)
-api/        muninn api — NestJS :41945 — ingest → enrich → analyze → Telegram dossier
-console/    muninn console — Vite+React :5177 — dashboard · leads/CRM · drawer · settings(keys)
+supabase/   migrations (waitlist + engine + gate/send) + edge functions (waitlist-join · unsub · r · webhook-sink)
+api/        muninn api — NestJS :41945 — ingest → enrich → analyze → dossier → SendPolicy → Smartlead
+console/    muninn console — Vite+React :5177 — dashboard · leads · review · control · drawer · settings
 scripts/    configure-site.mjs (bakes site values) · unsub-link.mjs (exit-test links)
 test/       node --test suite over the shared edge-function logic (api has its own suite)
 docs/       runbook-slice-0.html · runbook-slice-1.html — the operator runbooks
@@ -32,7 +32,7 @@ docs/       runbook-slice-0.html · runbook-slice-1.html — the operator runboo
 | 0 · Unblock | Landing wired + instrumented · Supabase waitlist · warmup runbook | **built — needs operator deploy (runbook-slice-0)** |
 | 1 · The raven flies | ingest → enrich → analyze → Telegram dossier | **built — needs keys + run (runbook-slice-1)** |
 | 2 · The console appears | shell + dashboard + CRM + drawer + **settings/keys panel** | **built — run it (runbook-slice-2)** |
-| 3 · The gate & the send | SendPolicy + sequences + Smartlead + review queue | pending |
+| 3 · The gate & the send | SendPolicy + sequences + Smartlead + review queue + webhooks + kill switch | **built — wire Smartlead (runbook-slice-3)** |
 | 4 · The loop | control-center + waitlist & waves + referral + digest | pending |
 | 5 · Governance | erasure + retention + spend breaker + settings | pending |
 
@@ -44,10 +44,11 @@ cd api && npm install && npm test    # api suite: unit + pglite integration over
 node scripts/configure-site.mjs --help   # bake real values into site/ (domain, Supabase ref, PostHog)
 ```
 
-Deploying is the operator's half: `docs/runbook-slice-0.html` (funnel + warmup), then
-`docs/runbook-slice-2.html` (run api + console, paste keys in Settings, triage from the
-UI). `runbook-slice-1.html` covers the Telegram-only path and the day-6 manual-outreach
-play — still valid, but the Settings panel now replaces its hand-edited `.env` steps.
+Deploying is the operator's half, runbook by runbook: `docs/runbook-slice-0.html` (funnel
++ warmup) → `runbook-slice-2.html` (run api + console, paste keys, triage from the UI) →
+`runbook-slice-3.html` (wire Smartlead + the webhook sink, then approve → send → reply-pause
+→ kill switch). `runbook-slice-1.html` covers the Telegram-only path and the day-6
+manual-outreach play — still valid, but Settings now replaces its hand-edited `.env` steps.
 
 ## Rules of this repo
 

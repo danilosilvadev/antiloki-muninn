@@ -1,7 +1,7 @@
 // D1 — the console shell: left rail, health header with the needs-you tray,
 // and the lead drawer overlay (opens over any screen).
 import { createContext, useContext, useState, type ReactNode } from 'react';
-import { useQuery } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { Link, Outlet, useNavigate } from '@tanstack/react-router';
 import { api, ApiError } from './api';
 import { LeadDrawer } from './pages/drawer';
@@ -17,12 +17,15 @@ export const useDrawer = (): DrawerApi => useContext(DrawerCtx);
 export function Shell(): ReactNode {
   const [leadId, setLeadId] = useState<string | null>(null);
   const navigate = useNavigate();
+  const qc = useQueryClient();
   const health = useQuery({ queryKey: ['health'], queryFn: api.health, refetchInterval: 15_000 });
-  const stats = useQuery({
-    queryKey: ['stats'],
-    queryFn: api.stats,
-    refetchInterval: 30_000,
-    retry: (count, err) => !(err instanceof ApiError && err.status === 503) && count < 2,
+  const noRetry503 = (count: number, err: unknown): boolean => !(err instanceof ApiError && err.status === 503) && count < 2;
+  const stats = useQuery({ queryKey: ['stats'], queryFn: api.stats, refetchInterval: 30_000, retry: noRetry503 });
+  const control = useQuery({ queryKey: ['control'], queryFn: api.control, refetchInterval: 15_000, retry: noRetry503 });
+  const reviewCount = stats.data?.needsYou.awaitingReview ?? 0;
+  const pause = useMutation({
+    mutationFn: (on: boolean) => api.pauseAll(on),
+    onSuccess: () => { void qc.invalidateQueries({ queryKey: ['control'] }); },
   });
 
   const h = health.data;
@@ -53,14 +56,13 @@ export function Shell(): ReactNode {
           <Link to="/leads" activeProps={{ className: 'active' }}>
             <span className="lbl">☰ Leads</span>
           </Link>
-          <span className="nav-off" title="arrives with slice 3">
+          <Link to="/review" activeProps={{ className: 'active' }}>
             <span className="lbl">⌨ Review</span>
-            <small>slice 3</small>
-          </span>
-          <span className="nav-off" title="arrives with slice 4">
+            {reviewCount > 0 && <small style={{ color: 'var(--amber)' }}>{reviewCount}</small>}
+          </Link>
+          <Link to="/control" activeProps={{ className: 'active' }}>
             <span className="lbl">⏸ Control</span>
-            <small>slice 4</small>
-          </span>
+          </Link>
           <span className="nav-off" title="arrives with slice 4">
             <span className="lbl">≋ Waitlist</span>
             <small>slice 4</small>
@@ -86,7 +88,22 @@ export function Shell(): ReactNode {
                 needs you: {needs}
               </button>
             )}
-            <span className="muted2">no sending until slice 3</span>
+            {control.data && (
+              <>
+                <span className="mono tiny muted2">
+                  {control.data.sentToday}/{control.data.dailyCap} today
+                </span>
+                <button
+                  className={`btn sm ${control.data.pauseAll ? '' : 'warn'}`}
+                  style={control.data.pauseAll ? { color: 'var(--green)', borderColor: 'var(--green)' } : {}}
+                  disabled={pause.isPending}
+                  onClick={() => pause.mutate(!control.data!.pauseAll)}
+                  title="global kill switch"
+                >
+                  {control.data.pauseAll ? '▶ resume all' : '⏸ pause all'}
+                </button>
+              </>
+            )}
           </header>
           <div className="content">
             <Outlet />

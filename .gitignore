@@ -7,3 +7,6 @@ supabase/.temp/
 supabase/.branches/
 .DS_Store
 Thumbs.db
+
+# stray tsc emits from cross-boundary test imports (webhook-core is type-stripped, not compiled)
+supabase/functions/**/*.js

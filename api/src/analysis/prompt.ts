@@ -37,9 +37,10 @@ export function buildUserPrompt(input: {
   emailStatus: string | null;
   company: unknown;
   raw: unknown;
+  steering?: string[]; // recent review-queue reject reasons (D4 → C4 loop)
 }): string {
   const rawStr = JSON.stringify(input.raw ?? {});
-  return [
+  const lines = [
     'Analyze this person as a potential antiloki design partner.',
     '',
     'linkedin_url: ' + input.linkedinUrl,
@@ -48,5 +49,13 @@ export function buildUserPrompt(input: {
     '',
     'enrichment_data (vendor response, verbatim, may be partial — cite only from this):',
     rawStr.length > 6000 ? rawStr.slice(0, 6000) + '…(truncated)' : rawStr,
-  ].join('\n');
+  ];
+  if (input.steering && input.steering.length > 0) {
+    lines.push(
+      '',
+      'OPERATOR STEERING — the human rejected recent drafts for these reasons; write drafts that do not repeat them:',
+      ...input.steering.map((s) => '- ' + s.slice(0, 200)),
+    );
+  }
+  return lines.join('\n');
 }

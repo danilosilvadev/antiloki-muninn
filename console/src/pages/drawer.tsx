@@ -177,8 +177,14 @@ function DraftEditor({
     mutationFn: () => api.editDraft(draft.id, { subject: draft.channel === 'email' ? subject : null, body_md: body }),
     onSuccess: (r) => { setReason(r.reason); onSaved(); },
   });
+  const markSent = useMutation({
+    mutationFn: () => api.markSent(draft.id),
+    onSuccess: () => { setReason('marked sent ✓'); onSaved(); },
+  });
   const words = countWords(body);
   const dirty = body !== draft.bodyMd || (draft.subject ?? '') !== subject;
+  const isLinkedin = draft.channel === 'linkedin';
+  const alreadySent = draft.status === 'sent';
   return (
     <div className="draft">
       <div className="dt">
@@ -191,12 +197,19 @@ function DraftEditor({
       {draft.channel === 'email' && (
         <input placeholder="subject" value={subject} onChange={(e) => setSubject(e.target.value)} />
       )}
-      <textarea rows={4} value={body} onChange={(e) => setBody(e.target.value)} />
+      <textarea rows={4} value={body} onChange={(e) => setBody(e.target.value)} disabled={alreadySent} />
       <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
-        <button className="btn sm" disabled={!dirty || save.isPending} onClick={() => save.mutate()}>save draft</button>
-        <button className="btn sm" disabled title="sending arrives with slice 3 (SendPolicy + review queue)">
-          send — slice 3
-        </button>
+        <button className="btn sm" disabled={!dirty || save.isPending || alreadySent} onClick={() => save.mutate()}>save draft</button>
+        {isLinkedin ? (
+          // P1 stays manual: you send the connect note in LinkedIn's real UI, then record it here.
+          <button className="btn sm ok" disabled={alreadySent || markSent.isPending} onClick={() => markSent.mutate()} title="send it in LinkedIn, then mark it">
+            {alreadySent ? 'sent ✓' : 'I sent this in LinkedIn — mark sent'}
+          </button>
+        ) : (
+          <button className="btn sm" disabled title="email sends are approved in the Review queue → SendPolicy → Smartlead">
+            {alreadySent ? 'sent ✓' : 'email sends via Review → approve'}
+          </button>
+        )}
         {reason && <span className="tiny muted2 mono">{reason}</span>}
       </div>
     </div>

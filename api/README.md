@@ -1,9 +1,10 @@
-# muninn api — slice 1: the raven flies
+# muninn api
 
 NestJS service on **loopback `127.0.0.1:41945`** (no auth in v1 — it never leaves the
-machine). One field in, a dossier out: `ingest → enrich (FullEnrich) → analyze
-(OpenRouter) → Telegram dossier` with ✅ queue / ✏️ note / ❌ park buttons. **No sending
-exists here** — sequencing + SendPolicy are slice 3.
+machine). The full pipeline: `ingest → enrich (FullEnrich) → analyze (OpenRouter) →
+dossier → review/approve → SendPolicy → Smartlead → webhooks → reply-pause`. Cold mail
+leaves ONLY through Smartlead on secondary domains; the console (slice 2) and Telegram
+(slice 1) are the operator surfaces.
 
 ## Run
 
@@ -31,11 +32,15 @@ name every disabled subsystem.
 ```
 src/config/       zod env, .env loader, degraded-mode semantics
 src/db/           drizzle schema (mirror of supabase/migrations — DDL lives THERE) + client
-src/leads/        URL normalize/dedupe/suppression-check ingest + the lead view
-src/enrichment/   fullenrich.adapter (ALL vendor-contract assumptions live here) + idempotent step service
-src/analysis/     openrouter client · zod acceptance gate (accept → retry once → fail loud) · ICP rubric prompt · service
+src/leads/        ingest (normalize/dedupe/suppression-check) · lead view/list/timeline · suggestions inbox
+src/enrichment/   fullenrich + apollo adapters (ALL vendor-contract assumptions here) + idempotent step service
+src/analysis/     openrouter client · zod acceptance gate · ICP rubric prompt (+ reject-reason steering) · service
+src/policy/       SendPolicy — pure ordered gate (send-policy.ts) + the service that gathers reality & logs refusals
+src/channels/     smartlead.adapter · sequence machine (approve→push) · reply classifier (labels only)
 src/telegram/     fetch-based bot client · console v0 (operator-locked) · dossier + digest renderers
-src/jobs/         pg-boss queues (muninn-enrich/analyze/digest/sequence-tick) + workers
+src/jobs/         pg-boss queues + workers + the every-minute tick (drain webhooks · kill switch · health · linkedin-due)
+src/http/         controllers: health · leads · stats · suggestions · control (review/approve/pause-all)
+src/settings/     keys-on-panel: masked status + atomic .env write + in-place runtime reload
 src/runtime.ts    the single wiring point — every subsystem optional by config
 ```
 

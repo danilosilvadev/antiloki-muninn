@@ -5,6 +5,8 @@ import { RouterProvider, createRootRoute, createRoute, createRouter } from '@tan
 import { Shell } from './shell';
 import { DashboardPage } from './pages/dashboard';
 import { LeadsPage } from './pages/leads';
+import { ReviewPage } from './pages/review';
+import { ControlPage } from './pages/control';
 import { SettingsPage } from './pages/settings';
 import './theme.css';
 
@@ -15,9 +17,11 @@ const queryClient = new QueryClient({
 const rootRoute = createRootRoute({ component: Shell });
 const dashboardRoute = createRoute({ getParentRoute: () => rootRoute, path: '/', component: DashboardPage });
 const leadsRoute = createRoute({ getParentRoute: () => rootRoute, path: '/leads', component: LeadsPage });
+const reviewRoute = createRoute({ getParentRoute: () => rootRoute, path: '/review', component: ReviewPage });
+const controlRoute = createRoute({ getParentRoute: () => rootRoute, path: '/control', component: ControlPage });
 const settingsRoute = createRoute({ getParentRoute: () => rootRoute, path: '/settings', component: SettingsPage });
 
-const routeTree = rootRoute.addChildren([dashboardRoute, leadsRoute, settingsRoute]);
+const routeTree = rootRoute.addChildren([dashboardRoute, leadsRoute, reviewRoute, controlRoute, settingsRoute]);
 const router = createRouter({ routeTree });
 
 declare module '@tanstack/react-router' {

@@ -37,6 +37,12 @@ const Env = z.object({
   APOLLO_API_KEY: z.string().min(10).optional(),
   APOLLO_BASE_URL: z.string().default('https://api.apollo.io/api/v1'),
   CALENDLY_URL: z.string().optional(),
+  SMARTLEAD_API_KEY: z.string().min(10).optional(),
+  SMARTLEAD_BASE_URL: z.string().default('https://server.smartlead.ai/api/v1'),
+  MUNINN_DAILY_SEND_CAP: z.coerce.number().int().min(1).max(500).default(30),
+  MUNINN_QUIET_HOURS: z.string().regex(/^\d{1,2}-\d{1,2}$/).default('20-8'),
+  MUNINN_UTC_OFFSET: z.coerce.number().min(-12).max(14).default(-3),
+  MUNINN_GEO_BLOCKED: z.string().default('DE,CA'),
 });
 
 export type Config = z.infer<typeof Env> & { degraded: string[] };
@@ -53,5 +59,6 @@ export function loadConfig(env: NodeJS.ProcessEnv = process.env): Config {
   if (!parsed.OPENROUTER_API_KEY) degraded.push('analysis: OPENROUTER_API_KEY missing');
   if (!parsed.TELEGRAM_BOT_TOKEN) degraded.push('telegram: TELEGRAM_BOT_TOKEN missing');
   else if (!parsed.TELEGRAM_OPERATOR_CHAT_ID) degraded.push('telegram: TELEGRAM_OPERATOR_CHAT_ID missing — bot replies with your chat id, then set it');
+  if (!parsed.SMARTLEAD_API_KEY) degraded.push('sending: SMARTLEAD_API_KEY missing — approvals will be refused (not_ready)');
   return { ...parsed, degraded };
 }
