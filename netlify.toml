@@ -1,0 +1,11 @@
+# Static-site deploy config (Netlify). Cloudflare Pages works identically with
+# build output directory = site/ (the site/_redirects file is honored by both).
+[build]
+  publish = "site"
+
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Content-Type-Options = "nosniff"
+    Referrer-Policy = "strict-origin-when-cross-origin"
+    X-Frame-Options = "DENY"

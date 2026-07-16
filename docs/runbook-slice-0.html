@@ -1,0 +1,219 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>muninn — slice 0 runbook · deploy + warmup · 2026-07-16</title>
+<meta name="description" content="The operator's runbook for slice 0: domains, Supabase deploy, site bake, DNS + warmup, and the exit test." />
+<style>
+  :root{
+    --base:#FBF9F6; --panel:#F4F0EA; --panel2:#ECE7DE; --line:#E0D9CD; --ink:#26221D; --muted:#6E6558; --faint:#9A9184;
+    --orange:#C44A24; --green:#1E8F4E; --amber:#A8720F; --red:#C03A28; --violet:#6D4FD8;
+    --green-bg:rgba(30,143,78,.08); --amber-bg:rgba(168,114,15,.09); --violet-bg:rgba(109,79,216,.08);
+    --mono:'Cascadia Code','JetBrains Mono',Consolas,ui-monospace,monospace;
+    --sans:'Segoe UI Variable Text','Segoe UI',system-ui,-apple-system,sans-serif;
+  }
+  @media (prefers-color-scheme: dark){
+    :root{ --base:#0F0E0C; --panel:#171512; --panel2:#1E1B18; --line:#2B2723; --ink:#EDE8E0; --muted:#9A9083; --faint:#6A6257;
+      --orange:#E8623A; --green:#4ADE80; --amber:#F0A93B; --red:#F0533B; --violet:#A78BFA;
+      --green-bg:rgba(74,222,128,.08); --amber-bg:rgba(240,169,59,.09); --violet-bg:rgba(167,139,250,.09); }
+  }
+  :root[data-theme="dark"]{ --base:#0F0E0C; --panel:#171512; --panel2:#1E1B18; --line:#2B2723; --ink:#EDE8E0; --muted:#9A9083; --faint:#6A6257;
+    --orange:#E8623A; --green:#4ADE80; --amber:#F0A93B; --red:#F0533B; --violet:#A78BFA;
+    --green-bg:rgba(74,222,128,.08); --amber-bg:rgba(240,169,59,.09); --violet-bg:rgba(167,139,250,.09); }
+  :root[data-theme="light"]{ --base:#FBF9F6; --panel:#F4F0EA; --panel2:#ECE7DE; --line:#E0D9CD; --ink:#26221D; --muted:#6E6558; --faint:#9A9184;
+    --orange:#C44A24; --green:#1E8F4E; --amber:#A8720F; --red:#C03A28; --violet:#6D4FD8;
+    --green-bg:rgba(30,143,78,.08); --amber-bg:rgba(168,114,15,.09); --violet-bg:rgba(109,79,216,.08); }
+  *{box-sizing:border-box}
+  body{background:var(--base);color:var(--ink);font-family:var(--sans);font-size:16px;line-height:1.65;margin:0;-webkit-font-smoothing:antialiased}
+  .wrap{max-width:920px;margin:0 auto;padding:0 26px}
+  a{color:var(--orange);text-decoration:none} a:hover{text-decoration:underline}
+  header{padding:52px 0 8px}
+  .eyebrow{font-family:var(--mono);font-size:11.5px;letter-spacing:.15em;text-transform:uppercase;color:var(--orange);display:flex;align-items:center;gap:10px;margin-bottom:16px}
+  .eyebrow::before{content:"";width:28px;height:1px;background:var(--orange);opacity:.6}
+  h1{font-size:clamp(27px,4vw,38px);line-height:1.1;letter-spacing:-.025em;margin:0;font-weight:700;text-wrap:balance}
+  .sub{color:var(--muted);font-size:16.5px;max-width:66ch;margin:16px 0 0}
+  .sub b{color:var(--ink)}
+  h2{font-size:clamp(20px,2.6vw,26px);letter-spacing:-.02em;margin:52px 0 6px;font-weight:700}
+  h2 .no{font-family:var(--mono);font-size:.6em;font-weight:500;color:var(--faint);vertical-align:.3em;margin-right:10px}
+  p{margin:12px 0;color:var(--muted)} p b,li b{color:var(--ink);font-weight:600}
+  ul,ol{margin:12px 0;padding-left:22px;color:var(--muted)} li{margin:6px 0}
+  code{font-family:var(--mono);font-size:.84em;background:var(--panel2);border:1px solid var(--line);border-radius:5px;padding:1px 6px;color:var(--ink)}
+  pre{font-family:var(--mono);font-size:12.5px;line-height:1.65;background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:14px 17px;overflow-x:auto;color:var(--ink);margin:14px 0}
+  pre .c{color:var(--faint)}
+  .tbl{border:1px solid var(--line);border-radius:10px;overflow-x:auto;margin:16px 0;background:var(--panel)}
+  table{border-collapse:collapse;width:100%;font-size:13.5px;min-width:560px}
+  th,td{padding:10px 13px;text-align:left;border-bottom:1px solid var(--line);vertical-align:top}
+  thead th{font-family:var(--mono);font-size:10.5px;letter-spacing:.07em;text-transform:uppercase;color:var(--faint);background:var(--panel2);font-weight:500}
+  tbody tr:last-child th,tbody tr:last-child td{border-bottom:none}
+  tbody th{font-weight:600;color:var(--ink);font-size:13px;font-family:var(--mono);white-space:nowrap}
+  td{color:var(--muted)} td b{color:var(--ink)}
+  .callout{border:1px solid var(--line);border-radius:10px;padding:15px 19px;margin:18px 0;background:var(--panel)}
+  .callout.green{border-color:color-mix(in srgb,var(--green) 40%,var(--line));background:var(--green-bg)}
+  .callout.amber{border-color:color-mix(in srgb,var(--amber) 45%,var(--line));background:var(--amber-bg)}
+  .callout.violet{border-color:color-mix(in srgb,var(--violet) 40%,var(--line));background:var(--violet-bg)}
+  .callout .ch{font-family:var(--mono);font-size:11px;letter-spacing:.12em;text-transform:uppercase;margin-bottom:8px;font-weight:600}
+  .callout.green .ch{color:var(--green)} .callout.amber .ch{color:var(--amber)} .callout.violet .ch{color:var(--violet)}
+  .callout p{font-size:14.5px;margin:7px 0}
+  .pill{display:inline-block;font-family:var(--mono);font-size:11px;font-weight:600;border-radius:20px;padding:2px 10px;border:1px solid;white-space:nowrap}
+  .pill.g{color:var(--green);border-color:var(--green);background:var(--green-bg)}
+  .pill.a{color:var(--amber);border-color:var(--amber);background:var(--amber-bg)}
+  footer{border-top:1px solid var(--line);margin-top:64px;padding:28px 0 56px;font-family:var(--mono);font-size:11.5px;color:var(--faint)}
+</style>
+</head>
+<body>
+<header><div class="wrap">
+  <div class="eyebrow">muninn · slice 0 · operator runbook · 2026-07-16</div>
+  <h1>Everything is built. This is the half-day of clicking only you can do.</h1>
+  <p class="sub">The code side of slice 0 is complete and tested: the landing is <b>wired</b> (form → edge function → Postgres row with a position), instrumented, share-ready, and legally footed; the waitlist backend (<code>waitlist-join</code> · <code>unsub</code> · <code>r</code>) is written with deny-all RLS. What remains needs <b>your accounts, your domains, and your card</b> — steps 0→7, top to bottom. Step 6 starts the 3–4-week warmup clock, which is the long pole of the whole plan: do it the same day.</p>
+</div></header>
+
+<section><div class="wrap">
+  <h2><span class="no">·</span>The board</h2>
+  <div class="tbl"><table>
+    <thead><tr><th>Step</th><th>What</th><th>Time</th><th>Blocks</th></tr></thead>
+    <tbody>
+      <tr><th>0</th><td>Decide: canonical domain · your name + postal line</td><td>10 min of courage</td><td>everything</td></tr>
+      <tr><th>1</th><td>Buy 3 domains (canonical + 2 secondary sending)</td><td>20 min</td><td>steps 3–6</td></tr>
+      <tr><th>2</th><td>Accounts: Supabase · PostHog · Google Workspace · Smartlead</td><td>30 min</td><td>steps 3–6</td></tr>
+      <tr><th>3</th><td>Deploy the waitlist backend (migrations + functions + secrets)</td><td>15 min</td><td>step 4</td></tr>
+      <tr><th>4</th><td>Bake the site (configure script + OG card export)</td><td>10 min</td><td>step 5</td></tr>
+      <tr><th>5</th><td>Deploy the site + custom domain + HTTPS</td><td>20 min</td><td>step 7</td></tr>
+      <tr><th>6</th><td>Inboxes + DNS (SPF/DKIM/DMARC) + <b>warmup ON</b> — the clock starts</td><td>45 min + DNS waits</td><td>slice 3 sends</td></tr>
+      <tr><th>7</th><td>Run the exit test (below) — slice 0 is done when it passes</td><td>10 min</td><td>slice 1 start</td></tr>
+    </tbody>
+  </table></div>
+</div></section>
+
+<section><div class="wrap">
+  <h2><span class="no">00</span>Decide</h2>
+  <ul>
+    <li><b>Canonical domain</b> (blocking decision #1) — gates deploy, OG cards, secondary-domain selection, warmup. Pick it today; a decent name beats a perfect one you pick next month.</li>
+    <li><b>Name + postal line</b> (blocking decision #2) — goes on the privacy page and, later, every cold email (CAN-SPAM requires a physical address; a virtual mailbox — e.g. a local coworking address or a mailbox service — satisfies it). The site currently says "built by <b>Danilo</b>"; give the configure script the rest when ready.</li>
+  </ul>
+</div></section>
+
+<section><div class="wrap">
+  <h2><span class="no">01</span>Buy the domains</h2>
+  <p>Three purchases (~$25–40/yr each): the <b>canonical</b> (the site, consented mail later — never cold), and <b>two secondary sending domains</b> — clearly-yours variants (think <code>get&lt;name&gt;.com</code>, <code>try&lt;name&gt;.com</code>, <code>&lt;name&gt;hq.com</code>), impersonating no one. Prefer <code>.com</code> for sending reputation. Two domains isolate blast radius: if one's reputation dips, the other keeps sending while it rests.</p>
+</div></section>
+
+<section><div class="wrap">
+  <h2><span class="no">02</span>Create the accounts</h2>
+  <div class="tbl"><table>
+    <thead><tr><th>Account</th><th>Plan</th><th>Grab</th></tr></thead>
+    <tbody>
+      <tr><th>Supabase</th><td>free tier</td><td>project <b>ref</b> (in the URL), database password, <code>service_role</code> key (Settings → API — keep server-side only)</td></tr>
+      <tr><th>PostHog</th><td>free tier (US cloud)</td><td>project key <code>phc_…</code></td></tr>
+      <tr><th>Google Workspace</th><td>~$14/user/mo</td><td>2–3 inboxes <b>per secondary domain</b> (e.g. danilo@, hello@) — created in step 6</td></tr>
+      <tr><th>Smartlead</th><td>from $39/mo</td><td>account now; inbox connection + warmup in step 6</td></tr>
+    </tbody>
+  </table></div>
+  <p>Slice-1 accounts (OpenRouter, FullEnrich, Telegram bot) can wait — the full list with env keys lives in <code>.env.example</code>.</p>
+</div></section>
+
+<section><div class="wrap">
+  <h2><span class="no">03</span>Deploy the waitlist backend</h2>
+  <pre><span class="c"># once: install the Supabase CLI (https://supabase.com/docs/guides/cli) and log in</span>
+supabase login
+
+<span class="c"># from the antiloki-muninn repo root:</span>
+supabase link --project-ref &lt;REF&gt;
+supabase db push                      <span class="c"># applies supabase/migrations (3 tables + deny-all RLS)</span>
+
+<span class="c"># secrets for the functions (generate the secret once, save it in your password manager +.env):</span>
+openssl rand -hex 32                  <span class="c"># → MUNINN_EDGE_SECRET</span>
+supabase secrets set MUNINN_EDGE_SECRET=&lt;hex&gt; ALLOWED_ORIGINS=https://&lt;canonical-domain&gt; LANDING_URL=https://&lt;canonical-domain&gt; RATE_LIMIT_PER_HOUR=20
+
+supabase functions deploy waitlist-join unsub r
+<span class="c"># config.toml already sets verify_jwt=false for all three (they're public endpoints);
+# if your CLI version ignores it, add --no-verify-jwt to the deploy command.</span></pre>
+  <p>Quick pulse check (before the site exists — CORS doesn't apply to curl):</p>
+  <pre>curl -s -X POST https://&lt;REF&gt;.supabase.co/functions/v1/waitlist-join -H "content-type: application/json" -d "{\"email\":\"pulse@example.com\"}"
+<span class="c"># → {"ok":true,"position":1,"referral_code":"…","referral_url":"https://…/r/…","deduped":false,"message":"✓ operator #1 — share your link to skip the line"}</span></pre>
+</div></section>
+
+<section><div class="wrap">
+  <h2><span class="no">04</span>Bake the site</h2>
+  <pre>node scripts/configure-site.mjs --domain &lt;canonical-domain&gt; --supabase-ref &lt;REF&gt; --posthog-key phc_… --contact-email &lt;you@canonical-domain&gt; --postal "&lt;street, city, country&gt;"
+<span class="c"># it reports every replacement and lists anything still at a placeholder</span>
+
+<span class="c"># export the share card (A3) — Playwright screenshots the 1200×630 frame:</span>
+npx playwright screenshot --viewport-size=1200,630 --wait-for-timeout=2500 site/og-card.html site/og-card.png</pre>
+  <p>Spot check: <code>grep -c "__MUNINN_" site/index.html site/privacy.html site/_redirects</code> should print <b>0</b> for each file, and <code>site/og-card.png</code> should exist.</p>
+</div></section>
+
+<section><div class="wrap">
+  <h2><span class="no">05</span>Deploy the site</h2>
+  <p>Netlify: <code>netlify deploy --dir site --prod</code> (or drag the <code>site/</code> folder into the dashboard). Cloudflare Pages works identically with build output = <code>site/</code> — both honor <code>site/_redirects</code>. Then attach the canonical domain and let HTTPS provision.</p>
+  <pre><span class="c"># verify the redirect layer once live:</span>
+curl -sI https://&lt;domain&gt;/landing-verify.html | findstr /i "301 location"     <span class="c"># legacy page → /</span>
+curl -sI https://&lt;domain&gt;/r/testcode1 | findstr /i "302 location"             <span class="c"># → the r function → /?ref=testcode1</span></pre>
+</div></section>
+
+<section><div class="wrap">
+  <h2><span class="no">06</span>Inboxes, DNS, and warmup ON — the clock starts here</h2>
+  <p>For <b>each secondary sending domain</b>: add it to Google Workspace, create 2–3 inboxes, then set DNS:</p>
+  <div class="tbl"><table>
+    <thead><tr><th>Record</th><th>Value</th><th>Note</th></tr></thead>
+    <tbody>
+      <tr><th>MX</th><td><code>smtp.google.com</code> (priority 1)</td><td>Workspace receiving</td></tr>
+      <tr><th>SPF</th><td><code>v=spf1 include:_spf.google.com ~all</code></td><td>TXT on the root</td></tr>
+      <tr><th>DKIM</th><td>generate in Admin console → Apps → Gmail → Authenticate email</td><td>TXT, 2048-bit; turn ON after the record propagates</td></tr>
+      <tr><th>DMARC</th><td><code>v=DMARC1; p=none; rua=mailto:dmarc@&lt;canonical&gt;</code></td><td>TXT on <code>_dmarc</code>; move to <code>p=quarantine</code> after 2 clean weeks</td></tr>
+    </tbody>
+  </table></div>
+  <ul>
+    <li>Connect every inbox to <b>Smartlead</b> and switch <b>warmup ON</b> (start 10–20/day, ramp ~20% per step). Warmup stays on permanently, even after campaigns begin.</li>
+    <li>Give the <b>canonical</b> domain SPF/DKIM/DMARC too (it will send consented mail via Resend in slice 4) — but it <b>never</b> sends cold. Microsoft rejects unauthenticated bulk senders outright; Google/Yahoo enforce a 0.3% complaint ceiling. The engine's auto-pause thresholds (slice 3) assume this DNS is right.</li>
+    <li><b>First cold send is ~4 weeks from today</b> — slice 3 will be ready long before the domains are. That's by design; don't shortcut the warmup.</li>
+  </ul>
+</div></section>
+
+<section><div class="wrap">
+  <h2><span class="no">07</span>The exit test — slice 0 is done when this passes</h2>
+  <div class="tbl"><table>
+    <thead><tr><th>#</th><th>Do</th><th>Expect</th></tr></thead>
+    <tbody>
+      <tr><th>1</th><td><code>curl -s -X POST https://&lt;REF&gt;.supabase.co/functions/v1/waitlist-join -H "content-type: application/json" -d "{\"email\":\"exit-test@example.com\",\"utm\":{\"utm_source\":\"runbook\"}}"</code></td><td><code>ok:true</code>, a <code>position</code> number, a <code>referral_code</code>, message "✓ operator #N — share your link to skip the line"</td></tr>
+      <tr><th>2</th><td>run the exact same curl again</td><td><b>same position</b>, <code>deduped:true</code> — no second row</td></tr>
+      <tr><th>3</th><td>same curl with <code>"company":"anything"</code> added (the honeypot)</td><td><code>ok:true</code> but <code>position:null</code>; SQL shows <b>no row</b> for that email</td></tr>
+      <tr><th>4</th><td><code>MUNINN_EDGE_SECRET=… SUPABASE_PROJECT_REF=&lt;REF&gt; node scripts/unsub-link.mjs exit-test@example.com</code> → open the printed URL</td><td>"Done." page; a <code>suppressions</code> row with reason <code>unsub</code>; a tampered token → "invalid link"</td></tr>
+      <tr><th>5</th><td>open the <code>referral_url</code> from test 1 in a browser</td><td>302 → landing with <code>?ref=&lt;code&gt;</code>; an <code>events</code> row with kind <code>referral_visit</code></td></tr>
+      <tr><th>6</th><td>submit the form <b>from the live page</b> with a second address</td><td>form swaps to "✓ operator #N — share your link to skip the line" + your referral link with a copy button</td></tr>
+      <tr><th>7</th><td>paste the site URL into a share preview (Slack/Discord/opengraph.xyz)</td><td>the "faster horses" card renders, title + description present</td></tr>
+      <tr><th>8</th><td>Smartlead warmup dashboard</td><td>every inbox shows warmup sending activity</td></tr>
+    </tbody>
+  </table></div>
+  <p>SQL spot-check (Supabase → SQL editor):</p>
+  <pre>select position, email, referral_code, referred_by, utm-&gt;&gt;'utm_source' as src, created_at
+from waitlist_members order by position;
+select kind, payload, at from events order by at desc limit 10;
+select email, reason, at from suppressions;</pre>
+  <div class="callout green">
+    <div class="ch">then tell the machine</div>
+    <p>When all eight pass, slice 0 is shipped. Mark it in the muninn README's slice table, and slice 1 (the raven flies: NestJS skeleton → FullEnrich → analysis → Telegram dossier) can start — conversations begin at day 6 with manual touches, long before the warmup clock finishes.</p>
+  </div>
+</div></section>
+
+<section><div class="wrap">
+  <h2><span class="no">08</span>What slice 0 deliberately does not include</h2>
+  <ul>
+    <li><b>webhook-sink</b> (Smartlead events) — slice 3, with SendPolicy and the sequencer.</li>
+    <li><b>thank-you v2 + WhatsApp/Telegram opt-in consents</b> — slice 4 (the landing's inline success line covers slice 0).</li>
+    <li><b>erasure endpoint + retention jobs</b> — slice 5 (the privacy page states the policy; the automation lands there).</li>
+    <li><b>any cold sending</b> — nothing sends until warmup completes <i>and</i> slice 3's SendPolicy gate exists.</li>
+  </ul>
+  <div class="callout amber">
+    <div class="ch">flag log (§ pendencies)</div>
+    <p>Nothing in slice 0 hit a safeguard flag — it's a form, a database, and a privacy page. The Tier-1 item (P1, LinkedIn auto-send) remains <b>operator-owned and unscheduled</b>; P7's rename is applied throughout ("secondary sending domains"). The B2 deviation is documented in the migration: RLS shipped deny-all instead of anon-insert, because the edge function is the only sanctioned write path.</p>
+  </div>
+  <div class="callout violet">
+    <div class="ch">run-rate after this runbook</div>
+    <p>Domains ~$75–120/yr · Workspace ~$28–84/mo (2–6 inboxes) · Smartlead $39/mo · Supabase + PostHog + static host $0. The enrichment/AI spend starts with slice 1.</p>
+  </div>
+</div></section>
+
+<footer><div class="wrap">muninn slice-0 runbook · 2026-07-16 · companion to the six-slice plan · every step ends in a check you can run</div></footer>
+</body>
+</html>

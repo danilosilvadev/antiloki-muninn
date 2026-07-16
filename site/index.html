@@ -1,0 +1,1028 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>antiloki — software engineering as an assembly line. Local-first, verifiable, building itself.</title>
+<meta name="description" content="A working attempt at the unsolved half of AI development: software engineering as a pipeline of specialized stages — architecture before code, verification before trust, every model replaceable. Runs on your machine, and builds itself with its own pipeline." />
+<!-- A3 · share metadata + canonical + favicon (configure-site.mjs bakes the real domain) -->
+<link rel="canonical" href="https://__MUNINN_DOMAIN__/" />
+<link rel="icon" type="image/svg+xml" href="favicon.svg" />
+<meta property="og:type" content="website" />
+<meta property="og:site_name" content="antiloki" />
+<meta property="og:url" content="https://__MUNINN_DOMAIN__/" />
+<meta property="og:title" content="Everyone is building faster horses. We built the race." />
+<meta property="og:description" content="antiloki — software engineering as an assembly line. Local-first, verifiable, building itself." />
+<meta property="og:image" content="https://__MUNINN_DOMAIN__/og-card.png" />
+<meta property="og:image:width" content="1200" />
+<meta property="og:image:height" content="630" />
+<meta property="og:image:alt" content="Everyone is building faster horses (struck through). We built the race." />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="Everyone is building faster horses. We built the race." />
+<meta name="twitter:description" content="antiloki — software engineering as an assembly line. Local-first, verifiable, building itself." />
+<meta name="twitter:image" content="https://__MUNINN_DOMAIN__/og-card.png" />
+<script>
+/* muninn site config — baked by scripts/configure-site.mjs; a value starting with "__" means not configured yet */
+window.MUNINN = {
+  functionsBase: '__MUNINN_FUNCTIONS_BASE__',
+  posthogKey: '__MUNINN_POSTHOG_KEY__',
+  posthogHost: 'https://us.i.posthog.com',
+  origin: 'https://__MUNINN_DOMAIN__'
+};
+</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --base:#0E0D0B; --panel:#161412; --panel-2:#1E1B18; --line:#2A2622;
+    --orange:#E8623A; --green:#4ADE80; --amber:#F0A93B; --red:#F0533B; --violet:#A78BFA;
+    --text:#EDE8E0; --muted:#8C8378; --muted-2:#5E574E;
+    --display:'Space Grotesk',sans-serif; --mono:'JetBrains Mono',ui-monospace,monospace;
+    --maxw:1100px;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{background:var(--base);color:var(--text);font-family:var(--display);font-size:17px;line-height:1.6;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+  a{color:inherit;text-decoration:none}
+  ::selection{background:var(--orange);color:#0E0D0B}
+  .wrap{max-width:var(--maxw);margin:0 auto;padding:0 28px}
+  em{font-style:normal;color:var(--text)}
+
+  nav{position:sticky;top:0;z-index:50;backdrop-filter:blur(12px);background:rgba(14,13,11,.72);border-bottom:1px solid var(--line)}
+  .nav-in{display:flex;align-items:center;justify-content:space-between;height:62px}
+  .brand{font-weight:700;font-size:21px;letter-spacing:-.02em;display:flex;align-items:center;gap:9px}
+  .brand .dot{color:var(--orange)}
+  .brand .blip{width:8px;height:8px;border-radius:50%;background:var(--green);animation:pulse 2.4s infinite}
+  @keyframes pulse{0%{box-shadow:0 0 0 0 rgba(74,222,128,.55)}70%{box-shadow:0 0 0 7px rgba(74,222,128,0)}100%{box-shadow:0 0 0 0 rgba(74,222,128,0)}}
+  .nav-links{display:flex;align-items:center;gap:26px;font-size:14px;color:var(--muted);font-family:var(--mono)}
+  .nav-links a:hover{color:var(--text)}
+  .nav-cta{font-family:var(--mono);font-size:13px;font-weight:500;color:var(--base);background:var(--orange);padding:9px 16px;border-radius:7px;border:1px solid var(--orange);transition:transform .15s,background .15s}
+  .nav-cta:hover{background:#f0764f;transform:translateY(-1px)}
+  @media(max-width:820px){.nav-links{display:none}}
+
+  .hero{padding:96px 0 90px}
+  .eyebrow{font-family:var(--mono);font-size:12.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--orange);margin-bottom:26px;display:flex;align-items:center;gap:10px}
+  .eyebrow .bar{width:30px;height:1px;background:var(--orange);opacity:.6}
+  h1{font-weight:700;font-size:clamp(40px,6.6vw,74px);line-height:1.02;letter-spacing:-.035em;max-width:15ch}
+  h1 .strike{position:relative;color:var(--muted)}
+  h1 .strike::after{content:"";position:absolute;left:-2%;right:-2%;top:54%;height:3px;background:var(--red);border-radius:2px;transform:scaleX(0);transform-origin:left;animation:strike .7s .8s cubic-bezier(.6,0,.2,1) forwards}
+  @keyframes strike{to{transform:scaleX(1)}}
+  h1 .keep{color:var(--green)}
+  .lede{margin-top:28px;max-width:56ch;font-size:20px;color:var(--muted);line-height:1.6}
+  .lede b{color:var(--text);font-weight:600}
+  .hero-cta{margin-top:36px;display:flex;gap:14px;flex-wrap:wrap;align-items:center}
+  .btn-primary{font-family:var(--mono);font-size:14.5px;font-weight:600;background:var(--orange);color:var(--base);padding:14px 24px;border-radius:9px;border:1px solid var(--orange);transition:transform .15s,background .15s}
+  .btn-primary:hover{background:#f0764f;transform:translateY(-2px)}
+  .btn-ghost{font-family:var(--mono);font-size:14.5px;color:var(--text);padding:14px 22px;border-radius:9px;border:1px solid var(--line);transition:border-color .15s}
+  .btn-ghost:hover{border-color:var(--muted)}
+  .hero-note{font-family:var(--mono);font-size:12.5px;color:var(--muted-2);margin-top:18px}
+
+  .proofstrip{border-top:1px solid var(--line);border-bottom:1px solid var(--line);background:var(--panel)}
+  .ps-in{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--line)}
+  .ps{background:var(--panel);padding:18px 20px}
+  .ps .v{font-family:var(--mono);font-weight:700;font-size:22px;color:var(--green)}
+  .ps .k{font-size:12.5px;color:var(--muted);margin-top:4px;line-height:1.45}
+  @media(max-width:820px){.ps-in{grid-template-columns:1fr 1fr}}
+
+  section{padding:92px 0;border-top:1px solid var(--line)}
+  .sec-eyebrow{font-family:var(--mono);font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:var(--muted-2);margin-bottom:18px}
+  h2{font-weight:700;font-size:clamp(28px,3.8vw,44px);letter-spacing:-.03em;line-height:1.08;max-width:22ch}
+  .sec-lede{margin-top:18px;max-width:58ch;color:var(--muted);font-size:18px}
+  .sec-lede b{color:var(--text)}
+
+  .loop{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin-top:48px;font-family:var(--mono)}
+  .lstep{border:1px solid var(--line);border-radius:12px;background:var(--panel);padding:18px 15px;position:relative;transition:border-color .2s,transform .2s}
+  .lstep:hover{border-color:var(--muted-2);transform:translateY(-3px)}
+  .lstep .ln{font-size:10px;color:var(--muted-2);letter-spacing:.1em;margin-bottom:9px}
+  .lstep .lt{font-size:14px;color:var(--text);font-weight:500;line-height:1.35;font-family:var(--display);letter-spacing:-.01em}
+  .lstep .ld{font-size:11px;color:var(--muted);margin-top:7px;line-height:1.55}
+  .lstep::after{content:"→";position:absolute;right:-13px;top:50%;transform:translateY(-50%);color:var(--muted-2);z-index:2}
+  .lstep:last-child::after{content:""}
+  .lstep.gate{border-color:rgba(232,98,58,.4)}
+  .lstep.gate .ln{color:var(--orange)}
+  @media(max-width:920px){.loop{grid-template-columns:1fr!important}.lstep::after{content:""}}
+
+  .term{margin-top:48px;border:1px solid var(--line);border-radius:14px;background:#0B0A09;font-family:var(--mono);font-size:13px;overflow:hidden}
+  .term-bar{display:flex;align-items:center;gap:7px;padding:12px 15px;border-bottom:1px solid var(--line);background:var(--panel-2)}
+  .term-bar span{width:10px;height:10px;border-radius:50%;background:var(--line);flex-shrink:0}
+  .term-bar span:first-child{background:var(--red)} .term-bar span:nth-child(2){background:var(--amber)} .term-bar span:nth-child(3){background:var(--green)}
+  .term-bar .tt{margin-left:8px;font-size:11px;color:var(--muted-2)}
+  .term .tbody{padding:18px 20px;display:flex;flex-direction:column;gap:7px}
+  .tline{line-height:1.6;color:var(--muted);white-space:pre-wrap;word-break:break-word;display:block}
+  .tline .d{color:var(--muted-2);margin-right:9px;user-select:none}
+  .tline .t{color:var(--text)}
+  .tline.err{color:var(--red)} .tline.ok{color:var(--green)}
+  .tline.gap{height:10px}
+
+  /* state machine (returning from v1, evolved) */
+  .sm{margin-top:50px;border:1px solid var(--line);border-radius:14px;overflow:hidden;background:#0B0A09}
+  .sm-bar{display:flex;align-items:center;gap:16px;padding:13px 18px;border-bottom:1px solid var(--line);background:var(--panel-2);font-family:var(--mono);font-size:12px;color:var(--muted-2);flex-wrap:wrap}
+  .sm-bar .sm-t{color:var(--text)}
+  .sm-bar .sm-t b{color:var(--violet);font-weight:500}
+  .sm-bar .sm-stat{margin-left:auto;display:flex;gap:18px;color:var(--muted)}
+  .sm-bar .sm-stat b{color:var(--amber);font-weight:500}
+  .sm-cols{display:grid;grid-template-columns:1fr 1fr;gap:0}
+  .sm-col{padding:22px 22px 26px}
+  .sm-col.plan{border-right:1px solid var(--line)}
+  .sm-col h4{font-family:var(--mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted-2);margin-bottom:18px;display:flex;align-items:center;gap:9px}
+  .sm-col h4 .pd{width:7px;height:7px;border-radius:50%}
+  .sm-col.plan h4 .pd{background:var(--violet)}
+  .sm-col.build h4 .pd{background:var(--green)}
+  .sm-step{display:flex;align-items:center;gap:11px;font-family:var(--mono);font-size:13px;color:var(--muted);padding:9px 0;border-bottom:1px solid rgba(42,38,34,.4)}
+  .sm-step:last-child{border-bottom:none}
+  .sm-step .sd{width:7px;height:7px;border-radius:50%;background:var(--muted-2);flex-shrink:0}
+  .sm-step.done .sd{background:var(--green)} .sm-step.done{color:var(--text)}
+  .sm-step.err{color:var(--red)} .sm-step.err .sd{background:var(--red)}
+  .sm-step .stag{margin-left:auto;font-size:11px;color:var(--muted-2)}
+  .sm-step.err .stag{color:var(--red)}
+  .sm-step.pending{opacity:.55}
+  .sm-halt{margin-top:14px;border:1px solid rgba(240,83,59,.4);border-radius:10px;background:rgba(240,83,59,.06);padding:16px}
+  .sm-halt .hh{font-family:var(--mono);font-size:12px;color:var(--red);font-weight:500;margin-bottom:10px;display:flex;align-items:center;gap:8px}
+  .sm-halt .hh .hd{width:8px;height:8px;border-radius:50%;background:var(--red)}
+  .sm-halt p{font-family:var(--mono);font-size:12px;color:var(--muted);line-height:1.6;margin-bottom:8px}
+  .sm-halt p:last-child{margin-bottom:0}
+  .sm-halt b{color:var(--red);font-weight:500}
+  @media(max-width:760px){.sm-cols{grid-template-columns:1fr}.sm-col.plan{border-right:none;border-bottom:1px solid var(--line)}}
+
+  /* vibe swarm */
+  .vibe{margin-top:22px;border:1px solid var(--line);border-radius:14px;overflow:hidden;background:#0B0A09}
+  .vibe-bar{display:flex;align-items:center;gap:14px;padding:13px 18px;border-bottom:1px solid var(--line);background:var(--panel-2);font-family:var(--mono);font-size:12px;color:var(--muted-2);flex-wrap:wrap}
+  .vibe-bar .vt{color:var(--text)} .vibe-bar .vt b{color:var(--green);font-weight:500}
+  .vibe-bar .vstat{margin-left:auto;color:var(--muted)}
+  .vgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--line)}
+  .vses{background:#0B0A09;padding:14px 15px;font-family:var(--mono)}
+  .vses .vn{display:flex;align-items:center;gap:8px;font-size:12px;color:var(--text);margin-bottom:8px}
+  .vses .vd{width:7px;height:7px;border-radius:50%;flex-shrink:0}
+  .vses.run .vd{background:var(--green);animation:pulse 2.4s infinite}
+  .vses.review .vd{background:var(--amber)}
+  .vses.done .vd{background:var(--muted-2)}
+  .vses .vf{font-size:10.5px;color:var(--muted-2);line-height:1.6}
+  .vses .vf b{color:var(--muted);font-weight:400}
+  .vibe-note{padding:12px 18px;border-top:1px solid var(--line);font-family:var(--mono);font-size:11.5px;color:var(--muted-2)}
+  .vibe-note b{color:var(--orange);font-weight:500}
+  @media(max-width:760px){.vgrid{grid-template-columns:1fr}}
+
+  /* code intelligence */
+  .intel{display:grid;grid-template-columns:1.15fr 1fr;gap:18px;margin-top:48px}
+  .mosaic{border:1px solid var(--line);border-radius:14px;background:#0B0A09;overflow:hidden}
+  .mosaic .m-bar{padding:11px 16px;border-bottom:1px solid var(--line);background:var(--panel-2);font-family:var(--mono);font-size:11px;color:var(--muted-2)}
+  .m-grid{display:grid;grid-template-columns:repeat(4,1fr);grid-auto-rows:64px;gap:7px;padding:14px}
+  .m-tile{border:1px solid var(--line);border-top:2px solid var(--violet);border-radius:7px;background:var(--panel);padding:8px 9px;font-family:var(--mono);font-size:10px;color:var(--muted);overflow:hidden;display:flex;flex-direction:column;justify-content:space-between}
+  .m-tile .mn{color:var(--text);font-size:10.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .m-tile .ms{color:var(--muted-2)}
+  .m-tile.big{grid-column:span 2;grid-row:span 2}
+  .m-tile.wide{grid-column:span 2}
+  .m-tile.ts{border-top-color:var(--violet)} .m-tile.css{border-top-color:var(--green)} .m-tile.db{border-top-color:var(--amber)} .m-tile.api{border-top-color:var(--orange)}
+  .graphbox{border:1px solid var(--line);border-radius:14px;background:#0B0A09;overflow:hidden;display:flex;flex-direction:column}
+  .graphbox .m-bar{padding:11px 16px;border-bottom:1px solid var(--line);background:var(--panel-2);font-family:var(--mono);font-size:11px;color:var(--muted-2)}
+  .graphbox svg{flex:1;width:100%;min-height:220px}
+  .intel-cells{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;margin-top:18px;background:var(--line);border:1px solid var(--line);border-radius:14px;overflow:hidden}
+  .icell{background:var(--panel);padding:18px 18px}
+  .icell .ik{font-family:var(--mono);font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--violet);margin-bottom:8px}
+  .icell h4{font-weight:600;font-size:15px;margin-bottom:6px;letter-spacing:-.01em}
+  .icell p{font-size:12.5px;color:var(--muted);line-height:1.55}
+  @media(max-width:880px){.intel{grid-template-columns:1fr}.intel-cells{grid-template-columns:1fr 1fr}}
+  @media(max-width:600px){.intel-cells{grid-template-columns:1fr}}
+
+  .debts{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-top:52px}
+  .debt{border:1px solid var(--line);border-radius:14px;background:var(--panel);padding:30px 26px 26px;display:flex;flex-direction:column;position:relative;overflow:hidden;transition:border-color .2s,transform .2s}
+  .debt:hover{border-color:var(--muted-2);transform:translateY(-3px)}
+  .debt::before{content:"";position:absolute;top:0;left:0;width:100%;height:2px;background:var(--red);opacity:.7}
+  .debt .dnum{font-family:var(--mono);font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--red);margin-bottom:16px}
+  .debt h3{font-weight:700;font-size:23px;letter-spacing:-.02em;margin-bottom:13px;line-height:1.12}
+  .debt .dprob{font-size:14.5px;color:var(--muted);line-height:1.6;padding-bottom:20px;border-bottom:1px solid var(--line);margin-bottom:20px}
+  .debt .dfix-h{font-family:var(--mono);font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--green);margin-bottom:14px}
+  .debt .dfix ul{list-style:none;display:flex;flex-direction:column;gap:11px}
+  .debt .dfix li{font-size:13.5px;color:var(--muted);line-height:1.45;padding-left:20px;position:relative}
+  .debt .dfix li::before{content:"✓";position:absolute;left:0;color:var(--green);font-family:var(--mono);font-size:12px;top:1px}
+  .debt .dfix li b{color:var(--text);font-weight:600}
+  .debt .dscreens{font-family:var(--mono);font-size:11px;color:var(--muted-2);margin-top:auto;padding-top:22px}
+  .debt .dscreens span{color:var(--orange)}
+  @media(max-width:880px){.debts{grid-template-columns:1fr}}
+
+  /* capabilities */
+  .cap{margin-top:70px}
+  .cap:first-of-type{margin-top:50px}
+  .cap-eyebrow{font-family:var(--mono);font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:var(--muted-2);margin-bottom:14px}
+  .cap-eyebrow b{color:var(--orange);font-weight:700}
+  .cap h3{font-weight:700;font-size:clamp(24px,3vw,34px);letter-spacing:-.025em;line-height:1.1;max-width:22ch}
+  .cap .cap-lede{margin-top:14px;max-width:58ch;color:var(--muted);font-size:17px}
+  .cap .cap-lede b{color:var(--text)}
+  .cap-proof{margin-top:26px;border:1px solid rgba(74,222,128,.28);background:rgba(74,222,128,.05);border-radius:11px;padding:13px 18px;font-family:var(--mono);font-size:12.5px;color:var(--muted);line-height:1.6;display:flex;gap:10px;flex-wrap:wrap;align-items:baseline}
+  .cap-proof b{color:var(--green);font-weight:600}
+  .cap-proof .cs{margin-left:auto;color:var(--muted-2)} .cap-proof .cs span{color:var(--orange)}
+
+  .fgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;margin-top:50px;background:var(--line);border:1px solid var(--line);border-radius:14px;overflow:hidden}
+  .fcell{background:var(--panel);padding:24px 22px}
+  .fcell .fk{font-family:var(--mono);font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--orange);margin-bottom:11px}
+  .fcell h4{font-weight:600;font-size:17px;margin-bottom:8px;letter-spacing:-.01em}
+  .fcell p{font-size:13.5px;color:var(--muted);line-height:1.55}
+  @media(max-width:820px){.fgrid{grid-template-columns:1fr}}
+
+  .split{display:grid;grid-template-columns:1fr 1fr;gap:54px;align-items:center;margin-top:8px}
+  @media(max-width:880px){.split{grid-template-columns:1fr;gap:36px}}
+  .split.rev > .copy{order:2}
+  @media(max-width:880px){.split.rev > .copy{order:0}}
+  .cost{border:1px solid var(--line);border-radius:13px;background:#0B0A09;overflow:hidden;font-family:var(--mono);font-size:12.5px}
+  .cost-head{display:flex;justify-content:space-between;padding:12px 16px;border-bottom:1px solid var(--line);background:var(--panel-2);color:var(--muted)}
+  .crow{display:grid;grid-template-columns:1fr 88px 70px;gap:10px;padding:10px 16px;border-bottom:1px solid rgba(42,38,34,.5);align-items:center}
+  .crow .agent{color:var(--text);display:flex;align-items:center;gap:8px}
+  .crow .agent .tier{font-size:10px;padding:1px 7px;border-radius:10px;border:1px solid var(--line);color:var(--muted)}
+  .crow .agent .tier.low{color:var(--green);border-color:rgba(74,222,128,.3)}
+  .crow .agent .tier.mid{color:var(--violet);border-color:rgba(167,139,250,.3)}
+  .crow .agent .tier.high{color:var(--orange);border-color:rgba(232,98,58,.3)}
+  .crow .tok{color:var(--muted);text-align:right}
+  .crow .cost-v{color:var(--green);text-align:right}
+  .crow.total{background:rgba(232,98,58,.06);border-bottom:none}
+  .crow.total .agent{color:var(--orange);font-weight:700} .crow.total .cost-v{color:var(--orange);font-weight:700}
+  .byok{margin-top:26px;border:1px solid var(--line);border-radius:11px;background:var(--panel-2);padding:14px 18px;display:flex;align-items:center;gap:14px;flex-wrap:wrap;font-family:var(--mono);font-size:12.5px;color:var(--muted)}
+  .byok .kchip{color:var(--orange);border:1px solid rgba(232,98,58,.35);border-radius:7px;padding:4px 10px}
+  .byok b{color:var(--text)}
+
+  .matrix-wrap{margin-top:34px;border:1px solid var(--line);border-radius:13px;overflow-x:auto}
+  .matrix{width:100%;border-collapse:collapse;font-size:13.5px;min-width:720px}
+  .matrix th,.matrix td{padding:15px 16px;text-align:left;border-bottom:1px solid var(--line);vertical-align:top}
+  .matrix thead th{font-family:var(--mono);font-size:11px;letter-spacing:.05em;text-transform:uppercase;color:var(--muted-2);background:var(--panel-2);font-weight:500}
+  .matrix thead th.us{color:var(--orange)}
+  .matrix tbody th{font-weight:500;color:var(--text);font-size:14px}
+  .matrix td{color:var(--muted);font-family:var(--mono);font-size:12.5px;line-height:1.45}
+  .matrix td.us{background:rgba(232,98,58,.05);color:var(--text)}
+  .matrix tbody tr:last-child th,.matrix tbody tr:last-child td{border-bottom:none}
+  .matrix .yes{color:var(--green)} .matrix .no{color:var(--red)} .matrix .mid{color:var(--amber)}
+  .matrix-note{font-family:var(--mono);font-size:11.5px;color:var(--muted-2);margin-top:16px;line-height:1.6}
+  .honest{margin-top:28px;border:1px solid var(--line);border-radius:12px;background:var(--panel);padding:22px 24px}
+  .honest h4{font-weight:600;font-size:16px;margin-bottom:8px;color:var(--text)}
+  .honest p{font-size:14.5px;color:var(--muted);line-height:1.6}
+  .honest b{color:var(--text);font-weight:600}
+
+  /* ownership */
+  .own{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-top:48px}
+  .ocard{border:1px solid var(--line);border-radius:13px;background:var(--panel);padding:24px 20px;transition:border-color .2s,transform .2s}
+  .ocard:hover{border-color:var(--green);transform:translateY(-3px)}
+  .ocard .ok{font-family:var(--mono);font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--green);margin-bottom:11px}
+  .ocard h4{font-weight:600;font-size:17px;letter-spacing:-.01em;margin-bottom:8px}
+  .ocard p{font-size:13.5px;color:var(--muted);line-height:1.6}
+  .ocard p b{color:var(--text)}
+  .own-line{margin-top:26px;border:1px solid rgba(74,222,128,.28);background:rgba(74,222,128,.05);border-radius:12px;padding:16px 20px;font-family:var(--mono);font-size:13px;color:var(--muted);line-height:1.7}
+  .own-line b{color:var(--green)}
+  @media(max-width:920px){.own{grid-template-columns:1fr 1fr}}
+  @media(max-width:600px){.own{grid-template-columns:1fr}}
+
+  .teams{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:44px}
+  .tcard{border:1px solid var(--line);border-radius:13px;background:var(--panel);padding:22px 20px}
+  .tcard .tk{font-family:var(--mono);font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;margin-bottom:10px}
+  .tcard.now .tk{color:var(--green)} .tcard.next .tk{color:var(--orange)} .tcard.later .tk{color:var(--violet)}
+  .tcard h4{font-weight:600;font-size:17px;margin-bottom:8px;letter-spacing:-.01em}
+  .tcard p{font-size:13.5px;color:var(--muted);line-height:1.6}
+  .tcard p b{color:var(--text)}
+  @media(max-width:820px){.teams{grid-template-columns:1fr}}
+
+  /* heimdall */
+  .heim{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-top:48px}
+  .hcast{border:1px solid var(--line);border-radius:14px;background:#0B0A09;overflow:hidden;font-family:var(--mono)}
+  .hcast .m-bar{padding:11px 16px;border-bottom:1px solid var(--line);background:var(--panel-2);font-size:11px;color:var(--muted-2)}
+  .hrow{display:flex;align-items:center;gap:10px;padding:11px 16px;border-bottom:1px solid rgba(42,38,34,.5);font-size:12px;color:var(--muted);flex-wrap:wrap}
+  .hrow:last-child{border-bottom:none}
+  .hrow .hk{color:var(--muted-2);width:86px;flex-shrink:0;font-size:10.5px;text-transform:uppercase;letter-spacing:.08em}
+  .hrow .hv{color:var(--text)}
+  .hrow .hv .arr{color:var(--orange)}
+  .hrow .chip{border:1px solid var(--line);border-radius:10px;padding:1px 8px;font-size:10.5px;color:var(--muted)}
+  .hrow .chip.g{color:var(--green);border-color:rgba(74,222,128,.3)}
+  .hrow .chip.v{color:var(--violet);border-color:rgba(167,139,250,.3)}
+  .ladder{border:1px solid var(--line);border-radius:14px;background:#0B0A09;overflow:hidden;font-family:var(--mono)}
+  .ladder .m-bar{padding:11px 16px;border-bottom:1px solid var(--line);background:var(--panel-2);font-size:11px;color:var(--muted-2)}
+  .lrung{display:flex;align-items:center;gap:12px;padding:12px 16px;border-bottom:1px solid rgba(42,38,34,.5);font-size:12px;color:var(--muted)}
+  .lrung:last-child{border-bottom:none}
+  .lrung .ln2{color:var(--muted-2);font-size:10px;width:20px}
+  .lrung .lt2{color:var(--text)}
+  .lrung .ls2{margin-left:auto;font-size:10.5px;color:var(--muted-2)}
+  .lrung.hit{background:rgba(74,222,128,.05)}
+  .lrung.hit .lt2{color:var(--green)}
+  .lrung.hit .ls2{color:var(--green)}
+  @media(max-width:880px){.heim{grid-template-columns:1fr}}
+
+  /* go deeper — the library */
+  .lib{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:44px}
+  .lib a{border:1px solid var(--line);border-radius:13px;background:var(--panel);padding:24px 22px;display:flex;flex-direction:column;transition:border-color .2s,transform .2s}
+  .lib a:hover{border-color:var(--orange);transform:translateY(-3px)}
+  .lib .lk{font-family:var(--mono);font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--violet);margin-bottom:11px}
+  .lib h4{font-weight:600;font-size:18px;letter-spacing:-.01em;margin-bottom:8px}
+  .lib p{font-size:13.5px;color:var(--muted);line-height:1.6;flex:1}
+  .lib .go{font-family:var(--mono);font-size:12px;color:var(--orange);margin-top:16px}
+  @media(max-width:820px){.lib{grid-template-columns:1fr}}
+
+  .cta-final{padding:118px 0;border-top:1px solid var(--line);text-align:center}
+  .cta-final h2{margin:0 auto;max-width:18ch}
+  .cta-final .sec-lede{margin:18px auto 0}
+  .wl{margin:42px auto 0;display:flex;gap:10px;max-width:480px}
+  .wl input{flex:1;font-family:var(--mono);font-size:15px;color:var(--text);background:var(--panel);border:1px solid var(--line);border-radius:9px;padding:14px 16px;outline:none;transition:border-color .15s}
+  .wl input:focus{border-color:var(--orange)}
+  .wl input::placeholder{color:var(--muted-2)}
+  .wl button{font-family:var(--mono);font-size:14.5px;font-weight:600;background:var(--orange);color:var(--base);border:none;border-radius:9px;padding:14px 24px;cursor:pointer;transition:background .15s,transform .15s}
+  .wl button:hover{background:#f0764f;transform:translateY(-2px)}
+  .wl-note{font-family:var(--mono);font-size:12px;color:var(--muted-2);margin-top:16px}
+  .wl-ok{color:var(--green);font-family:var(--mono);font-size:14px;margin-top:22px;display:none}
+  .wl-err{color:var(--red);font-family:var(--mono);font-size:12.5px;margin-top:16px;display:none}
+  .wl-share{margin-top:14px;display:flex;gap:8px;justify-content:center;align-items:center;flex-wrap:wrap}
+  .wl-share code{font-family:var(--mono);font-size:12.5px;color:var(--text);background:var(--panel);border:1px solid var(--line);border-radius:7px;padding:8px 12px;word-break:break-all}
+  .wl-share button{font-family:var(--mono);font-size:11.5px;color:var(--muted);background:transparent;border:1px solid var(--line);border-radius:7px;padding:8px 12px;cursor:pointer}
+  .wl-share button:hover{color:var(--text);border-color:var(--muted)}
+  @media(max-width:540px){.wl{flex-direction:column}}
+
+  footer{border-top:1px solid var(--line);padding:40px 0}
+  .foot-in{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:18px}
+  .foot-in .brand{font-size:18px}
+  .foot-links{font-family:var(--mono);font-size:13px;color:var(--muted-2);display:flex;gap:24px;flex-wrap:wrap}
+  .foot-links a:hover{color:var(--text)}
+  .foot-legal{margin-top:16px;font-family:var(--mono);font-size:12px;color:var(--muted-2);line-height:1.7}
+  .foot-legal b{color:var(--muted)}
+  .foot-legal a{color:var(--orange)}
+
+  .reveal{opacity:0;transform:translateY(18px);transition:opacity .7s ease,transform .7s ease}
+  .reveal.in{opacity:1;transform:none}
+  @media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}.reveal{opacity:1;transform:none}h1 .strike::after{transform:scaleX(1)}}
+</style>
+<style>
+  /* ── the 60-second idea · a self-playing film (scoped .cine-*) ── */
+  .cine{margin-top:36px;border:1px solid var(--line);border-radius:16px;background:#0B0A09;overflow:hidden;position:relative;cursor:pointer}
+  .cine-bar{display:flex;align-items:center;gap:7px;padding:12px 15px;border-bottom:1px solid var(--line);background:var(--panel-2);font-family:var(--mono);font-size:11px;color:var(--muted-2)}
+  .cine-bar i{width:10px;height:10px;border-radius:50%;background:var(--line);flex-shrink:0}
+  .cine-bar i:first-child{background:var(--red)} .cine-bar i:nth-child(2){background:var(--amber)} .cine-bar i:nth-child(3){background:var(--green)}
+  .cine-bar .ct{margin-left:8px}
+  .cine-prog{position:absolute;top:0;left:0;right:0;height:2px;z-index:6}
+  .cine-prog b{display:block;height:100%;width:0;background:var(--orange)}
+  .cine-stage{position:relative;height:470px}
+  @media(max-width:640px){.cine-stage{height:520px}}
+  .cine .scene{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;opacity:0;pointer-events:none;transition:opacity .55s ease;padding:44px 28px 60px;text-align:center}
+  .cine .scene.on{opacity:1;pointer-events:auto}
+  .cine .s-big{font-family:var(--display);font-weight:700;font-size:clamp(24px,3.8vw,42px);letter-spacing:-.03em;line-height:1.12;max-width:24ch;color:var(--text)}
+  .cine .s-mid{font-family:var(--display);font-weight:700;font-size:clamp(19px,2.6vw,28px);letter-spacing:-.02em;color:var(--text)}
+  .cine .s-sub{font-family:var(--mono);font-size:13px;color:var(--muted);line-height:1.7;max-width:60ch}
+  .cine .fu{opacity:0;transform:translateY(12px)}
+  .cine .scene.on .fu{animation:cineFadeUp .7s forwards}
+  @keyframes cineFadeUp{to{opacity:1;transform:none}}
+  /* scene 1 — the code rain */
+  .cine .rain{position:absolute;inset:0;overflow:hidden;opacity:.28;pointer-events:none}
+  .cine .rain pre{font-family:var(--mono);font-size:11px;color:var(--green);line-height:1.75;text-align:left;padding:0 26px;animation:cineRain 6s linear infinite}
+  @keyframes cineRain{from{transform:translateY(0)}to{transform:translateY(-50%)}}
+  .cine .err{color:var(--red)}
+  /* scene 3 — the assembly line draws itself */
+  .cine .aline{position:relative;display:flex;align-items:center;justify-content:center;gap:0;width:min(760px,94%);margin-top:10px}
+  .cine .stn{border:1px solid var(--line);border-radius:10px;background:var(--panel);padding:11px 0;font-family:var(--mono);font-size:11px;color:var(--muted);flex:1;opacity:0;transform:translateY(10px)}
+  .cine .stn small{display:block;font-size:8.5px;color:var(--muted-2);letter-spacing:.1em;margin-top:3px}
+  .cine .stn.g8{border-color:rgba(232,98,58,.45)} .cine .stn.g8 small{color:var(--orange)}
+  .cine .scene.on .stn{animation:cineFadeUp .5s forwards}
+  .cine .cx{width:22px;height:1px;background:var(--line);flex-shrink:0}
+  .cine .trv{position:absolute;top:-22px;width:12px;height:12px;border-radius:3px;left:0;opacity:0}
+  .cine .trv.red{background:var(--red)}
+  .cine .trv.grn{background:var(--green)}
+  .cine .scene.on .trv.red{animation:cineTRed 3.4s 3.2s forwards ease-in-out}
+  @keyframes cineTRed{0%{opacity:1;left:0%}52%{left:55%;top:-22px}60%{left:54%}66%{left:56%}72%{left:55%}100%{left:55%;top:34px;opacity:0}}
+  .cine .scene.on .trv.grn{animation:cineTGrn 5.4s 7.2s forwards ease-in-out}
+  @keyframes cineTGrn{0%{opacity:1;left:0%}30%{left:34%}38%{left:34%}62%{left:66%}70%{left:66%}100%{opacity:1;left:98%}}
+  .cine .verdict{opacity:0}
+  .cine .scene.on .verdict{animation:cineFadeUp .5s 12.8s forwards}
+  /* scene 4 — the model swap */
+  .cine .cyc{position:relative;height:44px;width:min(340px,86%)}
+  .cine .cyc span{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-family:var(--mono);font-size:13.5px;color:var(--violet);border:1px solid rgba(167,139,250,.4);border-radius:9px;opacity:0;animation:cineCyc 7.5s infinite}
+  .cine .scene:not(.on) .cyc span{animation-play-state:paused}
+  .cine .cyc span:nth-child(2){animation-delay:2.5s}
+  .cine .cyc span:nth-child(3){animation-delay:5s}
+  @keyframes cineCyc{0%{opacity:0;transform:translateY(9px)}5%,28%{opacity:1;transform:none}36%,100%{opacity:0;transform:translateY(-9px)}}
+  /* scene 5 — the echo */
+  .cine .xstrike{position:relative;color:var(--muted)}
+  .cine .xstrike::after{content:"";position:absolute;left:-2%;right:-2%;top:54%;height:3px;background:var(--red);border-radius:2px;transform:scaleX(0);transform-origin:left}
+  .cine .scene.on .xstrike::after{animation:strike .6s .7s cubic-bezier(.6,0,.2,1) forwards}
+  .cine .xkeep{color:var(--green)}
+  /* chrome */
+  .cine-ctl{position:absolute;bottom:12px;right:14px;display:flex;gap:8px;z-index:7}
+  .cine-ctl button{font-family:var(--mono);font-size:10.5px;color:var(--muted);background:transparent;border:1px solid var(--line);border-radius:6px;padding:4px 10px;cursor:pointer}
+  .cine-ctl button:hover{color:var(--text);border-color:var(--muted)}
+  .cine-hint{position:absolute;bottom:15px;left:16px;font-family:var(--mono);font-size:10px;color:var(--muted-2);z-index:7}
+  /* film II/III scene components */
+  .cine .cterm{width:min(600px,92%);border:1px solid var(--line);border-radius:11px;background:#080706;font-family:var(--mono);font-size:12.5px;text-align:left;padding:16px 18px;display:flex;flex-direction:column;gap:7px}
+  .cine .cterm .cl{color:var(--muted);opacity:0;transform:translateY(6px)}
+  .cine .scene.on .cterm .cl{animation:cineFadeUp .45s forwards}
+  .cine .cterm .cl b{color:var(--text);font-weight:500}
+  .cine .cterm .ok2{color:var(--green)} .cine .cterm .err2{color:var(--red)} .cine .cterm .dim2{color:var(--muted-2)}
+  .cine .cmos{display:grid;grid-template-columns:repeat(4,78px);gap:7px}
+  .cine .cmt{height:46px;border:1px solid var(--line);border-top:2px solid var(--violet);border-radius:7px;background:var(--panel);opacity:0;transform:scale(.85)}
+  .cine .scene.on .cmt{animation:cinePop .45s forwards}
+  @keyframes cinePop{to{opacity:1;transform:none}}
+  .cine .cmt.c2{border-top-color:var(--green)} .cine .cmt.c3{border-top-color:var(--amber)} .cine .cmt.c4{border-top-color:var(--orange)}
+  .cine .cchips{display:flex;gap:14px;flex-wrap:wrap;justify-content:center}
+  .cine .cchip{font-family:var(--mono);font-size:12px;border:1px solid var(--line);border-radius:9px;padding:8px 16px;opacity:0;transform:translateY(10px)}
+  .cine .scene.on .cchip{animation:cineFadeUp .5s forwards}
+  .cine .cchip.pr{color:var(--red);border-color:rgba(240,83,59,.4)}
+  .cine .cchip.df{color:var(--green);border-color:rgba(74,222,128,.4)}
+  .cine .cchip.jd{color:var(--amber);border-color:rgba(240,169,59,.4)}
+  .cine svg .draw{stroke-dasharray:420;stroke-dashoffset:420}
+  .cine .scene.on svg .draw{animation:cineDraw 1.4s ease forwards}
+  @keyframes cineDraw{to{stroke-dashoffset:0}}
+  /* ── the constructing headline: words are PLACED, then slammed, then lit ── */
+  .hl1{font-family:var(--display);font-weight:700;font-size:clamp(22px,3.4vw,38px);letter-spacing:-.02em;color:var(--text);line-height:1.15}
+  .hl1 .w{display:inline-block;opacity:0;transform:translateY(28px) rotate(3deg)}
+  .cine .scene.on .hl1 .w{animation:wIn .55s cubic-bezier(.2,.9,.3,1.2) forwards}
+  @keyframes wIn{to{opacity:1;transform:none}}
+  .hl2{font-family:var(--display);font-weight:700;font-size:clamp(36px,6.4vw,68px);letter-spacing:-.035em;line-height:1.05;margin:0}
+  .hl2 .w2{display:inline-block;opacity:0;transform:scale(1.7)}
+  .cine .scene.on .hl2 .w2{animation:wSlam .5s cubic-bezier(.2,.9,.25,1.3) forwards}
+  @keyframes wSlam{55%{opacity:1;transform:scale(.95)}100%{opacity:1;transform:none}}
+  .cine .scene.on .race .xkeep{animation:raceGlow 1.2s 3.4s ease forwards}
+  @keyframes raceGlow{0%{text-shadow:0 0 0 rgba(74,222,128,0)}45%{text-shadow:0 0 30px rgba(74,222,128,.7)}100%{text-shadow:0 0 12px rgba(74,222,128,.28)}}
+  .caret{display:inline-block;width:4px;height:.85em;background:var(--green);margin-left:12px;vertical-align:-6%;opacity:0}
+  .cine .scene.on .caret{animation:caretOn .1s 3.4s forwards,caretBlink 1.05s 3.4s steps(1) infinite}
+  @keyframes caretOn{to{opacity:1}} @keyframes caretBlink{50%{opacity:0}}
+  .cine .scene.on .hl1 .xstrike::after{animation-delay:1.6s} /* the strike waits for the words to land */
+  /* ── scrolly content upgrades: kickers, rubber stamps, labeled tiles ── */
+  .kick{font-family:var(--mono);font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--muted-2);opacity:0}
+  .cine .scene.on .kick{animation:cineFadeUp .5s forwards}
+  .stamp{font-family:var(--mono);font-weight:700;font-size:clamp(15px,1.9vw,23px);letter-spacing:.2em;padding:10px 24px;border:3px solid currentColor;border-radius:9px;opacity:0;transform:rotate(-7deg) scale(2.3)}
+  .cine .scene.on .stamp{animation:stampIn .45s cubic-bezier(.2,.9,.3,1.25) forwards}
+  @keyframes stampIn{to{opacity:1;transform:rotate(-7deg) scale(1)}}
+  .stamp.red{color:var(--red)} .stamp.grn{color:var(--green)} .stamp.amb{color:var(--amber)}
+  .cine .cmt{position:relative}
+  .cine .cmt .mn{position:absolute;left:8px;bottom:6px;font-family:var(--mono);font-size:8.5px;color:var(--muted);white-space:nowrap}
+  /* ── full-bleed hero film (no box — the film IS the screen) ── */
+  .cine-full{border:none;border-radius:0;margin-top:0;background:var(--base)}
+  .cine-full .cine-stage{height:calc(100vh - 64px);height:calc(100svh - 64px);min-height:520px}
+  .cine-full .s-big{font-size:clamp(30px,5.4vw,60px);max-width:26ch}
+  .cine-full .s-mid{font-size:clamp(22px,3.2vw,36px)}
+  .cine-full .s-sub{font-size:14.5px}
+  .cine-title{position:absolute;top:15px;left:18px;font-family:var(--mono);font-size:11px;color:var(--muted-2);z-index:7}
+  /* A7 · the static subhead — the 5-second visitor gets the category without watching the film */
+  .cine-title .cine-sub{display:block;margin-top:5px;font-size:11px;color:var(--muted);max-width:56ch;line-height:1.55}
+  @media (max-width:760px){.cine-title .cine-sub{max-width:calc(100vw - 48px);font-size:10.5px}}
+  /* ── the machine · full-screen scroll metamorphosis ── */
+  .sy-track{position:relative}
+  .sy-stage{position:sticky;top:62px;height:calc(100vh - 62px);height:calc(100svh - 62px)}
+  .sy-stage.cine{cursor:default;border:none;border-radius:0;background:var(--base);overflow:hidden}
+  /* scenes don't fade — they MUTATE: blur-morph in and out */
+  .sy-stage .scene{transition:opacity .5s ease,filter .7s ease,transform .7s ease;filter:blur(16px);transform:scale(.94)}
+  .sy-stage .scene.on{filter:none;transform:none}
+  /* the ambient layer: a drifting color orb (continuous with scroll) + a giant ghost step number */
+  .sy-bg{position:absolute;inset:0;pointer-events:none}
+  .sy-orb{position:absolute;left:50%;top:50%;width:74vmax;height:74vmax;margin:-37vmax 0 0 -37vmax;border-radius:50%;filter:blur(80px);opacity:.15;background:#A78BFA;transition:background 1.1s ease;transform:translate(calc(var(--syp,0)*44vw - 22vw),calc(var(--syp,0)*30vh - 15vh)) scale(calc(.7 + var(--syp,0)*.55))}
+  .sy-num{position:absolute;right:3vw;bottom:-8vh;font-family:var(--mono);font-weight:700;font-size:46vh;line-height:1;color:var(--panel-2);opacity:.55;user-select:none;transition:color .9s ease;transform:translateY(calc(var(--syp,0)*-26vh)) rotate(calc(var(--syp,0)*4deg))}
+  .sy-stage[data-k="0"] .sy-orb{background:#A78BFA}
+  .sy-stage[data-k="1"] .sy-orb{background:#E8623A}
+  .sy-stage[data-k="2"] .sy-orb{background:#4ADE80}
+  .sy-stage[data-k="3"] .sy-orb{background:#F0533B}
+  .sy-stage[data-k="4"] .sy-orb{background:#F0A93B}
+  .sy-stage[data-k="5"] .sy-orb{background:#A78BFA}
+  .sy-stage[data-k="6"] .sy-orb{background:#4ADE80}
+  .sy-stage[data-k="7"] .sy-orb{background:#E8623A}
+  .sy-stage[data-k="8"] .sy-orb{background:#F0533B}
+  .cine .cmt .mc{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-family:var(--mono);font-size:10px;color:var(--muted)}
+  .sy-rail{position:absolute;left:15px;top:50%;transform:translateY(-50%);display:flex;flex-direction:column;gap:9px;z-index:7}
+  .sy-rail i{width:7px;height:7px;border-radius:50%;background:var(--line);transition:background .3s}
+  .sy-rail i.hit{background:var(--orange)}
+  .sy-tag{position:absolute;top:13px;right:15px;font-family:var(--mono);font-size:10.5px;color:var(--muted-2);z-index:7}
+  .sy-hintdn{position:absolute;bottom:13px;left:0;right:0;text-align:center;font-family:var(--mono);font-size:10.5px;color:var(--muted-2);z-index:7;animation:syNudge 2.2s ease-in-out infinite}
+  @keyframes syNudge{0%,100%{transform:translateY(0);opacity:.55}50%{transform:translateY(4px);opacity:1}}
+  /* ════ SMARTPHONES ════════════════════════════════════════════════════════════════════════
+     Measured in a headless browser at 320/360/393/430 portrait and 740×360 / 852×393 landscape:
+       · the films CUT their own scenes — a fixed-height stage + overflow:hidden lost up to 180px
+         on a 320×568 phone and 76–170px off EVERY stop in landscape;
+       · the mosaics were fixed-pixel grids (463–493px wide) inside a 320–430px screen;
+       · the hero's assembly line squeezed its 5 stations into 32–61px columns;
+       · the film hint ran underneath the replay/skip buttons;
+       · the comparison table scrolled with no affordance and no row anchor.
+     The rule that fixes the class: no film box may have a height its content can't have.
+     ── (a) ANY screen a scene can't fit on — narrow OR short (a phone on its side is both) ── */
+  @media (max-width:760px), (max-height:560px) {
+    /* the films — the stage becomes a ONE-CELL GRID: every scene stacks in the same cell, so the
+       box is exactly as tall as its tallest scene. Nothing is ever cut; the crossfade is intact. */
+    .cine .cine-stage{height:auto!important;min-height:0!important;display:grid}
+    .cine .scene{position:relative;grid-area:1/1;inset:auto;padding:32px 16px 64px;gap:13px}
+    .cine .s-sub{font-size:12.5px;line-height:1.62}
+    /* the hero still FILLS the screen (the film IS the screen) — but it may grow past it rather
+       than cut a scene: min-height, never height. */
+    .cine-full .cine-stage{height:auto!important;min-height:calc(100svh - 64px)!important}
+    .cine-full .s-sub{font-size:13px}
+    .cine .cmt .mn{max-width:calc(100% - 14px);overflow:hidden;text-overflow:ellipsis}
+
+    /* film chrome — the hint stops short of the 160px button cluster; buttons take a thumb */
+    .cine-hint{right:auto;max-width:calc(100% - 200px);line-height:1.45}
+    .cine-ctl button{padding:7px 12px;font-size:11px}
+    .nav-cta{padding:11px 15px}   /* a thumb-sized target */
+    .wl input{font-size:16px}     /* anything smaller makes iOS zoom the page on focus */
+
+    /* the machine — a sticky viewport-height stage cannot hold a stop on a phone (it cut every
+       one of them in landscape), so each stop becomes its own block and reveals as it arrives.
+       The driver switches to the same rule set at the same breakpoint. */
+    #scrolly{height:auto!important;margin-top:24px}
+    .sy-stage{position:static!important;height:auto!important}
+    .sy-stage .cine-stage{display:block!important}
+    .sy-stage .scene{position:relative;inset:auto;filter:none;transform:none;padding:38px 18px 44px;border-top:1px solid var(--line)}
+    .sy-stage .scene:first-child{border-top:none}
+    .sy-bg,.sy-rail,.sy-hintdn,.sy-stage .sy-tag{display:none!important}
+  }
+  /* ── (b) NARROW screens only — a landscape phone is short but wide enough to keep these ── */
+  @media (max-width:760px) {
+    .wrap{padding:0 18px}
+
+    /* the hero's assembly line — 5 stations (they were 32-61px columns) become readable rows.
+       The travelling dots ride a horizontal rail, which a column doesn't have; the verdict
+       line below still tells that story. */
+    .cine .aline{flex-direction:column;width:100%;gap:6px;margin-top:4px}
+    .cine .stn{width:100%;flex:none;padding:9px 13px;text-align:left}
+    .cine .stn small{display:inline;margin:0 0 0 9px}
+    .cine .cx,.cine .trv{display:none}
+
+    /* mosaics + terminals — fluid, never wider than the screen (the stops carry inline
+       grid-template columns, which is why these need !important) */
+    .cine .cmos{grid-template-columns:repeat(2,minmax(0,1fr))!important;width:100%;max-width:310px;gap:6px}
+    .cine .cterm{width:100%;font-size:11.5px;padding:13px 14px;gap:6px}
+    .cine .cyc{width:100%}
+    .cine .rain pre{padding:0 14px}
+  }
+  @media (max-width:480px){
+    .ps{padding:14px 15px} .ps .v{font-size:19px} .ps .k{font-size:11.5px}
+  }
+  /* the matrix keeps its six real columns and scrolls — but the row you're reading stays
+     anchored, the swipe is advertised, and it can't trigger the browser's back-swipe. */
+  .swipe-hint{display:none;font-family:var(--mono);font-size:11px;color:var(--muted-2);margin-top:10px}
+  .swipe-hint b{color:var(--orange);font-weight:500}
+  @media (max-width:760px){
+    .matrix-wrap{-webkit-overflow-scrolling:touch;overscroll-behavior-x:contain}
+    .matrix{min-width:640px;font-size:12.5px}
+    .matrix th,.matrix td{padding:11px 12px}
+    .matrix tbody th{position:sticky;left:0;z-index:1;background:var(--base);box-shadow:1px 0 0 var(--line)}
+    .matrix thead th:first-child{position:sticky;left:0;z-index:2;background:var(--panel-2)}
+    .swipe-hint{display:block}
+  }
+  @media(prefers-reduced-motion:reduce){.cine .fu,.cine .stn,.cine .verdict,.cine .cterm .cl,.cine .cmt,.cine .cchip{opacity:1!important;transform:none!important}.cine .trv,.cine .rain{display:none!important}.cine .cyc span:first-child{opacity:1!important}.cine svg .draw{stroke-dashoffset:0!important}.sy-hintdn{animation:none!important}}
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="wrap nav-in">
+    <div class="brand">antiloki<span class="dot">.</span><span class="blip" aria-hidden="true"></span></div>
+    <div class="nav-links">
+      <a href="#idea">The idea</a>
+      <a href="#machine">The machine</a>
+      <a href="#ownership">Yours</a>
+    </div>
+    <a href="#waitlist" class="nav-cta">Point it at a repo</a>
+  </div>
+</nav>
+
+<!-- THE HERO IS THE FILM — the headline is its last slide -->
+<header class="hero" id="idea" style="padding:0">
+  <div class="cine cine-full reveal in" data-durs="11000,14000,14000" role="group" aria-label="the idea, in forty seconds">
+      <div class="cine-prog"><b></b></div>
+      <div class="cine-title">antiloki — the idea · 0:60<span class="cine-sub">a local-first substrate that runs AI software work through gates, courts and a sealed record</span></div>
+      <div class="cine-stage">
+
+        <!-- scene 1 · the pain -->
+        <div class="scene">
+          <div class="rain" aria-hidden="true"><pre>
+const user = await getUser(req.session.id)
+if (!user) return res.redirect('/login')
+export function applyDiscount(cart, code) {
+  const rule = RULES[code] ?? RULES.default
+db.prepare('UPDATE orders SET state=?')
+import { validate } from './schema'
+retry(sendEmail, { attempts: 3 })
+cache.set(key, value, TTL_MS)
+function reconcile(ledger, entries) {
+  for (const e of entries) apply(ledger, e)
+const total = items.reduce((s,i)=>s+i.price,0)
+router.post('/checkout', authed, checkout)
+useEffect(() => { void load() }, [])
+expect(res.status).toBe(200)
+const user = await getUser(req.session.id)
+if (!user) return res.redirect('/login')
+export function applyDiscount(cart, code) {
+  const rule = RULES[code] ?? RULES.default
+db.prepare('UPDATE orders SET state=?')
+import { validate } from './schema'
+retry(sendEmail, { attempts: 3 })
+cache.set(key, value, TTL_MS)
+function reconcile(ledger, entries) {
+  for (const e of entries) apply(ledger, e)
+const total = items.reduce((s,i)=>s+i.price,0)
+router.post('/checkout', authed, checkout)
+useEffect(() => { void load() }, [])
+expect(res.status).toBe(200)</pre></div>
+          <div class="s-big fu">Your AI ships code faster than you can read it.</div>
+          <div class="s-sub fu" style="animation-delay:2.2s"><span class="err">✗ so you stopped reading.</span>&nbsp; it kept shipping.</div>
+          <div class="s-big fu" style="animation-delay:4.6s">70 years optimizing <em style="color:var(--muted)">coding</em>. Zero on <em style="color:var(--orange)">engineering</em>.</div>
+        </div>
+
+        <!-- scene 2 · the idea -->
+        <div class="scene">
+          <div class="s-big fu">Software shouldn't be generated.</div>
+          <div class="s-big fu" style="animation-delay:1.2s;color:var(--green)">It should be assembled.</div>
+          <div class="aline" aria-hidden="true">
+            <div class="trv red"></div>
+            <div class="trv grn"></div>
+            <div class="stn" style="animation-delay:2.4s">ARCHITECT<small>before any code</small></div>
+            <div class="cx"></div>
+            <div class="stn" style="animation-delay:2.7s">BUILD<small>one file · one contract</small></div>
+            <div class="cx"></div>
+            <div class="stn g8" style="animation-delay:3.0s">GATE<small>real build · real tests</small></div>
+            <div class="cx"></div>
+            <div class="stn g8" style="animation-delay:3.3s">COURT<small>evidence, not consensus</small></div>
+            <div class="cx"></div>
+            <div class="stn" style="animation-delay:3.6s">LEARN<small>every outcome recorded</small></div>
+          </div>
+          <div class="s-sub verdict"><span style="color:var(--red)">✗ the bad change never left the gate</span> &nbsp;·&nbsp; <span style="color:var(--green)">✓ the good one shipped with a verdict attached</span></div>
+        </div>
+
+        <!-- scene 3 · THE HEADLINE CONSTRUCTS ITSELF -->
+        <div class="scene">
+          <div class="hl1" aria-label="Everyone is building faster horses.">
+            <span class="w" style="animation-delay:.2s">Everyone</span> <span class="w" style="animation-delay:.38s">is</span> <span class="w" style="animation-delay:.56s">building</span> <span class="w" style="animation-delay:.78s"><span class="xstrike" style="animation-delay:1.5s">faster&nbsp;horses</span>.</span>
+          </div>
+          <h1 class="hl2" aria-label="We built the race.">
+            <span class="w2" style="animation-delay:2.3s">We</span> <span class="w2" style="animation-delay:2.55s">built</span> <span class="w2" style="animation-delay:2.8s">the</span> <span class="w2 race" style="animation-delay:3.1s"><span class="xkeep">race</span>.</span><span class="caret" aria-hidden="true"></span>
+          </h1>
+          <div class="s-sub fu" style="animation-delay:4.4s">the process is deterministic · the AI inside is <em style="color:var(--violet)">replaceable</em> · everything runs on your machine</div>
+          <div class="fu" style="animation-delay:5.2s;display:flex;gap:12px;flex-wrap:wrap;justify-content:center">
+            <a class="btn-primary" href="#waitlist">Point it at your repo →</a>
+            <a class="btn-ghost" href="#machine">see the machine ▼</a>
+          </div>
+        </div>
+
+      </div>
+      <div class="cine-hint">click to advance · local-first · nothing leaves the machine</div>
+      <div class="cine-ctl">
+        <button class="cine-replay" type="button" title="play again">↻ replay</button>
+        <button class="cine-skip" type="button" title="skip to the end">skip ▸▸</button>
+      </div>
+  </div>
+</header>
+
+<!-- RECEIPTS — real numbers from a live substrate -->
+<div class="proofstrip">
+  <div class="wrap" style="padding:0"><div class="ps-in">
+    <div class="ps"><div class="v">37 laws</div><div class="k">machine-enforced in a database — process the AI can't forget, because it never has to remember</div></div>
+    <div class="ps"><div class="v">~4,000</div><div class="k">tests behind a hard push gate with zero exceptions — a red test blocks the ship</div></div>
+    <div class="ps"><div class="v">1 click</div><div class="k">verifies the entire engineering history — every hash of every action, recomputed offline</div></div>
+    <div class="ps"><div class="v">$0 cloud</div><div class="k">your code, keys, models and record stay local — these numbers come from the substrate building itself</div></div>
+  </div></div>
+</div>
+
+<!-- THE MACHINE — scroll-driven, in plain terms -->
+<section id="machine">
+  <div class="wrap">
+    <div class="sec-eyebrow" style="color:var(--orange)">The machine · keep scrolling</div>
+    <h2>What it actually does.</h2>
+    <p class="sec-lede">Six wow moments, in plain terms. Scroll.</p>
+  </div>
+  <div class="sy-track" id="scrolly" style="height:calc(6 * 100vh);margin-top:34px">
+    <div class="sy-stage cine">
+      <div class="sy-bg" aria-hidden="true"><div class="sy-orb"></div><div class="sy-num">01</div></div>
+      <div class="sy-rail" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i></div>
+      <div class="sy-tag" id="sy-tag">01 / 06 · it reads your code</div>
+      <div class="cine-stage" style="height:100%">
+
+        <!-- 01 · it reads your code -->
+        <div class="scene">
+          <div class="kick">stop 01 · it reads your code</div>
+          <div class="cmos" aria-hidden="true" style="grid-template-columns:repeat(4,118px)">
+            <div class="cmt" style="animation-delay:.1s"><span class="mn">engine/dispatch.ts</span></div><div class="cmt c2" style="animation-delay:.25s"><span class="mn">theme.css</span></div><div class="cmt c3" style="animation-delay:.4s"><span class="mn">db/schema.sql</span></div><div class="cmt c4" style="animation-delay:.55s"><span class="mn">api/routes.ts</span></div>
+            <div class="cmt c4" style="animation-delay:.7s"><span class="mn">api/client.ts</span></div><div class="cmt" style="animation-delay:.85s"><span class="mn">auth/guard.ts</span></div><div class="cmt c2" style="animation-delay:1s"><span class="mn">checkout.tsx</span></div><div class="cmt c3" style="animation-delay:1.15s"><span class="mn">db/orders.sql</span></div>
+          </div>
+          <div class="s-big fu" style="animation-delay:1.5s">Understand any codebase in minutes.</div>
+          <div class="s-sub fu" style="animation-delay:2.5s">give it your code — it draws the map: every file, every connection, <b style="color:var(--text)">what breaks if you touch something</b>. not generated docs: a living model, read from the code itself.</div>
+        </div>
+
+        <!-- 02 · think with your code -->
+        <div class="scene">
+          <div class="kick">stop 02 · think with your code</div>
+          <div class="cmos" aria-hidden="true" style="grid-template-columns:repeat(3,150px)">
+            <div class="cmt" style="animation-delay:.15s;height:54px"><span class="mc">💬 chat</span></div>
+            <div class="cmt c2" style="animation-delay:.35s;height:54px"><span class="mc">🔎 research</span></div>
+            <div class="cmt c4" style="animation-delay:.55s;height:54px"><span class="mc">▮ AI terminal</span></div>
+            <div class="cmt c3" style="animation-delay:.75s;height:54px"><span class="mc">◇ diagrams</span></div>
+            <div class="cmt c2" style="animation-delay:.95s;height:54px"><span class="mc">☑ to-dos</span></div>
+            <div class="cmt" style="animation-delay:1.15s;height:54px"><span class="mc">🌐 browser</span></div>
+          </div>
+          <div class="s-big fu" style="animation-delay:1.6s">Your codebase becomes a workspace.</div>
+          <div class="s-sub fu" style="animation-delay:2.6s">a chat that's an expert in <b style="color:var(--text)">your</b> repository. research over your own code — like NotebookLM, for software. panels where several AIs work the same session, together.</div>
+        </div>
+
+        <!-- 03 · it builds like an engineering team -->
+        <div class="scene">
+          <div class="kick">stop 03 · it builds like an engineering team</div>
+          <div class="cterm" aria-hidden="true">
+            <div class="cl" style="animation-delay:.2s"><b>plan · drawn and approved — 0 lines of code exist yet</b></div>
+            <div class="cl ok2" style="animation-delay:1s">✓ file 1 written → built → all tests pass</div>
+            <div class="cl ok2" style="animation-delay:1.7s">✓ file 2 written → built → all tests pass</div>
+            <div class="cl err2" style="animation-delay:2.4s">✗ file 3 broke the build — work stops right here, gets fixed, resumes</div>
+            <div class="cl" style="animation-delay:3.3s"><b>⚖ then three AIs argue the result — one attacks, one defends, one judges</b></div>
+            <div class="cl ok2" style="animation-delay:4.2s">✓ verdict: 0 defects upheld — approved on proof, not on a feeling</div>
+          </div>
+          <div class="s-big fu" style="animation-delay:5s">Software is assembled, not generated.</div>
+          <div class="s-sub fu" style="animation-delay:5.9s">plan first — then one file at a time, <b style="color:var(--text)">really built and really tested after every step</b>, in its own sealed sandbox. a bad change can never sneak in.</div>
+        </div>
+
+        <!-- 04 · you validate the behavior -->
+        <div class="scene">
+          <div class="kick">stop 04 · you have the final word</div>
+          <div class="cterm" aria-hidden="true">
+            <div class="cl ok2" style="animation-delay:.2s">✓ the code compiles</div>
+            <div class="cl ok2" style="animation-delay:.8s">✓ all 42 tests pass</div>
+            <div class="cl ok2" style="animation-delay:1.4s">✓ the app is running — see it live, click around</div>
+            <div class="cl" style="animation-delay:2.1s"><b style="color:var(--amber)">👁 "logout clears the cookie" — a human has to check this one</b></div>
+          </div>
+          <div class="s-big fu" style="animation-delay:2.9s">Review behavior, not just code.</div>
+          <div class="s-sub fu" style="animation-delay:3.8s">the feature runs live in front of you, with a guided checklist walking you through what to verify. approve or reject — <b style="color:var(--text)">nothing ships without your click, and your decision is saved with what you were looking at.</b></div>
+        </div>
+
+        <!-- 05 · it learns from you -->
+        <div class="scene">
+          <div class="kick">stop 05 · it learns from you</div>
+          <div class="cterm" aria-hidden="true">
+            <div class="cl" style="animation-delay:.2s"><b>task · write the checkout page</b></div>
+            <div class="cl dim2" style="animation-delay:.9s">router → picks the AI with the best track record for exactly this kind of task</div>
+            <div class="cl ok2" style="animation-delay:1.7s">it worked ✓ → remembered. next time, it chooses even better.</div>
+          </div>
+          <div class="cyc fu" style="animation-delay:2.3s" aria-hidden="true">
+            <span>⚙ this year's best model</span>
+            <span>⚙ next year's best model</span>
+            <span>⚙ whatever wins after that</span>
+          </div>
+          <div class="s-big fu" style="animation-delay:2.9s">Every interaction makes it smarter.</div>
+          <div class="s-sub fu" style="animation-delay:3.8s">it learns which AI is good at what — from real results and your corrections. <b style="color:var(--text)">models are workers, every one replaceable. the learning stays yours.</b></div>
+        </div>
+
+        <!-- 06 · yours — and it can't lie -->
+        <div class="scene">
+          <div class="kick">stop 06 · yours — and it can't lie</div>
+          <div class="cterm" aria-hidden="true">
+            <div class="cl" style="animation-delay:.2s"><b>your-project/.antiloki/</b> &nbsp;· the board · the brain · the rules · the history</div>
+            <div class="cl dim2" style="animation-delay:1s">files on your computer, not a service you rent. even the AI can run locally. unplug the internet — it still works.</div>
+            <div class="cl" style="animation-delay:2s"><b>$ try to edit its history…</b></div>
+            <div class="cl err2" style="animation-delay:2.9s">refused — and editing the files on disk gets caught at the exact row</div>
+            <div class="cl ok2" style="animation-delay:3.8s">✓ verified — the whole history checks out, in under a second</div>
+          </div>
+          <div class="s-big fu" style="animation-delay:4.6s">Trust through evidence, not assumptions.</div>
+          <div class="s-sub fu" style="animation-delay:5.5s">own your engineering stack — and prove every decision. <b style="color:var(--text)">even its own creator can't quietly change the past.</b></div>
+        </div>
+
+      </div>
+      <div class="sy-hintdn">▼ keep scrolling</div>
+    </div>
+  </div>
+  <div class="wrap">
+    <p class="matrix-note">// AI follows engineering here — engineering does not follow AI. the pipeline (stages, gates, rules, records) is deterministic; the generation inside a stage is a model. that's the point: probabilistic parts inside a process that catches them.</p>
+  </div>
+</section>
+
+<!-- COMPARE + JOIN -->
+<section id="ownership">
+  <div class="wrap">
+    <div class="sec-eyebrow">Vs. the rest</div>
+    <h2 style="font-size:clamp(24px,3vw,34px)">They make developers faster inside the old process. antiloki replaces the process.</h2>
+    <div class="matrix-wrap reveal">
+      <table class="matrix">
+        <thead><tr><th>&nbsp;</th><th>Cursor</th><th>Claude Code</th><th>Codex</th><th>Devin</th><th class="us">antiloki</th></tr></thead>
+        <tbody>
+          <tr><th>Who decides the next step</th><td>model loop</td><td>model loop</td><td>model loop</td><td>autonomous agent</td><td class="us"><span class="yes">deterministic gates</span></td></tr>
+          <tr><th>Architecture before code</th><td class="no">✕</td><td class="no">✕</td><td class="no">✕</td><td class="no">✕</td><td class="us"><span class="yes">✓ blueprint + design court</span></td></tr>
+          <tr><th>Isolated PR environments</th><td class="no">✕</td><td class="no">✕</td><td class="no">✕</td><td class="mid">cloud VM</td><td class="us"><span class="yes">✓ worktree / Docker + live preview</span></td></tr>
+          <tr><th>Replayable, tamper-evident history</th><td class="no">✕ editable logs</td><td class="no">✕ transcripts</td><td class="no">✕ logs</td><td class="mid">session logs</td><td class="us"><span class="yes">✓ Merkle chain, verifiable offline</span></td></tr>
+          <tr><th>Learns from your corrections</th><td class="no">✕</td><td class="mid">△ memory files</td><td class="no">✕</td><td class="no">✕</td><td class="us"><span class="yes">✓ evidence-based routing, ledgered</span></td></tr>
+          <tr><th>Runs fully local, your key</th><td class="no">✕ cloud</td><td class="mid">△ cloud · API/Bedrock/Vertex</td><td class="no">✕ cloud</td><td class="no">✕ cloud</td><td class="us"><span class="yes">✓ local-first · BYO, per tier</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="swipe-hint">swipe the table <b>→</b> · the row you're reading stays put</div>
+    <div class="honest reveal">
+      <h4>Where the others win — honestly.</h4>
+      <p>Cursor has the most polished IDE. Claude Code has the deepest single-shot reasoning. Codex is a strong autonomous coder. antiloki's bet is different: <b>the process is the product</b> — and a year of sealed, verifiable engineering history is something no prompt file replicates.</p>
+    </div>
+
+    <div id="waitlist" style="margin-top:90px;text-align:center;scroll-margin-top:80px">
+      <div class="sec-eyebrow" style="color:var(--orange)">Early access</div>
+      <h2 style="margin:0 auto;max-width:20ch">Cursor helps you write code.<br>antiloki changes how software is engineered.</h2>
+      <p class="sec-lede" style="margin:18px auto 0">Join early access — the first thing you'll do is <b>point it at a repo</b> and watch your architecture appear.</p>
+      <form class="wl" id="wlform" novalidate>
+        <input type="text" name="company" id="wlcompany" tabindex="-1" autocomplete="off" aria-hidden="true" style="position:absolute;left:-9999px;width:1px;height:1px;opacity:0" />
+        <input type="email" id="wlemail" placeholder="you@yourcompany.dev" aria-label="Email address" required />
+        <button type="submit" id="wlbtn">Get in line →</button>
+      </form>
+      <div class="wl-note">// no spam · one note when it's your turn · <a href="privacy.html" style="color:var(--orange)">privacy</a> · go deeper: <a href="antiloki-paper.html" style="color:var(--orange)">the paper</a> · <a href="antiloki-manual.html" style="color:var(--orange)">the manual</a> · <a href="antiloki-deck.html" style="color:var(--orange)">the deck</a></div>
+      <div class="wl-ok" id="wlok">✓ You're on the list. We'll be in touch.</div>
+      <div class="wl-err" id="wlerr"></div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap foot-in">
+    <div class="brand">antiloki<span class="dot">.</span></div>
+    <div class="foot-links">
+      <a href="#idea">The idea</a><a href="#machine">The machine</a><a href="#ownership">Yours</a><a href="antiloki-paper.html">Paper</a><a href="antiloki-manual.html">Manual</a><a href="antiloki-deck.html">Deck</a><a href="#waitlist">Early access</a>
+    </div>
+    <div style="font-family:var(--mono);font-size:12px;color:var(--muted-2)">© 2026 antiloki</div>
+  </div>
+  <!-- A6 · identity + legal. TODO(operator): full name + X/GitHub links — blocking decision #2 in the plan -->
+  <div class="wrap foot-legal">built by <b>Danilo</b> — one operator, and a substrate that builds itself · <a href="mailto:__MUNINN_CONTACT_EMAIL__">contact</a> · <a href="privacy.html">privacy</a></div>
+</footer>
+
+<script>
+  /* the films — generic scene driver (every .cine[data-durs] on the page) */
+  (function(){
+    document.querySelectorAll('.cine[data-durs]').forEach(function(cine){
+      const scenes=Array.prototype.slice.call(cine.querySelectorAll('.cine-stage > .scene'));
+      const durs=cine.getAttribute('data-durs').split(',').map(Number);
+      const prog=cine.querySelector('.cine-prog b');
+      const total=durs.reduce(function(a,b){return a+b;},0);
+      let i=-1,timer=null,started=false;
+      function show(n){
+        if(timer)clearTimeout(timer);
+        scenes.forEach(function(s){s.classList.remove('on');});
+        void cine.offsetWidth; /* reflow so re-entering a scene replays its animations */
+        scenes[n].classList.add('on');
+        i=n;
+        const done=durs.slice(0,n).reduce(function(a,b){return a+b;},0);
+        prog.style.transition='none';prog.style.width=(done/total*100)+'%';
+        void prog.offsetWidth;
+        prog.style.transition='width '+durs[n]+'ms linear';prog.style.width=((done+durs[n])/total*100)+'%';
+        if(n<scenes.length-1)timer=setTimeout(function(){show(n+1);},durs[n]);
+      }
+      function start(){if(started)return;started=true;show(0);}
+      if('IntersectionObserver' in window){
+        const io=new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting){start();io.disconnect();}});},{threshold:.35});
+        io.observe(cine);
+      } else start();
+      cine.addEventListener('click',function(e){
+        if(e.target.closest('a,button'))return;
+        if(!started){start();return;}
+        show(Math.min(i+1,scenes.length-1));
+      });
+      const rp=cine.querySelector('.cine-replay'), sk=cine.querySelector('.cine-skip');
+      if(rp)rp.addEventListener('click',function(e){e.stopPropagation();started=true;show(0);});
+      if(sk)sk.addEventListener('click',function(e){e.stopPropagation();started=true;show(scenes.length-1);});
+    });
+  })();
+
+  /* the machine — scroll-driven on a desktop; a STACKED story on phones and short windows.
+     A sticky viewport-height stage can't hold a stop on a 360px-tall screen (measured: every
+     scene lost 76-170px), so below the same breakpoint the CSS lays the stops out as blocks and
+     this driver just reveals each one as it arrives. Switches live on rotate/resize. */
+  (function(){
+    const track=document.getElementById('scrolly'); if(!track) return;
+    const stage=track.querySelector('.sy-stage');
+    const scenes=Array.prototype.slice.call(stage.querySelectorAll('.scene'));
+    const dots=Array.prototype.slice.call(stage.querySelectorAll('.sy-rail i'));
+    const tag=document.getElementById('sy-tag');
+    const num=stage.querySelector('.sy-num');
+    const labels=["it reads your code","think with your code","it builds like a team","you decide","it learns from you","yours — it can't lie"];
+    const mq=window.matchMedia('(max-width:760px),(max-height:560px)');
+    let cur=-1,ticking=false,mode='',io=null;
+    function update(){
+      ticking=false;
+      const r=track.getBoundingClientRect();
+      const vh=window.innerHeight||1;
+      const total=Math.max(1,r.height-vh);
+      const p=Math.min(1,Math.max(0,-r.top/total));
+      stage.style.setProperty('--syp',p.toFixed(4)); /* continuous — the screen mutates WHILE you travel */
+      const k=Math.min(scenes.length-1,Math.floor(p*scenes.length));
+      if(k===cur)return;
+      cur=k;
+      stage.setAttribute('data-k',k);
+      if(num)num.textContent=('0'+(k+1)).slice(-2);
+      scenes.forEach(function(s){s.classList.remove('on');});
+      void stage.offsetWidth;
+      scenes[k].classList.add('on');
+      dots.forEach(function(d,x){d.classList.toggle('hit',x<=k);});
+      if(tag)tag.textContent=('0'+(k+1)).slice(-2)+' / 0'+scenes.length+' · '+labels[k];
+    }
+    function onScroll(){if(mode!=='scroll')return;if(!ticking){ticking=true;requestAnimationFrame(update);}}
+    function apply(){
+      const next=mq.matches?'stack':'scroll';
+      if(next===mode)return;
+      mode=next; cur=-1;
+      if(io){io.disconnect();io=null;}
+      window.removeEventListener('scroll',onScroll);
+      scenes.forEach(function(s){s.classList.remove('on');});
+      if(mode==='stack'){
+        /* each stop is its own block now: light it when it arrives, and leave it lit */
+        if(!('IntersectionObserver' in window)){scenes.forEach(function(s){s.classList.add('on');});return;}
+        io=new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting)e.target.classList.add('on');});},{threshold:.15,rootMargin:'0px 0px -10% 0px'});
+        scenes.forEach(function(s){io.observe(s);});
+      }else{
+        window.addEventListener('scroll',onScroll,{passive:true});
+        update();
+      }
+    }
+    apply();
+    window.addEventListener('resize',function(){apply();onScroll();},{passive:true});
+    if(mq.addEventListener)mq.addEventListener('change',apply);
+  })();
+
+  (function(){const els=document.querySelectorAll('.reveal');if(!('IntersectionObserver' in window)){els.forEach(e=>e.classList.add('in'));return;}const io=new IntersectionObserver((ent)=>{ent.forEach(e=>{if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target);}});},{threshold:.12});els.forEach(e=>io.observe(e));})();
+
+  /* muninn · analytics (A4) — PostHog when a key is configured; queued console no-op otherwise */
+  (function(){
+    var cfg=window.MUNINN||{};
+    var configured=typeof cfg.posthogKey==='string'&&cfg.posthogKey.indexOf('__')!==0;
+    var q=[];
+    window.muninnTrack=function(name,props){
+      if(window.posthog&&window.posthog.capture){window.posthog.capture(name,props||{});}
+      else{q.push([name,props||{}]);if(window.console&&console.debug)console.debug('[muninn]',name,props||{});}
+    };
+    if(!configured)return;
+    var host=cfg.posthogHost||'https://us.i.posthog.com';
+    var s=document.createElement('script');s.async=true;s.crossOrigin='anonymous';
+    s.src=host.replace('.i.posthog.com','-assets.i.posthog.com')+'/static/array.full.js';
+    s.onload=function(){
+      window.posthog.init(cfg.posthogKey,{api_host:host,defaults:'2025-05-24'});
+      q.splice(0).forEach(function(e){window.posthog.capture(e[0],e[1]);});
+    };
+    document.head.appendChild(s);
+  })();
+
+  /* muninn · referral capture — /r/<code> lands here as ?ref=<code> */
+  (function(){
+    try{
+      var ref=new URLSearchParams(location.search).get('ref');
+      if(ref&&/^[a-z0-9]{4,20}$/i.test(ref)){
+        localStorage.setItem('muninn_ref',ref.toLowerCase());
+        muninnTrack('referral_visit',{code:ref.toLowerCase()});
+      }
+    }catch(e){}
+  })();
+
+  /* muninn · film + CTA instrumentation (A4) */
+  (function(){
+    var hero=document.querySelector('.cine-full');
+    if(hero&&'MutationObserver' in window){
+      var scenes=hero.querySelectorAll('.cine-stage > .scene');
+      var last=scenes[scenes.length-1];
+      var done=false,skipped=false;
+      var sk=hero.querySelector('.cine-skip');
+      if(sk)sk.addEventListener('click',function(){skipped=true;muninnTrack('film_skip',{});});
+      if(last)new MutationObserver(function(){
+        if(!done&&last.classList.contains('on')){done=true;muninnTrack('film_complete',{via:skipped?'skip':'played'});}
+      }).observe(last,{attributes:true,attributeFilter:['class']});
+    }
+    document.addEventListener('click',function(e){
+      var a=e.target.closest('.nav-cta,.btn-primary,.btn-ghost');
+      if(a)muninnTrack('cta_click',{cta:(a.textContent||'').trim().slice(0,60)});
+    });
+  })();
+
+  /* muninn · the form, wired (A1) — POSTs to the waitlist-join edge function; the success
+     line is the operator number; resubmitting the same email returns its original position */
+  (function(){
+    var f=document.getElementById('wlform'),ok=document.getElementById('wlok'),em=document.getElementById('wlemail'),
+        hp=document.getElementById('wlcompany'),err=document.getElementById('wlerr'),btn=document.getElementById('wlbtn');
+    var cfg=window.MUNINN||{};
+    var base=(typeof cfg.functionsBase==='string'&&cfg.functionsBase.indexOf('__')!==0)?cfg.functionsBase.replace(/\/+$/,''):null;
+    if(!base&&window.console&&console.warn)console.warn('[muninn] functionsBase not configured — run scripts/configure-site.mjs');
+    function fail(msg){err.textContent=msg;err.style.display='block';btn.disabled=false;btn.textContent='Get in line →';}
+    function utm(){
+      var o={},p=new URLSearchParams(location.search);
+      ['utm_source','utm_medium','utm_campaign','utm_term','utm_content'].forEach(function(k){var v=p.get(k);if(v)o[k]=v;});
+      if(document.referrer)o.referrer=document.referrer;
+      return o;
+    }
+    f.addEventListener('submit',function(ev){
+      ev.preventDefault();
+      err.style.display='none';
+      var v=(em.value||'').trim();
+      if(!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(v)){em.style.borderColor='var(--red)';em.focus();return;}
+      muninnTrack('waitlist_submit',{});
+      if(!base){fail('// the waitlist backend is not wired up yet — this build is a preview');return;}
+      btn.disabled=true;btn.textContent='…';
+      var ref=null;try{ref=new URLSearchParams(location.search).get('ref')||localStorage.getItem('muninn_ref');}catch(e){}
+      fetch(base+'/waitlist-join',{
+        method:'POST',
+        headers:{'content-type':'application/json'},
+        body:JSON.stringify({email:v,company:(hp&&hp.value)||'',ref:ref||undefined,source:ref?'landing:ref':'landing',utm:utm()})
+      }).then(function(r){return r.json().then(function(d){return{status:r.status,d:d};});})
+        .then(function(res){
+          var d=res.d||{};
+          if(!d.ok){
+            muninnTrack('waitlist_join_error',{status:res.status,error:d.error||'unknown'});
+            fail(res.status===429?'// too many attempts from this network — try again in an hour':'// something failed on our side — try again in a minute');
+            return;
+          }
+          muninnTrack('waitlist_join_ok',{position:d.position,deduped:!!d.deduped});
+          f.style.display='none';
+          var html=d.message||"✓ You're on the list. We'll be in touch.";
+          var link=d.referral_url||(d.referral_code?(((cfg.origin&&cfg.origin.indexOf('__')<0)?cfg.origin:location.origin)+'/r/'+d.referral_code):null);
+          if(link)html+='<div class="wl-share"><code>'+link+'</code><button type="button" id="wlcopy">copy</button></div>';
+          ok.innerHTML=html;ok.style.display='block';
+          var cp=document.getElementById('wlcopy');
+          if(cp)cp.addEventListener('click',function(){
+            var w=(navigator.clipboard&&navigator.clipboard.writeText)?navigator.clipboard.writeText(link):Promise.reject();
+            w.then(function(){cp.textContent='copied ✓';},function(){cp.textContent=link;});
+          });
+        })
+        .catch(function(){muninnTrack('waitlist_join_error',{status:0,error:'network'});fail('// network hiccup — try again');});
+    });
+    em.addEventListener('input',function(){em.style.borderColor='';});
+  })();
+</script>
+</body>
+</html>

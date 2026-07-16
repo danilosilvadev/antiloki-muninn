@@ -1,0 +1,15 @@
+# Supabase CLI config. `supabase link --project-ref <ref>` connects this to the
+# real project; `supabase db push` applies migrations/; `supabase functions deploy`
+# ships the functions below.
+project_id = "antiloki-muninn"
+
+# All three slice-0 functions are public endpoints (the landing form, unsubscribe
+# links in emails, referral links) — callers carry no Supabase JWT.
+[functions.waitlist-join]
+verify_jwt = false
+
+[functions.unsub]
+verify_jwt = false
+
+[functions.r]
+verify_jwt = false

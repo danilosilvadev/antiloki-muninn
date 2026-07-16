@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>og-card exporter — 1200×630</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  /* The share-card source (A3) — the struck-through "faster horses" frame.
+     Export to site/og-card.png:
+       npx playwright screenshot --viewport-size=1200,630 site/og-card.html site/og-card.png
+     (the card sits at 0,0 sized exactly 1200×630; the notes below are outside the shot) */
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:#333;font-family:'Space Grotesk',sans-serif}
+  .card{width:1200px;height:630px;background:#0E0D0B;color:#EDE8E0;position:relative;overflow:hidden;display:flex;flex-direction:column;justify-content:center;padding:0 96px}
+  .card .orb{position:absolute;right:-220px;top:-260px;width:640px;height:640px;border-radius:50%;background:radial-gradient(circle,rgba(232,98,58,.16),transparent 65%)}
+  .card .grid{position:absolute;inset:0;background-image:linear-gradient(rgba(42,38,34,.5) 1px,transparent 1px),linear-gradient(90deg,rgba(42,38,34,.5) 1px,transparent 1px);background-size:48px 48px;mask-image:radial-gradient(ellipse at 30% 45%,black 20%,transparent 75%)}
+  .eyebrow{font-family:'JetBrains Mono',monospace;font-size:19px;letter-spacing:.14em;text-transform:uppercase;color:#E8623A;display:flex;align-items:center;gap:14px;margin-bottom:34px}
+  .eyebrow .bar{width:44px;height:2px;background:#E8623A;opacity:.6}
+  .h1{font-weight:700;font-size:56px;line-height:1.12;letter-spacing:-.025em;color:#8C8378}
+  .h1 .strike{position:relative;white-space:nowrap}
+  .h1 .strike::after{content:"";position:absolute;left:-1%;right:-1%;top:54%;height:5px;background:#F0533B;border-radius:3px}
+  .h2{font-weight:700;font-size:92px;line-height:1.04;letter-spacing:-.035em;color:#EDE8E0;margin-top:14px}
+  .h2 .keep{color:#4ADE80}
+  .h2 .caret{display:inline-block;width:8px;height:.78em;background:#4ADE80;margin-left:18px;vertical-align:-4%}
+  .foot{position:absolute;left:96px;right:96px;bottom:44px;display:flex;justify-content:space-between;align-items:baseline;font-family:'JetBrains Mono',monospace;font-size:20px;color:#5E574E}
+  .foot .brand{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:30px;color:#EDE8E0;letter-spacing:-.02em}
+  .foot .brand i{color:#E8623A;font-style:normal}
+  .note{max-width:1200px;padding:22px 24px;color:#ccc;font:14px/1.7 monospace}
+  .note code{background:#222;border:1px solid #444;border-radius:5px;padding:2px 8px;display:inline-block;margin:2px 0}
+</style>
+</head>
+<body>
+  <div class="card">
+    <div class="grid"></div>
+    <div class="orb"></div>
+    <div class="eyebrow"><span class="bar"></span>antiloki — local-first · verifiable · builds itself</div>
+    <div class="h1">Everyone is building <span class="strike">faster&nbsp;horses</span>.</div>
+    <div class="h2">We built the <span class="keep">race</span>.<span class="caret"></span></div>
+    <div class="foot"><span class="brand">antiloki<i>.</i></span><span>software engineering as an assembly line</span></div>
+  </div>
+  <div class="note">
+    export (A3): wait for the webfonts, then screenshot the top-left 1200×630 —<br>
+    <code>npx playwright screenshot --viewport-size=1200,630 --wait-for-timeout=2500 site/og-card.html site/og-card.png</code><br>
+    then verify index.html's <code>og:image</code> points at /og-card.png on the canonical domain (configure-site.mjs does this).
+  </div>
+</body>
+</html>

@@ -1,0 +1,107 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>antiloki — privacy</title>
+<meta name="description" content="What antiloki collects, why, and how to make it forget you." />
+<link rel="icon" type="image/svg+xml" href="favicon.svg" />
+<link rel="canonical" href="https://__MUNINN_DOMAIN__/privacy.html" />
+<style>
+  :root{
+    --base:#0E0D0B; --panel:#161412; --line:#2A2622;
+    --orange:#E8623A; --green:#4ADE80; --text:#EDE8E0; --muted:#8C8378; --muted-2:#5E574E;
+    --display:'Space Grotesk','Segoe UI',system-ui,sans-serif; --mono:'JetBrains Mono',Consolas,ui-monospace,monospace;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:var(--base);color:var(--text);font-family:var(--display);font-size:16px;line-height:1.7;-webkit-font-smoothing:antialiased}
+  .wrap{max-width:720px;margin:0 auto;padding:0 24px 80px}
+  a{color:var(--orange);text-decoration:none} a:hover{text-decoration:underline}
+  header{padding:48px 0 8px}
+  .brand{font-weight:700;font-size:20px;letter-spacing:-.02em}
+  .brand i{color:var(--orange);font-style:normal}
+  h1{font-size:clamp(26px,4vw,34px);letter-spacing:-.03em;line-height:1.1;margin:26px 0 10px}
+  .meta{font-family:var(--mono);font-size:11.5px;color:var(--muted-2)}
+  h2{font-size:17px;letter-spacing:-.01em;margin:38px 0 8px;font-family:var(--mono);color:var(--orange);font-weight:600}
+  p,li{color:var(--muted);font-size:15px}
+  p{margin:10px 0}
+  ul{margin:10px 0;padding-left:20px}
+  li{margin:6px 0}
+  b{color:var(--text);font-weight:600}
+  .tldr{border:1px solid var(--line);border-left:3px solid var(--green);border-radius:10px;background:var(--panel);padding:16px 20px;margin:22px 0;font-size:14.5px;color:var(--muted)}
+  .tldr b{color:var(--green)}
+  code{font-family:var(--mono);font-size:.85em;background:var(--panel);border:1px solid var(--line);border-radius:5px;padding:1px 6px}
+  footer{border-top:1px solid var(--line);margin-top:56px;padding-top:22px;font-family:var(--mono);font-size:12px;color:var(--muted-2)}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="brand"><a href="./" style="color:inherit">antiloki<i>.</i></a></div>
+    <h1>Privacy — what we keep, why, and how to make us forget.</h1>
+    <div class="meta">last updated 2026-07-16 · applies to this site, the waitlist, and our outreach</div>
+  </header>
+
+  <div class="tldr"><b>The short version:</b> the waitlist stores the email you give us, plus how you found us. Site analytics are aggregate. If we researched you as a prospective design partner, it was role-relevant professional data — and one email erases all of it, permanently. We sell nothing to nobody.</div>
+
+  <h2>// who we are</h2>
+  <p>antiloki is built and operated by <b>Danilo</b> (a one-operator company).
+  Contact for anything on this page: <a href="mailto:__MUNINN_CONTACT_EMAIL__">__MUNINN_CONTACT_EMAIL__</a>.
+  Postal address: __MUNINN_POSTAL_LINE__.</p>
+
+  <h2>// the waitlist</h2>
+  <p>When you join, we store: your <b>email</b>, an optional name, your position number, a referral
+  code (yours, and the one that brought you here if any), and the campaign/source parameters your
+  visit carried (<code>utm_*</code>, referrer). We use this to run the waitlist: your position,
+  invite waves, and occasional product notes — the "one note when it's your turn" kind, not a drip feed.</p>
+  <ul>
+    <li>Every email we send includes a working one-click unsubscribe.</li>
+    <li>Unsubscribing writes you to a <b>suppression list</b> that every future send is checked against — it outranks everything else in the system.</li>
+    <li>We never sell, rent, or trade the list.</li>
+  </ul>
+
+  <h2>// site analytics</h2>
+  <p>We use <b>PostHog</b> to count things like film completions, clicks, and signups so we know which
+  of our messages works. This is product analytics, not ad-tech: no ad networks, no data brokers,
+  no cross-site tracking pixels beyond PostHog's own.</p>
+
+  <h2>// outreach research (design partners)</h2>
+  <p>We look for early design partners the way we build software: deliberately and on the record. For a
+  small number of people whose public professional profile fits (think: agency owners, engineering
+  leads), we may collect <b>role-relevant, professional</b> information — public posts, company pages,
+  and business contact data from licensed B2B providers — under a legitimate-interest basis, to write
+  one relevant note instead of spam. Concretely:</p>
+  <ul>
+    <li>Volume is deliberately low (this is a founder writing to a shortlist, not a cannon).</li>
+    <li>Every touch is recorded — if you ask "how did you get my email and what have you sent me?", the answer is a query, not a scramble.</li>
+    <li>Reply "no" once and the file closes: you go on the suppression list.</li>
+    <li>Cold messages go to work email only — WhatsApp/Telegram happen only if <i>you</i> opt in.</li>
+  </ul>
+
+  <h2>// your rights</h2>
+  <p>Access, correction, objection, erasure — email
+  <a href="mailto:__MUNINN_CONTACT_EMAIL__">__MUNINN_CONTACT_EMAIL__</a> and it's handled, normally
+  within days, at most within 30. Erasure removes every row about you and keeps only a hashed
+  tombstone on the suppression list so we can never re-ingest you — being forgotten includes staying forgotten.</p>
+
+  <h2>// retention</h2>
+  <ul>
+    <li><b>Waitlist:</b> kept while the waitlist runs; deleted or migrated to your account when you activate; erased on request anytime.</li>
+    <li><b>Outreach research:</b> purged on a schedule for anyone who never engaged; raw enrichment payloads expire on a clock.</li>
+    <li><b>Suppression list:</b> permanent, by design — it is the record that we must not contact you.</li>
+  </ul>
+
+  <h2>// storage &amp; cookies</h2>
+  <p>This site keeps a referral code in <code>localStorage</code> when you arrive through someone's
+  share link (so their referral counts if you join). PostHog sets its own analytics cookies. The
+  waitlist itself lives in a Postgres database (Supabase) with row-level security locked to deny-all —
+  the only write path is the join endpoint you used.</p>
+
+  <h2>// changes</h2>
+  <p>If this page changes materially, the date up top changes with it, and anything already promised
+  (suppression permanence, erasure) never gets weaker.</p>
+
+  <footer>antiloki · <a href="./">home</a> · <a href="antiloki-paper.html">the paper</a> · this page is version-controlled — its history is inspectable, like everything else we ship</footer>
+</div>
+</body>
+</html>

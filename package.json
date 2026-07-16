@@ -1,0 +1,14 @@
+{
+  "name": "antiloki-muninn",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "antiloki GTM engine — landing + waitlist (slice 0), lead engine + console (slices 1-5)",
+  "scripts": {
+    "test": "node --test \"test/*.test.mjs\"",
+    "configure": "node scripts/configure-site.mjs"
+  },
+  "engines": {
+    "node": ">=24"
+  }
+}

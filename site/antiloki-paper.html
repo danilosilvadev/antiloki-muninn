@@ -1,0 +1,381 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>antiloki — Deterministic Governance and Provable Records for Autonomous AI Software Work</title>
+<meta name="description" content="The antiloki paper: architecture, philosophy, and the formal model behind a local-first AI development substrate whose every action is cryptographically provable." />
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --base:#0E0D0B; --panel:#161412; --panel-2:#1E1B18; --line:#2A2622;
+    --orange:#E8623A; --green:#4ADE80; --amber:#F0A93B; --red:#F0533B; --violet:#A78BFA;
+    --text:#EDE8E0; --muted:#8C8378; --muted-2:#5E574E;
+    --display:'Space Grotesk',sans-serif; --mono:'JetBrains Mono',ui-monospace,monospace;
+    --maxw:880px;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{background:var(--base);color:var(--text);font-family:var(--display);font-size:16.5px;line-height:1.72;-webkit-font-smoothing:antialiased}
+  a{color:var(--orange);text-decoration:none} a:hover{text-decoration:underline}
+  ::selection{background:var(--orange);color:#0E0D0B}
+  .wrap{max-width:var(--maxw);margin:0 auto;padding:0 28px}
+
+  header.paper{padding:84px 0 46px;border-bottom:1px solid var(--line)}
+  .eyebrow{font-family:var(--mono);font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:var(--orange);margin-bottom:22px;display:flex;align-items:center;gap:10px}
+  .eyebrow .bar{width:30px;height:1px;background:var(--orange);opacity:.6}
+  h1{font-weight:700;font-size:clamp(30px,4.6vw,46px);line-height:1.12;letter-spacing:-.03em}
+  .authors{margin-top:22px;font-family:var(--mono);font-size:13px;color:var(--muted)}
+  .authors b{color:var(--text);font-weight:500}
+  .abstract{margin-top:34px;border:1px solid var(--line);border-left:3px solid var(--orange);border-radius:10px;background:var(--panel);padding:24px 26px}
+  .abstract .ah{font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--orange);margin-bottom:12px}
+  .abstract p{font-size:15.5px;color:var(--muted);line-height:1.7}
+  .abstract p b{color:var(--text);font-weight:600}
+
+  nav.toc{border-bottom:1px solid var(--line);background:var(--panel);position:sticky;top:0;z-index:40;backdrop-filter:blur(10px)}
+  .toc-in{display:flex;gap:20px;overflow-x:auto;padding:12px 28px;max-width:var(--maxw);margin:0 auto;font-family:var(--mono);font-size:12px;color:var(--muted);white-space:nowrap}
+  .toc-in a{color:var(--muted)} .toc-in a:hover{color:var(--text);text-decoration:none}
+
+  section{padding:58px 0 8px}
+  h2{font-weight:700;font-size:clamp(24px,3vw,32px);letter-spacing:-.025em;line-height:1.15;margin-bottom:8px}
+  h2 .no{color:var(--muted-2);font-family:var(--mono);font-size:.62em;font-weight:500;vertical-align:.28em;margin-right:12px;letter-spacing:.06em}
+  h3{font-weight:600;font-size:19.5px;letter-spacing:-.015em;margin:36px 0 10px}
+  h3 .no{color:var(--muted-2);font-family:var(--mono);font-size:.72em;font-weight:500;margin-right:10px}
+  p{margin:13px 0;color:var(--muted)} p b,li b{color:var(--text);font-weight:600} p em{color:var(--text);font-style:italic}
+  ul,ol{margin:13px 0 13px 24px;color:var(--muted)} li{margin:7px 0}
+  code{font-family:var(--mono);font-size:.86em;background:var(--panel-2);border:1px solid var(--line);border-radius:5px;padding:1.5px 6px;color:var(--text)}
+  pre{font-family:var(--mono);font-size:13px;line-height:1.6;background:#0B0A09;border:1px solid var(--line);border-radius:10px;padding:16px 18px;overflow-x:auto;margin:18px 0;color:var(--text)}
+  pre .c{color:var(--muted-2)} pre .k{color:var(--orange)} pre .g{color:var(--green)} pre .v{color:var(--violet)}
+
+  .eq{font-family:var(--mono);font-size:14.5px;background:#0B0A09;border:1px solid var(--line);border-radius:10px;padding:18px 22px;margin:20px 0;color:var(--text);overflow-x:auto;text-align:center}
+  .eq .tag{float:right;color:var(--muted-2);font-size:12px}
+  .prop{border:1px solid var(--line);border-left:3px solid var(--violet);border-radius:10px;background:var(--panel);padding:18px 22px;margin:20px 0}
+  .prop .ph{font-family:var(--mono);font-size:11.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--violet);margin-bottom:8px}
+  .prop p{margin:8px 0;font-size:15px}
+  .prop .proof{font-size:14px;color:var(--muted);border-top:1px dashed var(--line);margin-top:12px;padding-top:12px}
+  .prop .proof .ps{font-family:var(--mono);font-size:11px;color:var(--muted-2);text-transform:uppercase;letter-spacing:.08em;margin-right:8px}
+  .axiom{border:1px solid var(--line);border-left:3px solid var(--green);border-radius:10px;background:var(--panel);padding:16px 20px;margin:16px 0}
+  .axiom .ah{font-family:var(--mono);font-size:11.5px;color:var(--green);letter-spacing:.1em;text-transform:uppercase;margin-bottom:6px}
+  .axiom p{margin:4px 0;font-size:15px}
+
+  table{border-collapse:collapse;width:100%;margin:20px 0;font-size:13.5px}
+  th,td{padding:11px 13px;text-align:left;border-bottom:1px solid var(--line);vertical-align:top}
+  thead th{font-family:var(--mono);font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted-2);background:var(--panel-2);font-weight:500}
+  td{color:var(--muted);font-size:13.5px} td b, tbody th{color:var(--text);font-weight:600}
+  .tbl{overflow-x:auto;border:1px solid var(--line);border-radius:10px;margin:20px 0}
+  .tbl table{margin:0}
+  .yes{color:var(--green)} .no-c{color:var(--red)} .mid-c{color:var(--amber)}
+
+  .receipt{border:1px solid rgba(74,222,128,.28);background:rgba(74,222,128,.05);border-radius:10px;padding:14px 18px;margin:16px 0;font-family:var(--mono);font-size:12.5px;color:var(--muted);line-height:1.7}
+  .receipt .rh{color:var(--green);font-weight:500;margin-bottom:6px}
+  .figure{border:1px solid var(--line);border-radius:12px;background:#0B0A09;padding:20px;margin:22px 0;font-family:var(--mono);font-size:12.5px;color:var(--muted);overflow-x:auto}
+  .figure .cap{font-size:11.5px;color:var(--muted-2);margin-top:14px;text-align:center;font-family:var(--mono)}
+  .figure pre{border:none;background:transparent;padding:0;margin:0}
+  .honest{margin:26px 0;border:1px solid var(--line);border-radius:12px;background:var(--panel);padding:20px 24px}
+  .honest h4{font-weight:600;font-size:15.5px;margin-bottom:8px}
+  .honest p{font-size:14.5px;margin:6px 0}
+  footer{border-top:1px solid var(--line);margin-top:70px;padding:36px 0 60px;font-family:var(--mono);font-size:12px;color:var(--muted-2)}
+  .footline{display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px}
+</style>
+</head>
+<body>
+
+<header class="paper">
+  <div class="wrap">
+    <div class="eyebrow"><span class="bar"></span>antiloki · technical paper · v1.0 · july 2026</div>
+    <h1>Deterministic Governance and Provable Records for Autonomous AI Software Work</h1>
+    <div class="authors">the antiloki project · <b>local-first substrate, single-operator deployment</b> · this document is committed to the repository it describes; every claim carries a verification path</div>
+    <div class="abstract">
+      <div class="ah">Abstract</div>
+      <p>Large language models now perform real software engineering, but the systems that host them inherit a structural defect: <b>the record of what the AI did is whatever the AI says it did</b>. Rules live in prompts (hope), history lives in editable logs, and verification is a human rereading diffs at machine speed. We present <b>antiloki</b>, a local-first substrate for autonomous AI software work built on two commitments: <b>(1) determinism over cognition</b> — every rule that can be enforced by a machine is moved out of the model's memory and into triggers, hooks, and gates that physically refuse violations; and <b>(2) a provable record</b> — every mutation is sealed into an append-only, SHA-256 hash-linked log whose integrity is verifiable offline, survives compression and archival, and cannot be silently rewritten even by the system's own author. We formalize the record's tamper-, omission-, and reorder-evidence properties; describe the layered enforcement lattice, the multi-agent pipeline with adversarial verification, and the operator attention model; and evaluate the system by its own strictest standard — the incidents it caught in its author, including a drift detector that blocked its creator's commit on the night it shipped. antiloki runs ~4,000 substrate tests as a hard push gate and maintains a live production chain verified across its full history.</p>
+    </div>
+  </div>
+</header>
+
+<nav class="toc"><div class="toc-in">
+  <a href="#s1">1 Introduction</a><a href="#s2">2 Philosophy</a><a href="#s3">3 Architecture</a><a href="#s4">4 The Record</a><a href="#s5">5 Governance</a><a href="#s6">6 Pipeline</a><a href="#s7">7 Operator Model</a><a href="#s8">8 Cost &amp; Routing</a><a href="#s9">9 Evaluation</a><a href="#s10">10 Limitations</a><a href="#s11">11 Future Work</a><a href="#s12">12 Conclusion</a>
+</div></nav>
+
+<div class="wrap">
+
+<!-- ══════════ 1 INTRODUCTION ══════════ -->
+<section id="s1">
+  <h2><span class="no">01</span>Introduction</h2>
+  <p>AI coding assistants have crossed the threshold from autocomplete to authorship. Agents plan, edit multiple files, run tests, and open pull requests. Yet adoption inside serious engineering organizations stalls on a question no incumbent tool answers well: <em>what, exactly, did the AI do — and can you prove it?</em></p>
+  <p>Today's answers are unsatisfying by construction. Chat transcripts are editable text. "Agent traces" are application logs, mutable by the application. Rules of engagement ("never touch the migrations folder", "always run tests") are paragraphs in a system prompt — obeyed statistically, forgotten silently. When the model writes faster than the human reviews, review stops happening; the organization is left trusting a system that cannot testify.</p>
+  <p>antiloki is a response to that gap, built as a <b>substrate</b> rather than an assistant: a local system of record and governance <em>underneath</em> the AI. Work enters as structured cards, flows through a gated multi-agent pipeline, and lands as pull requests — while every mutation of governed state is sealed into a hash-linked, append-only audit chain that the operator can verify with one command, offline, forever. The rules of the system are not prose; they are rows in a database, each bound to an enforcement mechanism that fires whether or not any model remembers it.</p>
+  <p>The contributions of this paper:</p>
+  <ul>
+    <li>A <b>design philosophy</b> (§2) reduced to five operational axioms, each traceable to a concrete mechanism in the running system.</li>
+    <li>A <b>storage and dispatch architecture</b> (§3) that partitions system reality into nine orthogonal databases and forces every mutation through a single audited chokepoint.</li>
+    <li>A <b>formal model of the record</b> (§4): the sacred timeline, its Merkle-chained integrity, segment rotation with cryptographic continuity across files, and format-independent archive commitments — with propositions and proof sketches.</li>
+    <li>A <b>governance calculus</b> (§5): laws as data, a five-level enforcement lattice, supersession semantics, and the canary doctrine that turns every closed incident into a permanent tripwire.</li>
+    <li>An <b>autonomous pipeline</b> (§6) in which planning, authoring, and verification are separated across agents with distinct permissions, adversarial review, and deterministic application of code.</li>
+    <li>An <b>evaluation by incident</b> (§9): the system graded against the failures it caught in its own construction — including catching its author, twice, on the night the relevant detector shipped.</li>
+  </ul>
+</section>
+
+<!-- ══════════ 2 PHILOSOPHY ══════════ -->
+<section id="s2">
+  <h2><span class="no">02</span>Philosophy: five axioms</h2>
+  <p>Every design decision in antiloki descends from five axioms. They are stated here as engineering commitments, not aspirations — each names the mechanism that enforces it.</p>
+
+  <div class="axiom"><div class="ah">Axiom 1 · Less cognition, more determinism</div>
+  <p>Any rule that can be enforced by the system must not be remembered by the AI. AI memory is fallible by nature; a rule that lives in a prompt is a rule that fails silently at temperature. antiloki systematically migrates rules down the enforcement lattice (§5.2): from advisory text, to lint, to runtime hooks, to database triggers — the deepest layer being one that <em>even the system's own privileged modes cannot bypass</em>.</p></div>
+
+  <div class="axiom"><div class="ah">Axiom 2 · The record must be provable, not narrated</div>
+  <p>"What happened" is answered by recomputing hashes, never by reading prose. The audit chain (§4) is append-only at the database layer, hash-linked row to row, and verified by an O(n) walk that recomputes every seal. Convenience layers (digests, summaries) exist and are explicitly labeled <em>regenerable, not the record</em>.</p></div>
+
+  <div class="axiom"><div class="ah">Axiom 3 · Human attention is the scarcest resource</div>
+  <p>The system works autonomously but concentrates human involvement into single-click, high-leverage decisions: a pull-request gate before any merge, always-ask deletion, one-click classification queues, and a drift questionnaire with a recommended answer derived from live state. Nothing nags; everything that stops, stops for a stated reason with a stated remedy.</p></div>
+
+  <div class="axiom"><div class="ah">Axiom 4 · Local-first sovereignty</div>
+  <p>The nine databases, the code, the keys, and the record live on the operator's machine as plain files — copyable, greppable, backupable, and independent of any account or service. Models are bring-your-own-key, and any capability tier may bind to a fully local model, so <em>even inference</em> can stay on-device: the whole loop is air-gappable. Providers are swapped by updating a table row, never by refactoring call sites. The collaboration roadmap (§11) is peer-to-peer synchronization of sealed history — there is no vendor cloud in the data path, by design. The operating premise throughout: <b>the user owns the code, the data, and the record</b>; the software is a guest on their machine, not the other way around.</p></div>
+
+  <div class="axiom"><div class="ah">Axiom 5 · History is sacred; fix forward</div>
+  <p>Published history — git or chain — is never rewritten. Mistakes are corrected by new commits and new rows; the mistake itself is preserved as training signal (corrections are recorded as preference pairs: the naive answer <em>and</em> the correction). Even a broken migration is not edited into correctness: it is tombstoned in place, and its replacement ships beside it with the story of the failure in its header.</p></div>
+
+  <h3><span class="no">2.1</span>The consequence: a system that polices its author</h3>
+  <p>These axioms compose into an unusual property. Because enforcement is mechanical and the record is self-verifying, the system does not distinguish between an errant model, an errant script, and an errant author. In §9 we document the night the drift-detection dimension D18 shipped and immediately blocked its own author's commit — correctly — because it found real, pre-existing drift in the live deployment. A governance system that cannot inconvenience its creator is decoration; this one is not.</p>
+</section>
+
+<!-- ══════════ 3 ARCHITECTURE ══════════ -->
+<section id="s3">
+  <h2><span class="no">03</span>Architecture</h2>
+
+  <h3><span class="no">3.1</span>Nine databases, one connection, four quadrants of reality</h3>
+  <p>Storage partitions into orthogonal SQLite databases attached onto a single connection. Each owns one aspect of system reality; splits occurred only when orthogonality forced them (1 → 2 → … → 9). Atomicity is preserved because one connection spans all attached databases in a single transaction; SQLite forbids cross-database foreign keys, so cross-quadrant references use a TEXT-slug convention enforced at the skill layer.</p>
+  <div class="tbl"><table>
+    <thead><tr><th>database</th><th>quadrant</th><th>holds</th></tr></thead>
+    <tbody>
+      <tr><th>state</th><td>what the system <b>is</b></td><td>cards, agents, actions, contracts, grants</td></tr>
+      <tr><th>memory</th><td>what it <b>experienced</b></td><td>memories, embeddings, corrections, error events</td></tr>
+      <tr><th>brain</th><td>what it <b>does / thinks</b></td><td>driver ticks, decisions, AI calls + envelopes, bench runs</td></tr>
+      <tr><th>laws</th><td>what it <b>must / must not do</b></td><td>laws, clauses, violations, env-flag registry</td></tr>
+      <tr><th>knowledge</th><td>what it <b>learned externally</b></td><td>documents, extracts</td></tr>
+      <tr><th>timeline</th><td>what it <b>recorded, immutably</b></td><td>the sacred timeline (§4)</td></tr>
+      <tr><th>judgments</th><td>what its <b>reviewers ruled</b></td><td>swarm audit verdicts</td></tr>
+      <tr><th>code</th><td>what its <b>code looks like</b></td><td>the atlas: files, symbols, imports, edges</td></tr>
+      <tr><th>notebooks</th><td>what it <b>teaches</b></td><td>research sources + generated study artifacts</td></tr>
+    </tbody>
+  </table></div>
+  <p>A doctrinal detail with teeth: <b>the census of attached databases is derived, never stated</b>. Documentation that once hardcoded "4 databases" shipped false context to every AI session for weeks while the system ran nine. Today the number in the auto-generated agent instructions is computed from <code>PRAGMA database_list</code> at render time; the law that mandates this cites the incident that forced it. A second incident (§9.3) taught the sibling rule: <em>every</em> attached path derives from the main database's directory by one shared rule — two path conventions inside one open is how a "rehearsal" once silently touched production.</p>
+
+  <h3><span class="no">3.2</span>Skills, actions, and the single dispatch spine</h3>
+  <p>Executable capability is decomposed into <b>skills</b> — atomic, deterministic modules with one uniform contract: a single default export taking <code>(input, context)</code>. Skills are mechanism, not API: they are invocable only through <b>actions</b>, rows in the state database whose <code>steps_json</code> defines an ordered queue of skills with input mapping and output aliasing. Action names encode intent (<code>board-keeper.card.add</code>); skill names encode mechanism (<code>card-add</code>); the same mechanism may serve many intents under different permissions.</p>
+  <div class="figure"><pre>
+HTTP / CLI / driver / MCP
+        │
+        ▼
+<span class="k">action dispatch</span> ── permission gate (agent grants, relational)
+        │          ── law hooks (hard laws refuse here)          <span class="c">L1</span>
+        │          ── source gating (driver HMAC · god ed25519 ·
+        │             bootstrap allowlist · web-fe attribution)
+        ▼
+steps_json queue ──▶ <span class="v">with-audit</span> ──▶ skill ──▶ mutation
+                        │
+                        └──▶ <span class="g">sacred_timeline</span> seal (before/after diff,
+                             hash-linked, append-only)            <span class="c">L0</span></pre>
+  <div class="cap">Fig. 1 — the dispatch spine. Every governed mutation passes one chokepoint; the seal is written by the same transaction discipline that performs the mutation.</div></div>
+  <p>Callers are authenticated by <em>mechanism</em>, not by claim. The autonomous driver signs each dispatch with an HMAC over <code>{action, input, ts, actor}</code>. Privileged human overrides sign an ed25519 challenge (<code>antiloki-god-override:&lt;action&gt;:&lt;ISO&gt;</code>) verified against an installed public key. A small bootstrap allowlist admits pure reads and operator-clicked configuration, each entry carrying a written rationale. Web-frontend calls are attributed truthfully from their session header (<code>web-fe:&lt;prefix&gt;</code>) — a deliberate replacement for an earlier hardcoded actor string that lied to the record.</p>
+  <p>Every AI interaction flows through one further chokepoint, <code>ai-call</code>, which assembles a canonical <b>interaction envelope</b> — inputs, references, attachments resolved to grounding text — and persists it on every outcome row (success, cache hit, failover, validation failure). Provider adapters are importable only from that chokepoint; a canary test fails loudly if any other module touches one. The result: every AI call the system ever made is replayable from its envelope.</p>
+</section>
+
+<!-- ══════════ 4 THE RECORD ══════════ -->
+<section id="s4">
+  <h2><span class="no">04</span>The record: a formal model of the sacred timeline</h2>
+
+  <h3><span class="no">4.1</span>Definitions</h3>
+  <p>Let an <b>event</b> be the tuple of the seven semantic fields of a governed mutation:</p>
+  <div class="eq">e<sub>i</sub> = (ts<sub>i</sub>, actor<sub>i</sub>, op<sub>i</sub>, etype<sub>i</sub>, eid<sub>i</sub>, before<sub>i</sub>, after<sub>i</sub>, payload<sub>i</sub>)<span class="tag">(1)</span></div>
+  <p>Let φ be the canonical serialization joining those fields with the delimiter <code>|</code> (absent values map to the empty string; <code>eid</code> is coerced to string — a lesson from an incident where SQLite type affinity stored an integer as <code>"1.0"</code> and broke re-verification). With H = SHA-256 and the genesis constant p₀ = <code>"GENESIS"</code>, each row's <b>digital print</b> is:</p>
+  <div class="eq">p<sub>i</sub> = H( p<sub>i−1</sub> ‖ φ(e<sub>i</sub>) )<span class="tag">(2)</span></div>
+  <p>Each stored row carries both p<sub>i−1</sub> (<code>prev_print</code>) and p<sub>i</sub> (<code>digital_print</code>, UNIQUE). Three metadata columns — a correlation to the originating human goal, the execution environment, and the producing driver tick — are deliberately <em>excluded</em> from φ: they are annotations about the event, not the event, and may be absent without weakening the seal.</p>
+  <p>Two mechanisms make the table append-only <em>at the storage layer</em>: <code>BEFORE UPDATE</code> and <code>BEFORE DELETE</code> triggers that unconditionally <code>RAISE(ABORT)</code>. This is the deepest rung of the enforcement lattice: no application code path, including privileged ones, executes SQL below the trigger layer.</p>
+  <p><b>Verification</b> is the walk V(T): starting from expected = p₀, for each row in id order assert <code>prev_print = expected</code>, recompute (2), assert equality with the stored print, and advance. V is O(n) with n the row count; on the reference deployment it verifies the full history in well under a second.</p>
+
+  <h3><span class="no">4.2</span>Integrity propositions</h3>
+  <div class="prop"><div class="ph">Proposition 1 · Tamper evidence</div>
+    <p>If any stored field of any event e<sub>j</sub> participating in φ is altered after sealing, V(T) fails at row j.</p>
+    <div class="proof"><span class="ps">Proof sketch</span>Recomputing (2) at row j yields H(p<sub>j−1</sub> ‖ φ(e′<sub>j</sub>)) ≠ p<sub>j</sub> unless H collides on distinct inputs, contradicting collision resistance. Concealing the mismatch requires rewriting p<sub>j</sub> and, transitively, every subsequent print (each p<sub>k</sub>, k&gt;j, commits to p<sub>k−1</sub>) — a mass rewrite the UPDATE trigger refuses and the UNIQUE constraint further obstructs. ∎</div></div>
+
+  <div class="prop"><div class="ph">Proposition 2 · Omission &amp; reorder evidence</div>
+    <p>Deleting any interior row, or permuting any rows, breaks the linkage invariant and V(T) fails at the first affected position.</p>
+    <div class="proof"><span class="ps">Proof sketch</span>Deletion of row j makes row j+1's stored <code>prev_print</code> = p<sub>j</sub> ≠ p<sub>j−1</sub> = expected. A permutation places some row whose stored <code>prev_print</code> does not equal the walking expectation. Truncating a <em>suffix</em> is detectable against any retained head reference (the operator's last known print; under the team model of §11, any peer's copy). ∎</div></div>
+
+  <div class="prop"><div class="ph">Proposition 3 · Granularity forbids in-record lying</div>
+    <p>Given one row per governed action (never per session or per summary), an agent cannot omit an action from the record without either (a) bypassing the dispatch spine — refused at L1 and surfaced by bypass-detection canaries — or (b) breaking V(T) by Prop. 2.</p>
+    <div class="proof"><span class="ps">Design argument</span>Aggregated records (e.g., one row per work session) would let the writer choose what enters the summary — the lie hides <em>inside</em> a valid row. Per-action granularity moves the trust question from "did it summarize honestly?" to "did every mutation pass the chokepoint?", which is mechanically checkable. Sessions exist only as <em>views</em> over granular rows. ∎</div></div>
+
+  <h3><span class="no">4.3</span>Rotation: unbounded history, bounded hot storage</h3>
+  <p>An append-only log grows forever; a local tool must not. antiloki rotates the live segment into an immutable archive without ever deleting a row:</p>
+  <ol>
+    <li><b>Snapshot.</b> <code>VACUUM INTO</code> copies the live segment to an archive file — a defragmented, self-contained database that <em>retains the immutability triggers</em>.</li>
+    <li><b>Verify before touching anything.</b> The archive is checked row-for-row (count and final print) against the live table, and its canonical rows digest (§4.4) is computed.</li>
+    <li><b>Compress.</b> The verified archive is gzip'd (measured 6.9× on production data; §9.1) and the plaintext removed.</li>
+    <li><b>Seal the succession.</b> The live table is dropped (<code>DROP TABLE</code> fires no per-row DELETE trigger — no row is deleted) and recreated; its first row is a <b>boundary row</b> whose <code>prev_print</code> equals the archived segment's final print and whose payload records the archive's identity, row count, rows digest, compression, and authoring device.</li>
+  </ol>
+  <div class="eq">p<sub>boundary</sub> = H( p<sub>last(archived)</sub> ‖ φ(e<sub>boundary</sub>) )<span class="tag">(3)</span></div>
+  <div class="prop"><div class="ph">Proposition 4 · Cryptographic continuity across files</div>
+    <p>The multi-segment chain — archived segments in sequence order, then the live segment — verifies as a single chain from GENESIS to the present. A swapped, re-ordered, or missing segment surfaces as a hash-chain break, not as a metadata mismatch.</p>
+    <div class="proof"><span class="ps">Proof sketch</span>The full walk threads its expectation across file boundaries: each boundary row's <code>prev_print</code> commits to the predecessor segment's final print (3), so segment order and content are jointly committed. There is deliberately <em>no manifest to trust</em>: filenames carry only a sequence hint; the hashes are the authority. A named-but-absent archive is a loud, detectable gap. ∎</div></div>
+
+  <h3><span class="no">4.4</span>Format-independent archive commitments</h3>
+  <p>A subtlety worth a proposition of its own: what digest should the boundary row commit to? Hashing the archive's <em>file bytes</em> is fragile — a repack, a VACUUM, or a future SQLite version changes bytes without changing content, and (looking ahead to peer-to-peer sync) transport re-encoding does the same. antiloki instead commits to the <b>canonical rows digest</b>:</p>
+  <div class="eq">r(S) = H( "rows-v1" ‖ ⨁<sub>i∈S, id-order</sub> ( id<sub>i</sub> ‖ φ(e<sub>i</sub>) ‖ p<sub>i−1</sub> ‖ p<sub>i</sub> ) )<span class="tag">(4)</span></div>
+  <div class="prop"><div class="ph">Proposition 5 · Repack invariance</div>
+    <p>r(S) is invariant under any content-preserving re-serialization of the archive (VACUUM, page-size change, compression round-trips), and any content change alters it.</p>
+    <div class="proof"><span class="ps">Proof sketch</span>(4) is a function of row content only, read in a canonical order — the file layout never enters the computation. The property is regression-tested: the suite decompresses a production-shaped archive, VACUUMs it (changing its bytes), re-compresses, and asserts the full verification still passes. Note the two digests are <em>not</em> equivalent commitments, a distinction the design review caught in an earlier draft that called them interchangeable. ∎</div></div>
+  <p>Verification of an archive therefore has two independent paths: walk its sub-chain and match its head against the successor's boundary (full), or recompute r(S) against the sealed digest (walk-free spot check — and, later, the property that lets an untrusted peer serve archives).</p>
+
+  <h3><span class="no">4.5</span>Bounded rows, bounded honesty</h3>
+  <p>Audit blobs are capped per field (4,096 bytes): an oversized field is replaced <em>before hashing</em> by a marker containing its own SHA-256 — the seal commits to the digest of the oversized content rather than the content. This bounds row size (production mean: ~2.5 KB/row) while preserving tamper evidence for large payloads. The convenience layer above the record — deterministic per-segment digests rendering operations, entities, actors, and spans to markdown — is stamped in its first line as <em>“regenerable, NOT the record”</em>: a labeled cache, byte-reproducible from the archive, never a source of truth.</p>
+</section>
+
+<!-- ══════════ 5 GOVERNANCE ══════════ -->
+<section id="s5">
+  <h2><span class="no">05</span>Governance: laws as data</h2>
+
+  <h3><span class="no">5.1</span>The law table</h3>
+  <p>Rules are rows, not prose. Each law carries a slug, kind (<em>constitutional, constraint, procedural, decision, principle</em>), domain, statement, rationale, enforcement level (<b>hard</b> — the system refuses — or <b>soft</b> — surfaced to the AI when relevant), an optional enforcement hook or DB trigger, provenance (who established it, from which incident or card), and structured clauses: examples, antipatterns, exceptions, consequences. The reference deployment carries 37 active laws.</p>
+  <p>Laws change only by <b>supersession</b>: a new row is added and the old row is marked superseded by it — never edited, never deleted. The agent-facing documentation (the repository's <code>AGENTS.md</code>) is <em>rendered from</em> this table; editing it by hand is itself against the law that generates it.</p>
+
+  <h3><span class="no">5.2</span>The enforcement lattice</h3>
+  <p>Every rule is placed at the <em>deepest</em> level that can host it. Depth is trust: lower levels bind more actors, including the author.</p>
+  <div class="tbl"><table>
+    <thead><tr><th>level</th><th>mechanism</th><th>binds</th><th>example</th></tr></thead>
+    <tbody>
+      <tr><th>L0</th><td>SQLite triggers</td><td>everyone, including privileged modes</td><td>timeline UPDATE/DELETE refusal</td></tr>
+      <tr><th>L1</th><td>dispatch-time hooks</td><td>every action call</td><td>unsigned mutation refused; direct skill dispatch forbidden; fail-<em>closed</em> on a missing hard-law hook</td></tr>
+      <tr><th>L2</th><td>lint &amp; AST ratchets</td><td>every commit (shrink-only frozen sets)</td><td>skill-contract lint; provider-adapter import ban</td></tr>
+      <tr><th>L3</th><td>canary tests</td><td>every test run</td><td>audit-bypass canaries; envelope canary; attach-isolation canary</td></tr>
+      <tr><th>L4</th><td>RAG-surfaced advice</td><td>the model's context</td><td>procedural laws (read before writing; verify counts after batches)</td></tr>
+    </tbody>
+  </table></div>
+  <p>Two design details matter. First, L1 is <b>fail-closed</b>: if a hard law's enforcement hook is missing, dispatch is blocked entirely rather than the law being silently skipped — a deliberate inversion of an earlier fail-open loop found in review. Second, L2 ratchets are <b>frozen sets that may only shrink</b>: legacy violations are enumerated and grandfathered; new ones are refused; the debt can only decrease.</p>
+
+  <h3><span class="no">5.3</span>The canary doctrine</h3>
+  <p>When an enforcement gap is discovered and closed, the fix ships with a <b>canary test that asserts the failure mode itself</b> — a test that breaks loudly if a future refactor makes the bypass undetectable again. A fix is one commit; a canary preserves the lesson forever. §9 shows this doctrine catching real regressions the same day the canaries shipped. The complementary memory discipline records every human correction as a preference pair — the naive answer <em>and</em> the corrected one — because the wrong path is half the training signal.</p>
+</section>
+
+<!-- ══════════ 6 PIPELINE ══════════ -->
+<section id="s6">
+  <h2><span class="no">06</span>The autonomous pipeline</h2>
+
+  <h3><span class="no">6.1</span>Separation of cognitive powers</h3>
+  <p>Work is a <b>card</b>; a card ratifies into a <b>contract</b> (scope, acceptance criteria, files touched, laws in force, explicit out-of-scope); a contract is executed through a phase ladder driven by a deterministic scheduler (the <em>driver</em>) that decides the next action from state — never from a model's whim. Roles are separated with distinct permissions:</p>
+  <ul>
+    <li><b>PL</b> screens and prioritizes; <b>TL</b> designs — producing a <em>blueprint</em>, down to literal code patches;</li>
+    <li><b>DEV</b> is deliberately <em>not</em> an AI: it is a deterministic applier of the blueprint's patches. The thinking happens where it is reviewed; the application is mechanical. (This inversion — "QA thinks, DEV executes" — ended a class of failures where generation and application disagreed.)</li>
+    <li><b>QA</b> verifies in two stages: a pre-implementation contract review (shift-left) and a post-implementation verdict computed as <em>scope ∧ acceptance</em> — a conjunction of checkable facts. An AI "senior review" exists but is <b>advisory by law</b>: it records notes and can never block. (Making it blocking once produced a ~50-session livelock of self-rejection; the fix is now a decision law.)</li>
+  </ul>
+
+  <h3><span class="no">6.2</span>Adversarial verification and parse-only acceptance</h3>
+  <p>Designs face a tribunal: a prosecutor attacks, a defender must positively establish sufficiency claims, a judge rules. Failing the budget of redesigns <em>escalates to the human</em> rather than merging on hope. Two hard-won mechanical rules govern authored code: <b>(a) whole-file authoring</b> — a cohesive file is authored as one unit, never as concatenated fragments (per-fragment authoring once declared every symbol twice and consumed ~40 sessions before the architecture, not the prompt, was indicted); and <b>(b) parse-only acceptance</b> — AI-emitted code is accepted <em>only if it parses</em>, checked directly, never via a proxy signal.</p>
+
+  <h3><span class="no">6.3</span>Failure semantics</h3>
+  <p>Failures are typed, and the type decides the path: sliced retries re-execute only the failed implication of a plan (with provenance of each refinement); automatic rewinds are budget-capped; the operator's manual rewind is supreme (blocked only by already-shipped work); a stuck card <em>pauses and calls the human</em> — it is never silently retried into a loop. Gate results honor reality: a build/test gate that is red for reasons pre-existing on the baseline warns-and-passes with a banner instead of punishing the current change. QA-green work lands as a <b>pull request</b> and waits for the operator's merge — the human gate is the last gate.</p>
+
+  <h3><span class="no">6.4</span>Execution isolation</h3>
+  <p>No agent builds in the operator's working tree. Each card's build phase executes in a disposable environment — a git worktree when the workspace is a repository, a copy-on-write sandbox otherwise — and merges reach the tree only through the pull-request gate. Managed projects can additionally run their runtime in a per-workspace container, the host being reserved for the substrate itself. The environment is part of the testimony: every sealed row stamps <code>exec_env</code>, so "where did this run" is answerable from the record, not from memory. Configuration is governed by the same philosophy: every environment flag the system reads is a registered row with a danger tier (<em>safe / caution / enforcement-defeating</em>), rendered to documentation and census-checked by tests — and the runtime warns loudly at boot when an enforcement-defeating flag is set. Weakening the guarantees on one's own machine is permitted; doing it silently is not.</p>
+
+  <h3><span class="no">6.5</span>The codebase atlas</h3>
+  <p>The AI's structural understanding is not left to context-window recall. A deterministic <b>atlas</b> — files, symbols, and import/call edges extracted from the AST into the code database — powers blast-radius queries ("what does this change touch?"), entry-point inventories, and the feature wizard that turns product intent into cards. The atlas is rebuilt by a background pipeline with per-phase progress; its graph is the ground truth the pipeline consults before it edits.</p>
+</section>
+
+<!-- ══════════ 7 OPERATOR MODEL ══════════ -->
+<section id="s7">
+  <h2><span class="no">07</span>The operator model</h2>
+  <p>antiloki is operated, not babysat. The attention architecture routes every human touchpoint through a small number of surfaces, each obeying the same grammar: <em>the system surfaces items; the operator classifies with one click; never forms, never slugs.</em></p>
+  <ul>
+    <li><b>The board</b> — five columns (backlog / doing / pull requests / done / archived), play-pause per card, live spend in the header.</li>
+    <li><b>The waterfall</b> — one card's run: the phase ladder, gates, costs, commits, AI calls, drift, build tests, and (as of this writing) the card's <em>provable history</em> straight from the chain.</li>
+    <li><b>The pull-request gate</b> — QA-green work waits here; merge is a human act.</li>
+    <li><b>Drift resolution</b> — divergences become a questionnaire whose recommended answer (★) is derived from live state, applied by a single re-run click.</li>
+    <li><b>The audit screen</b> — the activity log, every AI prompt, and the chain view: one button verifies the entire multi-segment history and reports the verdict in green or red.</li>
+    <li><b>Notifications</b> — a global drawer; an unread <em>error</em>-severity notification pauses the autonomous daemon entirely: the system refuses to keep working past an unacknowledged failure.</li>
+  </ul>
+  <p>Destructive choices are <b>always-ask</b>, every time — prior authorization does not carry forward. Retention is detection-plus-choice: a daily pulse measures growth against thresholds and notifies; pruning and rotation remain operator actions (rotation additionally requires the backend stopped, so the screen offers the command, deliberately not a button).</p>
+</section>
+
+<!-- ══════════ 8 COST & ROUTING ══════════ -->
+<section id="s8">
+  <h2><span class="no">08</span>Cost and model routing</h2>
+  <p>Model access is provider-agnostic by construction. Call sites speak only in <b>tier</b> ∈ {low, mid, high} and <b>temperature</b> ∈ {freezed, cold, warm, hot, hell} (mapping to 0.0 / 0.2 / 0.5 / 0.8 / 1.0+); the tier→model binding lives in a provider table. Replacing a provider is an <code>UPDATE</code>, not a refactor; no model name may appear in call-site code, by law.</p>
+  <p>Above the tier system sits <b>Heimdall</b>, the evidence-based casting router, named for the watchman of the one bridge: because every AI call already crosses a single chokepoint (§3.2), one component can observe every crossing. Heimdall classifies each call into a problem taxonomy (families — build, design, judgment, language, reasoning — refining into categories, so sparse evidence can roll up), casts it to the best-evidenced worker model, and records the outcome. Three design rules keep it auditable. <em>Decisions are deterministic; evidence is mixed-provenance:</em> the functions that choose are pure, while the evidence they read is weighted by origin — machine gates (parse, build, ship) above AI verdicts, both above benchmarks (discounted, quarantine-graduation only); asking an LLM to pick the model is rejected outright as unexplainable. <em>Cold start is solved structurally</em> by a specificity ladder — template×model → category×model → family×model → model-global → provider default — resolved at the first rung with statistical footing, so a new template inherits its category's wisdom. <em>Attribution is never swallowed:</em> every surface shows caster → worker, because "which model wrote this?" is the exact operator instinct the ledger feeds on. That feeding is the <b>tagging loop</b>: one-click operator classifications on outputs, failures, and verdicts land as the highest-provenance evidence, continuously re-weighing future casting — the system's routing intelligence is, literally, the operator's accumulated judgment. The lineage is the expert-fleet school of routing (route each subtask to the right specialist rather than building one generalist), disciplined by this substrate's axioms: constraints such as cost bands and quarantine are hard filters a score can never outweigh, and the router stamps but never speaks.</p>
+  <p>Routing is deterministic and philosophy-driven rather than benchmark-driven: the operator's rule is a <b>two-phase split</b> — <em>reasoning</em> legs run high-tier, <em>formatting/authoring</em> legs run low-tier — so the expensive model is spent exactly where judgment lives. Every call is metered into the brain database with cost attribution by session and contract (structural attribution, not substring matching); the cost center shows real BYOK spend against a fixed-baseline estimate. A guard with its own canary refuses provider network calls from test contexts unless explicitly overridden — the system cannot accidentally spend the operator's money from a test suite (a lesson purchased once, in production, for a few cents and an evening).</p>
+</section>
+
+<!-- ══════════ 9 EVALUATION ══════════ -->
+<section id="s9">
+  <h2><span class="no">09</span>Evaluation: the system against its author</h2>
+  <p>Benchmarks measure models; substrates should be measured by what they <em>refuse and reveal</em>. We evaluate on three axes: mechanical verification, measured performance, and — the strictest — incidents where the system caught its own construction process misbehaving.</p>
+
+  <h3><span class="no">9.1</span>Mechanical verification</h3>
+  <div class="receipt"><div class="rh">// every number here is a command, not a claim</div>
+    substrate test suite: <b>~4,000 tests, zero failures</b>, enforced as a hard pre-push gate with an <em>empty</em> allowlist — any red file blocks the push · frontend: <b>103/103</b> with typecheck clean · live chain: <b>verified valid over its full history</b> (1,489 sealed rows at time of writing) · archive compression: <b>6.9× measured</b> on production rows (5.03 MB → 0.73 MB) · consistency scan: <b>18 dimensions</b> of claim-vs-reality · laws: <b>37 active</b>, hard ones bound to L0/L1 mechanisms
+  </div>
+
+  <h3><span class="no">9.2</span>Performance and scale, measured not guessed</h3>
+  <p>Scalability work is admitted only against measurements. The audit chain grows at ~25 rows/day (~2.5 KB/row after field capping) — roughly 22 MB of audit text per <em>decade</em> of single-operator use; rotation exists for the day that changes, behind a detection threshold rather than a schedule. The whales found by measuring were elsewhere (a 67k-row scheduler-tick table; a heartbeat table in the millions) and received retention reconcilers accordingly. The one latency defect that mattered — every read queuing behind a write lock held across a multi-minute AI call — was resolved by a read-only connection pool and, subsequently, by moving AI calls outside the audit write-lock entirely (staged, chain-verified).</p>
+
+  <h3><span class="no">9.3</span>Incidents as evidence</h3>
+  <p><b>The detector that blocked its author, same night.</b> The drift dimension D18 ("the chain must live in exactly one database, the one the code targets") shipped in the evening; the very first pre-commit run of it <em>blocked its author's own commit</em> — correctly — by finding real, pre-existing dual-layout drift in the active workspace. The author's response was constrained by the system's own rules: not to weaken the detector, but to make its grading more precise (an <em>empty</em> shadow table is a warning with a healing step; two populated records are critical). The commit passed only when the detector was satisfied honestly.</p>
+  <p><b>The rehearsal that wasn't, and the audit gap that followed.</b> A scratch-copy "rehearsal" of a governance change turned out to mutate the <em>live</em> laws database: the storage layer resolved half the attached databases from the explicit path and half from defaults — one open, two directories. The mutations themselves were authorized and fully sealed; the seals landed in the copy's timeline. The remediation is a case study in the axioms: the root cause was fixed (one sibling rule for all nine paths) <em>with a canary</em>; the genuine seal rows were preserved as evidence; the gap was recorded on the live chain through a properly audited compensating entry; and — decisively — the rows were <em>not</em> transplanted, because the law against manual timeline writes binds the author too, even when the rows are genuine.</p>
+  <p><b>The broken migration, tombstoned not edited.</b> The original chain-relocation migration had frozen a stale schema and mis-scoped a pragma; worse, sitting broken in lexical order it would have blocked every later migration. It was not edited into correctness: it is a permanent no-op tombstone whose header tells the story, and its replacement ships beside it — history sacred, fix forward, in the migration system itself.</p>
+  <p><b>Architecture indicted before prompts.</b> Forty sessions of an identical lint failure ended when the diagnosis moved from "the prompt is wrong" to "the composition is wrong" (fragment-wise authoring of cohesive files). A ~50-session verification livelock ended by demoting an AI reviewer from gate to advisor, by law. Both closures are laws and canaries now, not memories.</p>
+
+  <h3><span class="no">9.4</span>Comparison</h3>
+  <div class="tbl"><table>
+    <thead><tr><th></th><th>IDE agents (Cursor, Cline)</th><th>autonomous agents (Devin)</th><th>CLI agents (Claude Code)</th><th>antiloki</th></tr></thead>
+    <tbody>
+      <tr><th>who decides the next step</th><td>model loop</td><td>agent loop</td><td>model loop</td><td><span class="yes">deterministic scheduler + gates</span></td></tr>
+      <tr><th>record of what happened</th><td>editable logs</td><td>session logs</td><td>transcripts</td><td><span class="yes">hash-linked, append-only, verifiable offline</span></td></tr>
+      <tr><th>rules of engagement</th><td>prompt text</td><td>prompt/config</td><td>prompt files</td><td><span class="yes">laws in a DB, machine-enforced (L0–L2)</span></td></tr>
+      <tr><th>verification</th><td>human review</td><td class="mid-c">self-report</td><td>human review</td><td><span class="yes">gates + tribunal + PR gate; verdict = scope ∧ acceptance</span></td></tr>
+      <tr><th>data locality</th><td class="mid-c">mixed</td><td class="no-c">cloud</td><td class="mid-c">API</td><td><span class="yes">local-first; BYOK; P2P roadmap</span></td></tr>
+      <tr><th>model lock-in</th><td class="mid-c">bundle</td><td class="no-c">locked</td><td class="no-c">one vendor</td><td><span class="yes">any model per tier, swap by table row</span></td></tr>
+    </tbody>
+  </table></div>
+  <div class="honest"><h4>Where the comparison is honest about us.</h4>
+  <p>Each incumbent leads somewhere antiloki doesn't: richer IDE ergonomics, deeper single-shot reasoning on huge refactors, larger ecosystems. antiloki's thesis is not to win any single axis but to be the only system making <b>all of the accountability bets at once</b> — and that the value of those bets <em>rises</em> as models grow more autonomous, because the record and the rules are model-agnostic.</p></div>
+</section>
+
+<!-- ══════════ 10 LIMITATIONS ══════════ -->
+<section id="s10">
+  <h2><span class="no">10</span>Limitations</h2>
+  <ul>
+    <li><b>Single-operator, single-machine today.</b> Concurrency and multi-tenant operation are explicit non-goals of the current milestone; the teams design (§11) exists on paper and in three shipped micro-choices, not in running code.</li>
+    <li><b>The trust boundary is the operator's machine.</b> An attacker with local root defeats local guarantees — except retroactive falsification of already-sealed history against any externally retained head print, which remains detectable.</li>
+    <li><b>Soft laws are advisory by definition.</b> L4 depends on model compliance; the mitigation is the standing migration of load-bearing rules down the lattice, but the tail of judgment-dependent rules is irreducible.</li>
+    <li><b>Verification is of <em>record and process</em>, not semantic correctness.</b> Gates prove the code parsed, built, and passed acceptance checks; they do not prove the acceptance criteria were the right ones. The human at the PR gate is load-bearing, on purpose.</li>
+    <li><b>The chain records governed mutations, not every keystroke.</b> Work outside the dispatch spine (e.g., a human editing files directly) is visible to git, not to the chain; the two records are correlated (commit ↔ seal) but not identical.</li>
+  </ul>
+</section>
+
+<!-- ══════════ 11 FUTURE WORK ══════════ -->
+<section id="s11">
+  <h2><span class="no">11</span>Future work: teams as synchronization</h2>
+  <p>The collaboration model deliberately avoids a shared server database. Each device authors its own append-only chain; <b>teams exchange sealed, content-addressed segments plus chain heads</b>, the way git repositories exchange packs. History never merges, so history never conflicts; views merge at read time. Because sealed segments are immutable, self-verifying (Props. 4–5), and committed to by their author's chain, <em>any untrusted peer can serve them</em> — the BitTorrent property, applied to audit history. Three enabling choices already shipped with the rotation work: canonical rows digests over file-byte digests, sealed-segment immutability as a tested invariant, and a device identifier in every boundary seal.</p>
+  <p>The phased path: <b>P1</b> export/import bundles (read-only visibility of a teammate's provable history — the smallest real team value); <b>P2</b> continuous sync by pointing any folder-sync tool (e.g., Syncthing) at a bundle directory — antiloki ships no network code; <b>P3</b> direct P2P transport only if ergonomics demand it; <b>P4</b> shared <em>mutable</em> state via single-writer ownership per card with audited proposals — CRDTs only if a concrete need survives that design. Identity and keys ride a minimal control plane; project data never does. Structurally, the sacred timeline is kin to append-only P2P logs (hypercore/Dat); the future work is largely transport, not trust.</p>
+</section>
+
+<!-- ══════════ 12 CONCLUSION ══════════ -->
+<section id="s12">
+  <h2><span class="no">12</span>Conclusion</h2>
+  <p>The bottleneck for AI software work inside serious organizations is not capability; it is accountability. antiloki's answer is architectural: move the rules out of the model and into mechanisms that refuse; move the record out of narration and into hashes that verify; move the human out of the review treadmill and into a small number of decisive gates. The result is a system whose guarantees do not depend on any model's cooperation — demonstrated most convincingly on the nights it refused its own author.</p>
+  <p>Every claim in this paper is checkable against the repository that contains it: the laws render their own documentation, the chain verifies from one button or one command, the tests run as a hard gate, and the incidents cited here are committed — root causes, canaries, tombstones and all. That, ultimately, is the thesis in one sentence: <b>a system you can trust is a system that can testify.</b></p>
+</section>
+
+<footer>
+  <div class="wrap footline">
+    <span>antiloki · technical paper · v1.0 · 2026-07-12</span>
+    <span>companion documents: stakeholder deck · operator manual · product page</span>
+  </div>
+</footer>
+
+</div>
+</body>
+</html>

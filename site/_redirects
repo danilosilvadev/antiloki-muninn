@@ -1,0 +1,12 @@
+# A2 — 301 the legacy angle pages + the old one-pager to the canonical landing.
+# (They were never deployed, but their filenames circulated in drafts/DMs.)
+/landing-verify.html       /   301
+/landing-remember.html     /   301
+/landing-orchestrate.html  /   301
+/antiloki.html             /   301
+/antiloki-landing.html     /   301
+
+# Short referral links: /r/<code> → the r edge function (logs the visit into the
+# events audit chain, then 302s back to /?ref=<code>). configure-site.mjs bakes
+# the real Supabase project ref.
+/r/*  https://__MUNINN_SUPABASE_REF__.supabase.co/functions/v1/r?c=:splat  302

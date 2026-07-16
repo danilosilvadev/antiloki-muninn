@@ -1,0 +1,9 @@
+{
+  "origin": "https://__MUNINN_DOMAIN__",
+  "functionsBase": "__MUNINN_FUNCTIONS_BASE__",
+  "supabaseRef": "__MUNINN_SUPABASE_REF__",
+  "posthogKey": "__MUNINN_POSTHOG_KEY__",
+  "posthogHost": "https://us.i.posthog.com",
+  "contactEmail": "__MUNINN_CONTACT_EMAIL__",
+  "postalLine": "__MUNINN_POSTAL_LINE__"
+}

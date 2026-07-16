@@ -1,0 +1,439 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>antiloki — the deck</title>
+<meta name="description" content="antiloki for stakeholders: everyone is building faster horses — we built the race. Software engineering as an assembly line. 16 animated slides; ← → to navigate." />
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --base:#0E0D0B; --panel:#161412; --panel-2:#1E1B18; --line:#2A2622;
+    --orange:#E8623A; --green:#4ADE80; --amber:#F0A93B; --red:#F0533B; --violet:#A78BFA;
+    --text:#EDE8E0; --muted:#8C8378; --muted-2:#5E574E;
+    --display:'Space Grotesk',sans-serif; --mono:'JetBrains Mono',ui-monospace,monospace;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{height:100%}
+  body{background:var(--base);color:var(--text);font-family:var(--display);-webkit-font-smoothing:antialiased;overflow:hidden}
+  ::selection{background:var(--orange);color:#0E0D0B}
+
+  .deck{height:100%;display:flex;flex-direction:column}
+  .slides{flex:1;position:relative;overflow:hidden}
+  .slide{position:absolute;inset:0;display:none;flex-direction:column;justify-content:center;padding:5vh 7vw;overflow-y:auto}
+  .slide.active{display:flex;animation:fadein .35s ease}
+  @keyframes fadein{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+
+  .eyebrow{font-family:var(--mono);font-size:12.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--orange);margin-bottom:24px;display:flex;align-items:center;gap:10px}
+  .eyebrow .bar{width:30px;height:1px;background:var(--orange);opacity:.6}
+  h1{font-weight:700;font-size:clamp(34px,5.6vw,66px);line-height:1.04;letter-spacing:-.035em;max-width:20ch}
+  h1 .o{color:var(--orange)} h1 .g{color:var(--green)}
+  h2{font-weight:700;font-size:clamp(26px,3.6vw,44px);letter-spacing:-.03em;line-height:1.08;max-width:24ch}
+  .lede{margin-top:22px;max-width:60ch;font-size:clamp(15px,1.5vw,19px);color:var(--muted);line-height:1.65}
+  .lede b{color:var(--text);font-weight:600}
+  .note{font-family:var(--mono);font-size:12.5px;color:var(--muted-2);margin-top:26px}
+
+  .cols{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:38px}
+  .col{border:1px solid var(--line);border-radius:13px;background:var(--panel);padding:24px 22px}
+  .col .ck{font-family:var(--mono);font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;margin-bottom:12px}
+  .col h3{font-weight:700;font-size:19px;letter-spacing:-.015em;margin-bottom:9px}
+  .col p{font-size:14px;color:var(--muted);line-height:1.6}
+  .col p b{color:var(--text)}
+  .col.o .ck{color:var(--orange)} .col.g .ck{color:var(--green)} .col.v .ck{color:var(--violet)}
+  @media(max-width:840px){.cols{grid-template-columns:1fr}}
+
+  .term{margin-top:36px;border:1px solid var(--line);border-radius:13px;background:#0B0A09;font-family:var(--mono);font-size:clamp(11px,1.25vw,13.5px);overflow:hidden;max-width:900px}
+  .term-bar{display:flex;gap:7px;padding:11px 14px;border-bottom:1px solid var(--line);background:var(--panel-2)}
+  .term-bar span{width:10px;height:10px;border-radius:50%;background:var(--line)}
+  .term-bar span:first-child{background:var(--red)} .term-bar span:nth-child(2){background:var(--amber)} .term-bar span:nth-child(3){background:var(--green)}
+  .term .tbody{padding:16px 18px;display:flex;flex-direction:column;gap:6px}
+  .term .tline{line-height:1.6;color:var(--muted);white-space:pre-wrap;word-break:break-word}
+  .term .tline .d{color:var(--muted-2);margin-right:9px;user-select:none}
+  .term .tline .t{color:var(--text)}
+  .term .tline.err{color:var(--red)} .term .tline.ok{color:var(--green)} .term .tline.dim{color:var(--muted-2)}
+  .term .tline.gap{height:9px}
+
+  .big-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-top:40px}
+  .stat{border:1px solid var(--line);border-radius:13px;background:var(--panel);padding:22px 20px}
+  .stat .v{font-family:var(--mono);font-weight:700;font-size:clamp(22px,2.6vw,34px);color:var(--green);letter-spacing:-.02em}
+  .stat .k{font-size:13px;color:var(--muted);margin-top:8px;line-height:1.5}
+  .stat .cmd{font-family:var(--mono);font-size:10.5px;color:var(--muted-2);margin-top:12px;border-top:1px dashed var(--line);padding-top:10px;word-break:break-all}
+  @media(max-width:840px){.big-stats{grid-template-columns:1fr 1fr}}
+
+  table{border-collapse:collapse;width:100%;margin-top:34px;font-size:clamp(11.5px,1.25vw,13.5px)}
+  th,td{padding:12px 14px;text-align:left;border-bottom:1px solid var(--line)}
+  thead th{font-family:var(--mono);font-size:11px;letter-spacing:.05em;text-transform:uppercase;color:var(--muted-2);background:var(--panel-2);font-weight:500}
+  thead th.us{color:var(--orange)}
+  tbody th{font-weight:500;color:var(--text);font-size:13.5px}
+  td{color:var(--muted);font-family:var(--mono);font-size:12px}
+  td.us{background:rgba(232,98,58,.05);color:var(--text)}
+  .yes{color:var(--green)} .no{color:var(--red)} .mid{color:var(--amber)}
+  .tbl{border:1px solid var(--line);border-radius:13px;overflow:auto;margin-top:34px;max-height:52vh}
+  .tbl table{margin:0;min-width:680px}
+
+  ul.list{margin-top:30px;list-style:none;display:flex;flex-direction:column;gap:14px;max-width:72ch}
+  ul.list li{font-size:clamp(14px,1.5vw,17px);color:var(--muted);line-height:1.6;padding-left:26px;position:relative}
+  ul.list li::before{content:"✓";position:absolute;left:0;color:var(--green);font-family:var(--mono)}
+  ul.list.x li::before{content:"—";color:var(--amber)}
+  ul.list li b{color:var(--text);font-weight:600}
+
+  .hud{display:flex;align-items:center;justify-content:space-between;padding:14px 24px;border-top:1px solid var(--line);font-family:var(--mono);font-size:12px;color:var(--muted-2);background:var(--panel)}
+  .hud .brand{font-family:var(--display);font-weight:700;font-size:15px;color:var(--text)}
+  .hud .brand .dot{color:var(--orange)}
+  .hud .keys{display:flex;gap:14px}
+  .hud .keys kbd{border:1px solid var(--line);border-radius:5px;padding:1px 7px;color:var(--muted)}
+  .hud .pos{color:var(--muted)}
+  .dots{position:fixed;right:18px;top:50%;transform:translateY(-50%);display:flex;flex-direction:column;gap:8px;z-index:20}
+  .dots button{width:8px;height:8px;border-radius:50%;background:var(--line);border:none;cursor:pointer;padding:0}
+  .dots button.on{background:var(--orange)}
+  @media(max-width:700px){.dots{display:none}}
+
+  /* ── the choreography layer — every slide BUILDS when it enters ── */
+  .fu{opacity:0;transform:translateY(14px)}
+  .slide.active .fu{animation:fadeup .7s forwards}
+  @keyframes fadeup{to{opacity:1;transform:none}}
+  .slide.active .tline.fu{animation:fadeup .45s forwards}
+  .xstrike{position:relative;color:var(--muted)}
+  .xstrike::after{content:"";position:absolute;left:-2%;right:-2%;top:54%;height:3px;background:var(--red);border-radius:2px;transform:scaleX(0);transform-origin:left}
+  .slide.active .xstrike::after{animation:xs .6s .8s cubic-bezier(.6,0,.2,1) forwards}
+  @keyframes xs{to{transform:scaleX(1)}}
+  .xkeep{color:var(--green)}
+  .rain{position:absolute;inset:0;overflow:hidden;opacity:.22;pointer-events:none}
+  .rain pre{font-family:var(--mono);font-size:11px;color:var(--green);line-height:1.75;padding:0 26px;animation:drain 6s linear infinite}
+  @keyframes drain{from{transform:translateY(0)}to{transform:translateY(-50%)}}
+  .aline{position:relative;display:flex;align-items:center;gap:0;width:min(860px,100%);margin-top:44px}
+  .stn{border:1px solid var(--line);border-radius:10px;background:var(--panel);padding:12px 0;font-family:var(--mono);font-size:clamp(10px,1.1vw,12px);color:var(--muted);flex:1;text-align:center;opacity:0;transform:translateY(10px)}
+  .stn small{display:block;font-size:8.5px;color:var(--muted-2);letter-spacing:.08em;margin-top:4px}
+  .stn.g8{border-color:rgba(232,98,58,.45)} .stn.g8 small{color:var(--orange)}
+  .slide.active .stn{animation:fadeup .5s forwards}
+  .cx{width:22px;height:1px;background:var(--line);flex-shrink:0}
+  .trv{position:absolute;top:-24px;width:12px;height:12px;border-radius:3px;left:0;opacity:0}
+  .trv.red{background:var(--red)} .trv.grn{background:var(--green)}
+  .slide.active .trv.red{animation:tred 3.4s 2.4s forwards ease-in-out}
+  @keyframes tred{0%{opacity:1;left:0%}52%{left:55%;top:-24px}60%{left:54%}66%{left:56%}72%{left:55%}100%{left:55%;top:36px;opacity:0}}
+  .slide.active .trv.grn{animation:tgrn 5.4s 6.2s forwards ease-in-out}
+  @keyframes tgrn{0%{opacity:1;left:0%}30%{left:34%}38%{left:34%}62%{left:66%}70%{left:66%}100%{opacity:1;left:99%}}
+  .cmos{display:grid;grid-template-columns:repeat(6,90px);gap:8px;margin-top:40px}
+  .cmt{height:52px;border:1px solid var(--line);border-top:2px solid var(--violet);border-radius:8px;background:var(--panel);opacity:0;transform:scale(.85)}
+  .cmt.c2{border-top-color:var(--green)} .cmt.c3{border-top-color:var(--amber)} .cmt.c4{border-top-color:var(--orange)}
+  .slide.active .cmt{animation:mpop .45s forwards}
+  @keyframes mpop{to{opacity:1;transform:none}}
+  @media(max-width:840px){.cmos{grid-template-columns:repeat(3,90px)}}
+  .cchips{display:flex;gap:14px;flex-wrap:wrap;margin-top:36px}
+  .cchip{font-family:var(--mono);font-size:13px;border:1px solid var(--line);border-radius:9px;padding:9px 18px;opacity:0;transform:translateY(10px)}
+  .slide.active .cchip{animation:fadeup .5s forwards}
+  .cchip.pr{color:var(--red);border-color:rgba(240,83,59,.4)}
+  .cchip.df{color:var(--green);border-color:rgba(74,222,128,.4)}
+  .cchip.jd{color:var(--amber);border-color:rgba(240,169,59,.4)}
+  .cyc{position:relative;height:46px;width:min(360px,90%);margin-top:34px}
+  .cyc span{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-family:var(--mono);font-size:14px;color:var(--violet);border:1px solid rgba(167,139,250,.4);border-radius:9px;opacity:0;animation:cyc 7.5s infinite}
+  .slide:not(.active) .cyc span{animation-play-state:paused}
+  .cyc span:nth-child(2){animation-delay:2.5s}
+  .cyc span:nth-child(3){animation-delay:5s}
+  @keyframes cyc{0%{opacity:0;transform:translateY(9px)}5%,28%{opacity:1;transform:none}36%,100%{opacity:0;transform:translateY(-9px)}}
+  @media(prefers-reduced-motion:reduce){*{animation:none!important}.fu,.stn,.cmt,.cchip,.tline.fu{opacity:1!important;transform:none!important}.trv,.rain{display:none!important}.cyc span:first-child{opacity:1!important}.xstrike::after{transform:scaleX(1)!important}}
+</style>
+</head>
+<body>
+<div class="deck">
+<div class="slides" id="slides">
+
+  <!-- 1 · TITLE -->
+  <section class="slide active">
+    <div class="eyebrow"><span class="bar"></span>stakeholder briefing · 2026</div>
+    <h1 class="fu">Everyone is building <span class="xstrike">faster horses</span>.<br>We built the <span class="xkeep">race</span>.</h1>
+    <p class="lede fu" style="animation-delay:1.4s">Faster horses are still horses. antiloki is a different animal: <b>software engineering as an assembly line</b> — architecture before code, verification before trust, learning after every merge. The AI inside is <b>replaceable</b>, and everything runs on the operator's machine.</p>
+    <div class="note fu" style="animation-delay:2.2s">// 16 slides · ← → or click the dots · every number in this deck is a command you can run</div>
+  </section>
+
+  <!-- 2 · THE PAIN -->
+  <section class="slide">
+    <div class="rain" aria-hidden="true"><pre>
+const user = await getUser(req.session.id)
+if (!user) return res.redirect('/login')
+export function applyDiscount(cart, code) {
+  const rule = RULES[code] ?? RULES.default
+db.prepare('UPDATE orders SET state=?')
+import { validate } from './schema'
+retry(sendEmail, { attempts: 3 })
+cache.set(key, value, TTL_MS)
+function reconcile(ledger, entries) {
+  for (const e of entries) apply(ledger, e)
+const total = items.reduce((s,i)=>s+i.price,0)
+router.post('/checkout', authed, checkout)
+const user = await getUser(req.session.id)
+if (!user) return res.redirect('/login')
+export function applyDiscount(cart, code) {
+  const rule = RULES[code] ?? RULES.default
+db.prepare('UPDATE orders SET state=?')
+import { validate } from './schema'
+retry(sendEmail, { attempts: 3 })
+cache.set(key, value, TTL_MS)
+function reconcile(ledger, entries) {
+  for (const e of entries) apply(ledger, e)
+const total = items.reduce((s,i)=>s+i.price,0)
+router.post('/checkout', authed, checkout)</pre></div>
+    <div class="eyebrow"><span class="bar"></span>01 · the pain</div>
+    <h2 class="fu">Your AI ships code faster than you can read it.</h2>
+    <p class="lede fu" style="animation-delay:1.4s"><b style="color:var(--red)">✗ so you stopped reading. it kept shipping.</b> A broken import, a hallucinated function, a test that never ran — in main before anyone looks. The review happens at human speed against a machine that writes at machine speed.</p>
+  </section>
+
+  <!-- 3 · THE DIAGNOSIS -->
+  <section class="slide">
+    <div class="eyebrow"><span class="bar"></span>02 · the diagnosis</div>
+    <h2 class="fu">We spent 70 years making <em style="color:var(--muted);font-style:normal">coding</em> faster.</h2>
+    <h2 class="fu" style="animation-delay:1.4s;margin-top:10px">And zero making <em style="color:var(--orange);font-style:normal">engineering</em> safer.</h2>
+    <p class="lede fu" style="animation-delay:2.8s">Modern AI tools make developers type faster inside the same process: <b>no architecture phase, no verification discipline, no memory</b>. That's the faster horse. The unsolved problem was never typing speed — it was engineering itself.</p>
+  </section>
+
+  <!-- 4 · THE IDEA -->
+  <section class="slide">
+    <div class="eyebrow" style="color:var(--green)"><span class="bar" style="background:var(--green)"></span>03 · the idea</div>
+    <h2 class="fu">Software shouldn't be generated.<br><span style="color:var(--green)">It should be assembled.</span></h2>
+    <div class="aline" aria-hidden="true">
+      <div class="trv red"></div>
+      <div class="trv grn"></div>
+      <div class="stn" style="animation-delay:1.4s">ARCHITECT<small>before any code</small></div>
+      <div class="cx"></div>
+      <div class="stn" style="animation-delay:1.7s">BUILD<small>one file · one contract</small></div>
+      <div class="cx"></div>
+      <div class="stn g8" style="animation-delay:2.0s">GATE<small>real build · real tests</small></div>
+      <div class="cx"></div>
+      <div class="stn g8" style="animation-delay:2.3s">COURT<small>evidence, not consensus</small></div>
+      <div class="cx"></div>
+      <div class="stn" style="animation-delay:2.6s">LEARN<small>every outcome recorded</small></div>
+    </div>
+    <p class="lede fu" style="animation-delay:11.5s"><span style="color:var(--red)">✗ the bad change never left the gate</span> &nbsp;·&nbsp; <span style="color:var(--green)">✓ the good one shipped with a verdict attached</span> — each stage reduces uncertainty before the next begins.</p>
+  </section>
+
+  <!-- 5 · WOW — UNDERSTAND -->
+  <section class="slide">
+    <div class="eyebrow" style="color:var(--violet)"><span class="bar" style="background:var(--violet)"></span>04 · wow № 1 — understand</div>
+    <h2 class="fu">Point it at a repo. Your architecture appears.</h2>
+    <div class="cmos" aria-hidden="true">
+      <div class="cmt" style="animation-delay:.8s"></div><div class="cmt c2" style="animation-delay:.95s"></div><div class="cmt c3" style="animation-delay:1.1s"></div><div class="cmt" style="animation-delay:1.25s"></div><div class="cmt c4" style="animation-delay:1.4s"></div><div class="cmt c2" style="animation-delay:1.55s"></div>
+      <div class="cmt c3" style="animation-delay:1.7s"></div><div class="cmt" style="animation-delay:1.85s"></div><div class="cmt c4" style="animation-delay:2s"></div><div class="cmt c2" style="animation-delay:2.15s"></div><div class="cmt" style="animation-delay:2.3s"></div><div class="cmt c3" style="animation-delay:2.45s"></div>
+    </div>
+    <p class="lede fu" style="animation-delay:3s">A repository becomes an <b>interactive software model</b>: architecture, docs, diagrams and blast radius derived from the AST — re-derived, so they can't rot. <b>Any codebase, understandable in minutes</b> — for the team, and for every AI that works on it. This is the door.</p>
+  </section>
+
+  <!-- 6 · WOW — BLUEPRINT + GATES -->
+  <section class="slide">
+    <div class="eyebrow"><span class="bar"></span>05 · wow № 2 — the pipeline</div>
+    <h2 class="fu">Architecture materializes first. Gates stop everything else.</h2>
+    <div class="term">
+      <div class="term-bar"><span></span><span></span><span></span></div>
+      <div class="tbody">
+        <div class="tline fu" style="animation-delay:1s"><span class="d">$</span><span class="t">blueprint → design court → approved · code begins (one file, one contract)</span></div>
+        <div class="tline fu" style="animation-delay:1.8s"><span class="d">$</span><span class="t">npm run build</span></div>
+        <div class="tline ok fu" style="animation-delay:2.5s">exit 0 ✓</div>
+        <div class="tline fu" style="animation-delay:3.1s"><span class="d">$</span><span class="t">npm test</span></div>
+        <div class="tline ok fu" style="animation-delay:3.8s">42/42 passed ✓</div>
+        <div class="tline fu" style="animation-delay:4.5s"><span class="d">$</span><span class="t">apply next change → build</span></div>
+        <div class="tline err fu" style="animation-delay:5.3s">exit 1 ✗ — stopped. nothing propagates.</div>
+      </div>
+    </div>
+    <p class="lede fu" style="animation-delay:6.2s">Real compilers, real tests, isolated worktrees or era-matched Docker — <b>between every step</b>. Nothing proceeds on hope.</p>
+  </section>
+
+  <!-- 7 · WOW — THE COURT -->
+  <section class="slide">
+    <div class="eyebrow" style="color:var(--amber)"><span class="bar" style="background:var(--amber)"></span>06 · wow № 3 — the court</div>
+    <h2 class="fu">Evidence. Not consensus.</h2>
+    <div class="cchips" aria-hidden="true">
+      <div class="cchip pr" style="animation-delay:.9s">⚔ PROSECUTOR</div>
+      <div class="cchip df" style="animation-delay:1.2s">🛡 DEFENDER</div>
+      <div class="cchip jd" style="animation-delay:1.5s">⚖ JUDGE</div>
+    </div>
+    <div class="term">
+      <div class="term-bar"><span></span><span></span><span></span></div>
+      <div class="tbody">
+        <div class="tline err fu" style="animation-delay:2.2s">✗ prosecutor · "misses the empty-cart case"</div>
+        <div class="tline ok fu" style="animation-delay:3s">✓ defender · "covered — guard at checkout.ts:41"</div>
+        <div class="tline fu" style="animation-delay:3.8s"><span class="t">⚖ judge · claim dismissed — 0 defects upheld</span></div>
+      </div>
+    </div>
+    <p class="lede fu" style="animation-delay:4.6s">Every design faces an adversarial process whose goal is not agreement — it's a verdict that <b>cites its evidence</b>. Past the budget, the case escalates to a human.</p>
+  </section>
+
+  <!-- 8 · WOW — THE PULL REQUEST -->
+  <section class="slide">
+    <div class="eyebrow"><span class="bar"></span>07 · wow № 4 — the pull request</div>
+    <h2 class="fu">The last gate is human. You.</h2>
+    <div class="term">
+      <div class="term-bar"><span></span><span></span><span></span></div>
+      <div class="tbody">
+        <div class="tline ok fu" style="animation-delay:1s">✓ file exists · src/auth/session.ts</div>
+        <div class="tline ok fu" style="animation-delay:1.6s">✓ build · exit 0 · isolated worktree</div>
+        <div class="tline ok fu" style="animation-delay:2.2s">✓ tests · 42/42 · live preview running</div>
+        <div class="tline fu" style="animation-delay:2.9s"><span style="color:var(--amber)">👁 "logout clears the cookie" — needs you</span></div>
+      </div>
+    </div>
+    <p class="lede fu" style="animation-delay:3.8s">Acceptance criteria are <b>checks that run</b>, in a live isolated environment — not a simulation. Where the machine can't prove it, the operator rules, and <b>the verdict is recorded with what they were looking at</b>.</p>
+  </section>
+
+  <!-- 9 · WOW — HEIMDALL -->
+  <section class="slide">
+    <div class="eyebrow" style="color:var(--violet)"><span class="bar" style="background:var(--violet)"></span>08 · wow № 5 — heimdall</div>
+    <h2 class="fu">Every correction becomes evidence.<br>The knowledge compounds.</h2>
+    <div class="term">
+      <div class="term-bar"><span></span><span></span><span></span></div>
+      <div class="tbody">
+        <div class="tline fu" style="animation-delay:1s"><span class="t">task · author checkout.ts</span></div>
+        <div class="tline dim fu" style="animation-delay:1.7s">HEIMDALL → the best-evidenced model for this exact kind of work</div>
+        <div class="tline ok fu" style="animation-delay:2.4s">parsed ✓ · built ✓ · shipped ✓ → recorded in the ledger</div>
+      </div>
+    </div>
+    <div class="cyc fu" style="animation-delay:3s" aria-hidden="true">
+      <span>⚙ this year's best model</span>
+      <span>⚙ next year's best model</span>
+      <span>⚙ whatever wins after that</span>
+    </div>
+    <p class="lede fu" style="animation-delay:3.6s">Routing decisions are functions over the record, never opinions. <b>Swap the model — keep the process, the history, the evidence.</b> That's what "the AI is replaceable" means in practice: the moat is the accumulated engineering knowledge, and it survives every model migration.</p>
+  </section>
+
+  <!-- 10 · THE TAMPER -->
+  <section class="slide">
+    <div class="eyebrow"><span class="bar"></span>09 · the moment that sells it</div>
+    <h2 class="fu">Try to rewrite history. Watch it refuse.</h2>
+    <div class="term">
+      <div class="term-bar"><span></span><span></span><span></span></div>
+      <div class="tbody">
+        <div class="tline fu" style="animation-delay:1s"><span class="d">$</span><span class="t">sqlite&gt; UPDATE sacred_timeline SET actor='someone-else' WHERE id=42;</span></div>
+        <div class="tline err fu" style="animation-delay:1.9s">Error: sacred_timeline rows are immutable — refused at the storage layer</div>
+        <div class="tline gap" aria-hidden="true"></div>
+        <div class="tline dim fu" style="animation-delay:2.9s"># edit an archived history file on disk instead, as an attacker would…</div>
+        <div class="tline fu" style="animation-delay:3.7s"><span class="d">$</span><span class="t">antiloki&gt; verify full chain</span></div>
+        <div class="tline err fu" style="animation-delay:4.5s">✗ INVALID — digital_print mismatch @ archive row 2</div>
+        <div class="tline gap" aria-hidden="true"></div>
+        <div class="tline fu" style="animation-delay:5.4s"><span class="d">$</span><span class="t">restore the genuine file · verify again</span></div>
+        <div class="tline ok fu" style="animation-delay:6.2s">✓ chain valid — 1,489 rows · GENESIS → now · &lt; 1s</div>
+      </div>
+    </div>
+    <p class="lede fu" style="animation-delay:7s">This isn't logging. <b>It's testimony.</b> No competitor can show this slide — because no competitor has the property.</p>
+  </section>
+
+  <!-- 11 · OWNERSHIP -->
+  <section class="slide">
+    <div class="eyebrow" style="color:var(--green)"><span class="bar" style="background:var(--green)"></span>10 · yours</div>
+    <h2 class="fu">Unplug the internet. It still works — and still proves.</h2>
+    <div class="term">
+      <div class="term-bar"><span></span><span></span><span></span></div>
+      <div class="tbody">
+        <div class="tline fu" style="animation-delay:1s"><span class="t">~/your-project/.antiloki/</span></div>
+        <div class="tline fu" style="animation-delay:1.6s">├ state.sqlite &nbsp;&nbsp;· cards, contracts, the board</div>
+        <div class="tline fu" style="animation-delay:2.2s">├ brain.sqlite &nbsp;&nbsp;· every AI call, costed to the cent</div>
+        <div class="tline fu" style="animation-delay:2.8s">├ laws.sqlite &nbsp;&nbsp;&nbsp;· the rules, machine-enforced</div>
+        <div class="tline fu" style="animation-delay:3.4s">└ timeline/ &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;· sealed history, verifiable offline</div>
+      </div>
+    </div>
+    <p class="lede fu" style="animation-delay:4.2s"><b>Files you hold. Not a service you rent.</b> Your models (even local), your keys, your worktrees, your Docker. Teams arrive as peer-to-peer sync of sealed history — never through our servers, because there aren't any.</p>
+  </section>
+
+  <!-- 12 · RECEIPTS -->
+  <section class="slide">
+    <div class="eyebrow" style="color:var(--green)"><span class="bar" style="background:var(--green)"></span>11 · receipts</div>
+    <h2 class="fu">Every claim on this slide is a command.</h2>
+    <div class="big-stats">
+      <div class="stat fu" style="animation-delay:.8s"><div class="v">~4,000</div><div class="k">substrate tests, zero failures — enforced as a <b>hard push gate</b> with an empty exception list</div><div class="cmd">$ node scripts/test-gate.mjs</div></div>
+      <div class="stat fu" style="animation-delay:1.1s"><div class="v">1,489</div><div class="k">sealed rows on the live chain, verified across full history — archives included</div><div class="cmd">audit → chain → verify full chain</div></div>
+      <div class="stat fu" style="animation-delay:1.4s"><div class="v">37 · 18</div><div class="k">active laws · consistency dimensions cross-checking claim vs. reality on every commit</div><div class="cmd">$ antiloki system.consistency.report</div></div>
+      <div class="stat fu" style="animation-delay:1.7s"><div class="v">$0 cloud</div><div class="k">code, keys, models and record local — these numbers come from the substrate <b>building itself</b></div><div class="cmd">unplug the internet · it still verifies</div></div>
+    </div>
+    <p class="lede fu" style="animation-delay:2.4s">And the receipt money can't buy: <b>the system polices its author.</b> The night drift-detection shipped, its first run blocked its own creator's commit — correctly.</p>
+  </section>
+
+  <!-- 13 · HONEST -->
+  <section class="slide">
+    <div class="eyebrow" style="color:var(--amber)"><span class="bar" style="background:var(--amber)"></span>12 · what it is not (yet)</div>
+    <h2 class="fu">The honest slide.</h2>
+    <ul class="list x">
+      <li class="fu" style="animation-delay:.8s"><b>Single-operator today.</b> One developer, one machine. Teams are a designed roadmap with groundwork shipped — not running code.</li>
+      <li class="fu" style="animation-delay:1.2s"><b>Model costs are the user's own.</b> BYOK means we don't mark up inference — and our margin never depends on throttling the user's model.</li>
+      <li class="fu" style="animation-delay:1.6s"><b>The pipeline is deterministic; the generation inside a stage is a model.</b> That's the point — probabilistic parts inside a process that catches them — but it means gates prove process, not intent. The merge button is human on purpose.</li>
+      <li class="fu" style="animation-delay:2s"><b>Windows-first development reality;</b> cross-platform hardening is engineering work, not research risk.</li>
+    </ul>
+    <p class="note fu" style="animation-delay:2.6s">// a governance product that inflates its own claims is dead on arrival — this slide is the product behaving in deck form</p>
+  </section>
+
+  <!-- 14 · VS -->
+  <section class="slide">
+    <div class="eyebrow"><span class="bar"></span>13 · vs. the rest</div>
+    <h2 class="fu">They make developers faster inside the old process.<br>antiloki replaces the process.</h2>
+    <div class="tbl fu" style="animation-delay:1s"><table>
+      <thead><tr><th></th><th>Cursor</th><th>Claude Code</th><th>Codex</th><th>Devin</th><th class="us">antiloki</th></tr></thead>
+      <tbody>
+        <tr><th>who decides the next step</th><td>model loop</td><td>model loop</td><td>model loop</td><td>autonomous agent</td><td class="us"><span class="yes">deterministic gates</span></td></tr>
+        <tr><th>architecture before code</th><td class="no">✕</td><td class="no">✕</td><td class="no">✕</td><td class="no">✕</td><td class="us"><span class="yes">✓ blueprint + design court</span></td></tr>
+        <tr><th>isolated PR environments</th><td class="no">✕</td><td class="no">✕</td><td class="no">✕</td><td class="mid">cloud VM</td><td class="us"><span class="yes">✓ worktree / Docker + live preview</span></td></tr>
+        <tr><th>record of what happened</th><td class="no">editable logs</td><td class="no">transcripts</td><td class="no">logs</td><td class="mid">session logs</td><td class="us"><span class="yes">tamper-evident chain</span></td></tr>
+        <tr><th>learns from corrections</th><td class="no">✕</td><td class="no">✕</td><td class="no">✕</td><td class="no">✕</td><td class="us"><span class="yes">✓ evidence-based routing</span></td></tr>
+        <tr><th>runs fully local, your key</th><td class="no">✕</td><td class="no">✕ one vendor</td><td class="no">✕ cloud</td><td class="no">✕ cloud</td><td class="us"><span class="yes">✓ local-first · BYO per tier</span></td></tr>
+      </tbody>
+    </table></div>
+    <p class="lede fu" style="animation-delay:1.8s"><b>The moat compounds while models churn:</b> every model upgrade makes the faster-horse UX bets shakier and makes the process + record <i>more</i> valuable. A year of sealed, verifiable engineering history is a switching cost no prompt file replicates.</p>
+  </section>
+
+  <!-- 15 · ROADMAP -->
+  <section class="slide">
+    <div class="eyebrow"><span class="bar"></span>14 · roadmap</div>
+    <h2 class="fu">From one provable machine to provable teams.</h2>
+    <div class="cols">
+      <div class="col g fu" style="animation-delay:.8s"><div class="ck">now · shipped</div><h3>The single-operator substrate</h3><p>The full assembly line, the chain + one-click verification, the software model, era-matched Docker environments, BYOK cost control, the 4k-test hard gate. In daily use — <b>building itself</b>.</p></div>
+      <div class="col o fu" style="animation-delay:1.2s"><div class="ck">next · designed</div><h3>Teams as sync</h3><p>Export/import sealed history bundles → read-only visibility of a teammate's provable work; then continuous sync via <b>plain files any folder-sync tool can move</b>. antiloki ships no server.</p></div>
+      <div class="col v fu" style="animation-delay:1.6s"><div class="ck">later</div><h3>Shared work, still provable</h3><p>Card ownership across devices with audited proposals. Identity rides a thin control plane; <b>project data never does</b>.</p></div>
+    </div>
+    <p class="note fu" style="animation-delay:2.2s">// the enterprise unlock: "show me the record" becomes a file you hand the auditor</p>
+  </section>
+
+  <!-- 16 · CLOSE -->
+  <section class="slide">
+    <div class="eyebrow"><span class="bar"></span>15 · the close</div>
+    <h1 class="fu">Cursor helps you write code.<br><span class="g">antiloki changes how software is engineered.</span></h1>
+    <ul class="list" style="margin-top:30px">
+      <li class="fu" style="animation-delay:1.2s"><b>See it live</b> — point it at a repo, watch the architecture appear, then the assembly line, then the tamper demo.</li>
+      <li class="fu" style="animation-delay:1.6s"><b>Read the paper</b> — the formal model behind the record and the pipeline, with proofs and incidents.</li>
+      <li class="fu" style="animation-delay:2s"><b>Kick the tires</b> — every claim in this deck ends in a command; run them.</li>
+    </ul>
+    <div class="note fu" style="animation-delay:2.6s">// companion docs in this folder: technical paper · operator manual · product page</div>
+  </section>
+
+</div>
+
+<div class="hud">
+  <div class="brand">antiloki<span class="dot">.</span></div>
+  <div class="keys"><span><kbd>←</kbd> <kbd>→</kbd> navigate</span><span><kbd>Home</kbd> first</span></div>
+  <div class="pos" id="pos">1 / 16</div>
+</div>
+</div>
+<div class="dots" id="dots"></div>
+
+<script>
+(function(){
+  const slides=[...document.querySelectorAll('.slide')];
+  const pos=document.getElementById('pos');
+  const dots=document.getElementById('dots');
+  let i=0;
+  slides.forEach((_,k)=>{const b=document.createElement('button');b.addEventListener('click',()=>go(k));dots.appendChild(b);});
+  const db=[...dots.children];
+  function go(n){
+    i=Math.max(0,Math.min(slides.length-1,n));
+    slides.forEach((s,k)=>s.classList.toggle('active',k===i));
+    db.forEach((d,k)=>d.classList.toggle('on',k===i));
+    pos.textContent=(i+1)+' / '+slides.length;
+  }
+  addEventListener('keydown',e=>{
+    if(e.key==='ArrowRight'||e.key==='PageDown'||e.key===' ')go(i+1);
+    else if(e.key==='ArrowLeft'||e.key==='PageUp')go(i-1);
+    else if(e.key==='Home')go(0); else if(e.key==='End')go(slides.length-1);
+  });
+  let touchX=null;
+  addEventListener('touchstart',e=>{touchX=e.touches[0].clientX});
+  addEventListener('touchend',e=>{if(touchX==null)return;const dx=e.changedTouches[0].clientX-touchX;if(Math.abs(dx)>60)go(i+(dx<0?1:-1));touchX=null;});
+  go(0);
+})();
+</script>
+</body>
+</html>
