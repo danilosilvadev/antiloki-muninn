@@ -4,7 +4,7 @@
 // runtime, so subsystems light up without a restart.
 import { useState, type ReactNode } from 'react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { api, ApiError, type KeyStatus } from '../api';
+import { api, ApiError, exportUrl, type KeyStatus } from '../api';
 
 const GROUPS: { id: KeyStatus['group']; title: string; blurb: string }[] = [
   { id: 'core', title: 'core', blurb: 'the database everything else stands on' },
@@ -118,6 +118,28 @@ export function SettingsPage(): ReactNode {
               1 · set <span className="mono">TELEGRAM_BOT_TOKEN</span> above (from @BotFather) and save.<br />
               2 · message your bot anything — it replies with your chat id; paste it into{' '}
               <span className="mono">TELEGRAM_OPERATOR_CHAT_ID</span> and save again. From then on the bot serves only your chat.
+            </div>
+          </div>
+
+          <div className="panel">
+            <div className="ph">export &amp; backup — your data leaves whenever you ask (D8)</div>
+            <div className="pb">
+              <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+                <a className="btn sm" href={exportUrl('leads', 'csv')}>leads · csv ↓</a>
+                <a className="btn sm" href={exportUrl('leads', 'json')}>leads · json ↓</a>
+                <a className="btn sm" href={exportUrl('waitlist', 'csv')}>waitlist · csv ↓</a>
+                <a className="btn sm" href={exportUrl('waitlist', 'json')}>waitlist · json ↓</a>
+              </div>
+              <div className="small muted" style={{ marginTop: 10 }}>
+                <b>Backup reminder</b> — two things hold everything: the Supabase database
+                (dashboard → Database → Backups, or <span className="mono">pg_dump</span> the session-pooler URL)
+                and <span className="mono">api/.env</span> on this machine (the keys — never in git, never in this bundle).
+                Exports above are operational snapshots, not a substitute for either.
+              </div>
+              <div className="tiny muted2" style={{ marginTop: 8 }}>
+                Secrets posture (G4): vendor + service-role keys live in <span className="mono">api/.env</span> only;
+                this console shows <i>configured · length</i> and never a value; edge functions hold their own secrets in Supabase.
+              </div>
             </div>
           </div>
         </>

@@ -3,6 +3,7 @@
 import { and, desc, eq, ilike, inArray, type SQL } from 'drizzle-orm';
 import type { Db } from '../db/db';
 import * as t from '../db/schema';
+import { tombstoneOf } from '../governance/tombstone';
 import { QUEUES } from '../jobs/boss';
 
 export function normalizeLinkedinUrl(raw: string): string | null {
@@ -52,10 +53,11 @@ export class LeadsService {
     const url = normalizeLinkedinUrl(rawUrl);
     if (!url) return { kind: 'invalid' };
 
+    // plain suppression OR an erasure tombstone (G1): both refuse re-acquisition
     const sup = await this.db
       .select({ id: t.suppressions.id })
       .from(t.suppressions)
-      .where(eq(t.suppressions.linkedinUrl, url))
+      .where(inArray(t.suppressions.linkedinUrl, [url, tombstoneOf(url)]))
       .limit(1);
     if (sup.length > 0) return { kind: 'suppressed' };
 

@@ -3,6 +3,7 @@
 import { and, count, desc, eq, gte, inArray, isNotNull } from 'drizzle-orm';
 import type { Db } from '../db/db';
 import * as t from '../db/schema';
+import { tombstoneOf } from '../governance/tombstone';
 import {
   evaluateSendPolicy, hourInOffset, parseGeoBlocked, parseQuietHours,
   type PolicyVerdict,
@@ -80,19 +81,21 @@ export class PolicyService {
     ]);
     const healthPaused = await this.getFlag<{ on?: boolean }>(FLAG_HEALTH_PAUSED, {});
 
+    // plain rows AND erasure tombstones (G1) both suppress
     let suppressedEmail = false;
     if (opts.email) {
+      const email = opts.email.toLowerCase();
       const hit = await this.db
         .select({ id: t.suppressions.id })
         .from(t.suppressions)
-        .where(eq(t.suppressions.email, opts.email.toLowerCase()))
+        .where(inArray(t.suppressions.email, [email, tombstoneOf(email)]))
         .limit(1);
       suppressedEmail = hit.length > 0;
     }
     const linkHit = await this.db
       .select({ id: t.suppressions.id })
       .from(t.suppressions)
-      .where(eq(t.suppressions.linkedinUrl, lead.linkedinUrl))
+      .where(inArray(t.suppressions.linkedinUrl, [lead.linkedinUrl, tombstoneOf(lead.linkedinUrl)]))
       .limit(1);
 
     let hasConsent = true;

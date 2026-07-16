@@ -7,6 +7,7 @@ import type { Db } from '../db/db';
 import * as t from '../db/schema';
 import { AnalysisService } from '../analysis/analysis.service';
 import { EnrichmentService } from '../enrichment/enrichment.service';
+import { BudgetService } from '../governance/budget.service';
 import { escapeHtml } from '../telegram/dossier';
 import { QUEUES } from './boss';
 
@@ -20,6 +21,8 @@ export interface WorkerDeps {
   digest: () => Promise<void>;
   weeklyDigest: (() => Promise<void>) | null; // slice 4: C11 — the targets digest
   tick: (() => Promise<{ drained: number }>) | null; // slice 3: the gate & send scheduler
+  budget: BudgetService | null; // slice 5: G3 — the spend breaker in front of paid calls
+  retention: (() => Promise<void>) | null; // slice 5: G2 — the retention clock
 }
 
 const MAX_POLLS = 25; // × 5s ≈ 2 min of vendor patience per enrichment
@@ -33,6 +36,13 @@ interface EnrichJobData {
 export async function registerWorkers(d: WorkerDeps): Promise<void> {
   await d.boss.work(QUEUES.enrich, async ([job]: PgBoss.Job<EnrichJobData>[]) => {
     const data = job.data;
+    if (d.budget) {
+      const g = await d.budget.gate('fullenrich');
+      if (!g.allowed) {
+        await parkQuietly(d, data.leadId, g.reason); // the breaker already alerted once
+        return;
+      }
+    }
     try {
       const r = await d.enrichment.step(data.leadId, data.vendorJobId ?? null);
       if (r.kind === 'started') {
@@ -53,6 +63,13 @@ export async function registerWorkers(d: WorkerDeps): Promise<void> {
 
   await d.boss.work(QUEUES.analyze, async ([job]: PgBoss.Job<{ leadId: string }>[]) => {
     const { leadId } = job.data;
+    if (d.budget) {
+      const g = await d.budget.gate('openrouter');
+      if (!g.allowed) {
+        await parkQuietly(d, leadId, g.reason);
+        return;
+      }
+    }
     try {
       const existing = await d.db
         .select({ id: t.leadAnalyses.id })
@@ -93,6 +110,23 @@ export async function registerWorkers(d: WorkerDeps): Promise<void> {
       await tick();
     });
   }
+
+  if (d.retention) {
+    const retention = d.retention;
+    await d.boss.work(QUEUES.retention, async () => {
+      await retention();
+    });
+  }
+}
+
+// A budget refusal is not a lead failure: park with the reason, no per-lead
+// notification — the breaker itself alerted once when it tripped.
+async function parkQuietly(d: WorkerDeps, leadId: string, reason: string): Promise<void> {
+  await d.db
+    .update(t.leads)
+    .set({ status: 'parked', lastError: reason.slice(0, 500), updatedAt: new Date() })
+    .where(eq(t.leads.id, leadId));
+  await d.db.insert(t.events).values({ leadId, kind: 'pipeline_halted', payload: { reason: 'budget' } });
 }
 
 async function parkWithError(d: WorkerDeps, leadId: string, stage: string, e: unknown): Promise<void> {

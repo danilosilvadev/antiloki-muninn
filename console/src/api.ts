@@ -162,7 +162,7 @@ export interface Control {
   angles: AngleStat[];
   templates: TemplateRow[];
   vendors: VendorStat[];
-  budget: { monthUsd: number; spentMonthUsd: number; note: string };
+  budget: { monthUsd: number; spentMonthUsd: number; tripped: boolean; note: string };
   suppressionsCount: number;
   refusals: { id: string; channel: string; code: string; reason: string; at: string; leadId: string | null }[];
   senderReady: boolean;
@@ -337,7 +337,18 @@ export const api = {
     }),
   activateMember: (id: string) =>
     http<{ ok: boolean; already: boolean }>(`/waitlist/members/${id}/activate`, { method: 'POST' }),
+
+  erase: (target: { lead_id?: string; email?: string; linkedin_url?: string }) =>
+    http<{ leads: number; waitlistMembers: number; rows: Record<string, number>; emailHashes: string[]; urlHashes: string[] }>(
+      '/erasure',
+      { method: 'POST', body: JSON.stringify(target) },
+    ),
 };
+
+// D8 export links — plain downloads straight off the loopback api
+export function exportUrl(what: 'leads' | 'waitlist', format: 'csv' | 'json'): string {
+  return `${BASE}/export/${what}?format=${format}`;
+}
 
 export function slugName(url: string): string {
   const slug = url.slice(url.lastIndexOf('/') + 1);

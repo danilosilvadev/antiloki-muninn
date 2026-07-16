@@ -17,12 +17,12 @@ six-slice plan this repo implements).
 
 ```
 site/       the public static site — landing (index.html, thank-you v2), paper, manual, deck, privacy
-supabase/   migrations (waitlist + engine + gate/send + loop) + edge functions (waitlist-join · unsub · r · webhook-sink · consent · invite)
-api/        muninn api — NestJS :41945 — ingest → enrich → analyze → dossier → SendPolicy → Smartlead · waves + invites (Resend)
+supabase/   migrations (waitlist + engine + gate/send + loop + governance) + edge functions (waitlist-join · unsub · r · webhook-sink · consent · invite · erasure)
+api/        muninn api — NestJS :41945 — ingest → enrich → analyze → dossier → SendPolicy → Smartlead · waves + invites (Resend) · governance (erasure/retention/budget)
 console/    muninn console — Vite+React :5177 — dashboard · leads · review · control · waitlist · drawer · settings
 scripts/    configure-site.mjs (bakes site values) · unsub-link.mjs (exit-test links)
 test/       node --test suite over the shared edge-function logic (api has its own suite)
-docs/       runbook-slice-0.html … runbook-slice-4.html — the operator runbooks
+docs/       runbook-slice-0.html … runbook-slice-5.html — the operator runbooks
 ```
 
 ## Slice status
@@ -34,7 +34,7 @@ docs/       runbook-slice-0.html … runbook-slice-4.html — the operator runbo
 | 2 · The console appears | shell + dashboard + CRM + drawer + **settings/keys panel** | **built — run it (runbook-slice-2)** |
 | 3 · The gate & the send | SendPolicy + sequences + Smartlead + review queue + webhooks + kill switch | **built — wire Smartlead (runbook-slice-3)** |
 | 4 · The loop | control-center + waitlist & waves + referral math + weekly digest + thank-you v2 | **built — wire Resend (runbook-slice-4)** |
-| 5 · Governance | erasure + retention + spend breaker + settings | pending |
+| 5 · Governance | erasure (hashed tombstones) + retention clock + spend breaker + export | **built — deploy erasure fn (runbook-slice-5)** |
 
 ## Quickstart
 
@@ -48,9 +48,10 @@ Deploying is the operator's half, runbook by runbook: `docs/runbook-slice-0.html
 + warmup) → `runbook-slice-2.html` (run api + console, paste keys, triage from the UI) →
 `runbook-slice-3.html` (wire Smartlead + the webhook sink, then approve → send → reply-pause
 → kill switch) → `runbook-slice-4.html` (wire Resend + deploy consent/invite, then wave of
-10 → referral moves a position → pause-all survives restart). `runbook-slice-1.html` covers
-the Telegram-only path and the day-6 manual-outreach play — still valid, but Settings now
-replaces its hand-edited `.env` steps.
+10 → referral moves a position → pause-all survives restart) → `runbook-slice-5.html`
+(deploy the erasure endpoint, then erase a seeded person end-to-end and trip the budget
+breaker). `runbook-slice-1.html` covers the Telegram-only path and the day-6
+manual-outreach play — still valid, but Settings now replaces its hand-edited `.env` steps.
 
 ## Rules of this repo
 
@@ -58,7 +59,10 @@ replaces its hand-edited `.env` steps.
   Functions; operator surfaces bind loopback on the operator machine.
 - **Two mail paths, never crossed.** Cold → Smartlead on secondary sending domains.
   Consented (waitlist, invites, digest) → Resend on the canonical domain.
-- **Every send passes SendPolicy** (arrives slice 3). Refusals are logged, not remembered.
+- **Every send passes SendPolicy** (slice 3). Refusals are logged, not remembered.
+- **Every paid call passes the budget breaker** (slice 5). Erasure leaves only
+  `sha256:` tombstones; retention purges on a clock; secrets stay in `api/.env`
+  and Supabase — never in git, never in the console bundle (G4).
 - **Flagged work is annotated, never silently built** — see § Pendencies in the plan.
   The LinkedIn auto-send adapter (P1) is operator-owned and not scheduled in any slice.
 - Dependencies stay thin: the repo root has zero; the api carries Nest + drizzle +

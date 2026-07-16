@@ -9,6 +9,7 @@ import { OpenRouterClient } from '../analysis/openrouter.client';
 import { classifyReply } from '../channels/classify';
 import { SequenceService } from '../channels/sequence.service';
 import { SmartleadAdapter } from '../channels/smartlead.adapter';
+import { BudgetService } from '../governance/budget.service';
 import { FLAG_ANGLE_PAUSED, FLAG_HEALTH_PAUSED, FLAG_PAUSE_ALL, FLAG_PAUSE_APPLIED, PolicyService } from '../policy/policy.service';
 import { escapeHtml } from '../telegram/dossier';
 
@@ -18,10 +19,11 @@ export interface TickDeps {
   sequences: SequenceService;
   smartlead: SmartleadAdapter | null;
   classifier: OpenRouterClient | null;
+  budget: BudgetService | null; // slice 5: G3 — classification is a paid call too
   notify: (html: string) => Promise<void>;
 }
 
-const DRAIN_KINDS = ['sent', 'open', 'click', 'reply', 'bounce', 'unsub', 'complaint'];
+const DRAIN_KINDS = ['sent', 'open', 'click', 'reply', 'bounce', 'unsub', 'complaint', 'erasure_requested'];
 type EventRow = typeof t.events.$inferSelect;
 
 export async function runTick(d: TickDeps): Promise<{ drained: number }> {
@@ -90,7 +92,8 @@ async function processEvent(d: TickDeps, ev: EventRow): Promise<void> {
       }
       const replyText = typeof payload['reply_text'] === 'string' ? (payload['reply_text'] as string) : null;
       let labelTxt = '';
-      if (replyText && d.classifier) {
+      const budgetOk = !d.budget || (await d.budget.gate('openrouter')).allowed;
+      if (replyText && d.classifier && budgetOk) {
         const label = await classifyReply(d.classifier, replyText);
         if (label) {
           labelTxt = ` — <b>${label.label}</b> (${label.confidence})`;
@@ -126,6 +129,16 @@ async function processEvent(d: TickDeps, ev: EventRow): Promise<void> {
           .where(eq(t.leads.id, leadId));
       }
       await d.notify(`⚠️ bounce: ${escapeHtml(email ?? 'unknown')} — suppressed at the sink, sequence stopped.`);
+      break;
+    }
+    case 'erasure_requested': {
+      // filed by the public edge function (already suppressed at the edge);
+      // the DELETION is the operator's move — identity check is human
+      const who = typeof payload['email'] === 'string' ? (payload['email'] as string) : 'unknown';
+      await d.notify(
+        `⌫ <b>erasure requested</b> for ${escapeHtml(who)} — sends already suppressed at the edge.\n` +
+          `Verify it's really them, then execute from the lead drawer (or POST /v1/erasure).`,
+      );
       break;
     }
     case 'unsub':

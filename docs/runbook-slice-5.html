@@ -1,0 +1,119 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>muninn — slice 5 runbook · governance &amp; retention · 2026-07-16</title>
+<meta name="description" content="Deploy the erasure endpoint, then run the exit test: erase a seeded person end-to-end (only a hashed tombstone remains, re-ingest refused) and force the budget breaker to trip." />
+<style>
+  :root{
+    --base:#FBF9F6; --panel:#F4F0EA; --panel2:#ECE7DE; --line:#E0D9CD; --ink:#26221D; --muted:#6E6558; --faint:#9A9184;
+    --orange:#C44A24; --green:#1E8F4E; --amber:#A8720F; --red:#C03A28; --violet:#6D4FD8;
+    --green-bg:rgba(30,143,78,.08); --amber-bg:rgba(168,114,15,.09); --violet-bg:rgba(109,79,216,.08); --red-bg:rgba(192,58,40,.07);
+    --mono:'Cascadia Code','JetBrains Mono',Consolas,ui-monospace,monospace;
+    --sans:'Segoe UI Variable Text','Segoe UI',system-ui,-apple-system,sans-serif;
+  }
+  @media (prefers-color-scheme: dark){
+    :root{ --base:#0F0E0C; --panel:#171512; --panel2:#1E1B18; --line:#2B2723; --ink:#EDE8E0; --muted:#9A9083; --faint:#6A6257;
+      --orange:#E8623A; --green:#4ADE80; --amber:#F0A93B; --red:#F0533B; --violet:#A78BFA;
+      --green-bg:rgba(74,222,128,.08); --amber-bg:rgba(240,169,59,.09); --violet-bg:rgba(167,139,250,.09); --red-bg:rgba(240,83,59,.08); }
+  }
+  :root[data-theme="dark"]{ --base:#0F0E0C; --panel:#171512; --panel2:#1E1B18; --line:#2B2723; --ink:#EDE8E0; --muted:#9A9083; --faint:#6A6257;
+    --orange:#E8623A; --green:#4ADE80; --amber:#F0A93B; --red:#F0533B; --violet:#A78BFA;
+    --green-bg:rgba(74,222,128,.08); --amber-bg:rgba(240,169,59,.09); --violet-bg:rgba(167,139,250,.09); --red-bg:rgba(240,83,59,.08); }
+  :root[data-theme="light"]{ --base:#FBF9F6; --panel:#F4F0EA; --panel2:#ECE7DE; --line:#E0D9CD; --ink:#26221D; --muted:#6E6558; --faint:#9A9184;
+    --orange:#C44A24; --green:#1E8F4E; --amber:#A8720F; --red:#C03A28; --violet:#6D4FD8;
+    --green-bg:rgba(30,143,78,.08); --amber-bg:rgba(168,114,15,.09); --violet-bg:rgba(109,79,216,.08); --red-bg:rgba(192,58,40,.07); }
+  *{box-sizing:border-box}
+  body{background:var(--base);color:var(--ink);font-family:var(--sans);font-size:16px;line-height:1.65;margin:0;-webkit-font-smoothing:antialiased}
+  .wrap{max-width:920px;margin:0 auto;padding:0 26px}
+  a{color:var(--orange);text-decoration:none} a:hover{text-decoration:underline}
+  header{padding:52px 0 8px}
+  .eyebrow{font-family:var(--mono);font-size:11.5px;letter-spacing:.15em;text-transform:uppercase;color:var(--orange);display:flex;align-items:center;gap:10px;margin-bottom:16px}
+  .eyebrow::before{content:"";width:28px;height:1px;background:var(--orange);opacity:.6}
+  h1{font-size:clamp(27px,4vw,38px);line-height:1.1;letter-spacing:-.025em;margin:0;font-weight:700;text-wrap:balance}
+  .sub{color:var(--muted);font-size:16.5px;max-width:68ch;margin:16px 0 0}
+  .sub b{color:var(--ink)}
+  h2{font-size:clamp(20px,2.6vw,26px);letter-spacing:-.02em;margin:52px 0 6px;font-weight:700}
+  h2 .no{font-family:var(--mono);font-size:.6em;font-weight:500;color:var(--faint);vertical-align:.3em;margin-right:10px}
+  p{margin:12px 0;color:var(--muted)} p b,li b{color:var(--ink);font-weight:600}
+  ul,ol{margin:12px 0;padding-left:22px;color:var(--muted)} li{margin:6px 0}
+  code{font-family:var(--mono);font-size:.84em;background:var(--panel2);border:1px solid var(--line);border-radius:5px;padding:1px 6px;color:var(--ink)}
+  kbd{font-family:var(--mono);font-size:.78em;border:1px solid var(--line);border-bottom-width:2px;border-radius:5px;padding:0 6px;background:var(--panel2);color:var(--ink)}
+  pre{font-family:var(--mono);font-size:12.5px;line-height:1.65;background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:14px 17px;overflow-x:auto;color:var(--ink);margin:14px 0}
+  pre .c{color:var(--faint)}
+  .tbl{border:1px solid var(--line);border-radius:10px;overflow-x:auto;margin:16px 0;background:var(--panel)}
+  table{border-collapse:collapse;width:100%;font-size:13.5px;min-width:560px}
+  th,td{padding:10px 13px;text-align:left;border-bottom:1px solid var(--line);vertical-align:top}
+  thead th{font-family:var(--mono);font-size:10.5px;letter-spacing:.07em;text-transform:uppercase;color:var(--faint);background:var(--panel2);font-weight:500}
+  tbody tr:last-child th,tbody tr:last-child td{border-bottom:none}
+  tbody th{font-weight:600;color:var(--ink);font-size:13px;font-family:var(--mono);white-space:nowrap}
+  td{color:var(--muted)} td b{color:var(--ink)}
+  .callout{border:1px solid var(--line);border-radius:10px;padding:15px 19px;margin:18px 0;background:var(--panel)}
+  .callout.green{border-color:color-mix(in srgb,var(--green) 40%,var(--line));background:var(--green-bg)}
+  .callout.amber{border-color:color-mix(in srgb,var(--amber) 45%,var(--line));background:var(--amber-bg)}
+  .callout.red{border-color:color-mix(in srgb,var(--red) 45%,var(--line));background:var(--red-bg)}
+  .callout.violet{border-color:color-mix(in srgb,var(--violet) 40%,var(--line));background:var(--violet-bg)}
+  .callout .ch{font-family:var(--mono);font-size:11px;letter-spacing:.12em;text-transform:uppercase;margin-bottom:8px;font-weight:600}
+  .callout.green .ch{color:var(--green)} .callout.amber .ch{color:var(--amber)} .callout.red .ch{color:var(--red)} .callout.violet .ch{color:var(--violet)}
+  .callout p{font-size:14.5px;margin:7px 0}
+  footer{border-top:1px solid var(--line);margin-top:64px;padding:28px 0 56px;font-family:var(--mono);font-size:11.5px;color:var(--faint)}
+</style>
+</head>
+<body>
+<header><div class="wrap">
+  <div class="eyebrow">muninn · slice 5 · operator runbook · 2026-07-16</div>
+  <h1>The PII concern, answered. Erasure, retention, and a budget that refuses.</h1>
+  <p class="sub">The last slice flips the audit's biggest flag from "harvesting personal data" to "responsibly governed" — antiloki's own doctrine applied to its GTM. <b>G1</b>: "delete everything on person X" works end-to-end, leaving only a <code>sha256:</code> tombstone that refuses re-acquisition forever. <b>G2</b>: un-engaged leads and raw vendor payloads expire on a clock. <b>G3</b>: the budget bar becomes a circuit-breaker — enrichment/AI halt at the ceiling with an alert, not a surprise invoice. <b>G4/D8</b>: the secrets posture stays what it was (keys in <code>api/.env</code>, never in the bundle) and your data exports on demand. One function deploy, zero new keys.</p>
+</div></header>
+
+<section><div class="wrap">
+  <h2><span class="no">01</span>Migrate + deploy the erasure endpoint</h2>
+  <pre><span class="c"># the slice-5 migration (an index + the tombstone contract in its header — no new tables):</span>
+supabase db push
+
+<span class="c"># the public erasure-request endpoint (config.toml already sets verify_jwt=false):</span>
+supabase functions deploy erasure</pre>
+  <p>Optional dials, all with sane defaults (⚙ Settings → tuning): <code>MUNINN_RETENTION_LEAD_DAYS=90</code> · <code>MUNINN_RETENTION_RAW_DAYS=30</code> · <code>MUNINN_RETENTION_CRON=30 3 * * *</code> — and <code>MUNINN_MONTHLY_BUDGET_USD</code>, which as of this slice <b>enforces</b> (0 disables).</p>
+  <div class="callout violet">
+    <div class="ch">how the public endpoint stays safe</div>
+    <p>Anyone can POST an email to <code>/erasure</code> — so it never deletes anything by itself. It acts in two layers, webhook-sink style: the edge <b>suppresses the address instantly</b> (worst-case abuse = unsubscribing someone, the same power the unsub link already grants) and files the request; your api turns it into a Telegram ping. <b>You</b> verify it's really them, then execute the deletion from the lead drawer or <code>POST /v1/erasure</code>. Identity checks are human, on purpose.</p>
+  </div>
+</div></section>
+
+<section><div class="wrap">
+  <h2><span class="no">02</span>The exit test — erase end-to-end · breaker trips</h2>
+  <ol>
+    <li><b>Seed a person.</b> Ingest a test LinkedIn URL (yours works) and let it enrich + analyze; join the waitlist with the same test email so both halves exist.</li>
+    <li><b>Erase.</b> Lead drawer → <b>⌫ erase person</b> → <b>confirm: erase every row</b>. Or from the terminal:
+      <pre>curl -s -X POST 127.0.0.1:41945/v1/erasure -H 'content-type: application/json' \
+  -d '{"email":"the-test@address.dev"}' | jq
+<span class="c">#  → { "leads": 1, "waitlistMembers": 1, "rows": { ... }, "emailHashes": ["sha256:…"], … }</span></pre></li>
+    <li><b>Verify the void.</b> The lead is gone from /leads, the member gone from /waitlist, the timeline gone with them. In the DB, only suppression rows shaped <code>sha256:&lt;hex&gt;</code> remain (reason <code>erasure</code>), and the cost ledger keeps its dollars with <code>lead_id</code>/<code>meta</code> nulled — money spent stays true, the person is gone.</li>
+    <li><b>Re-ingest is refused.</b> Send the same URL to the bot or the console → <i>suppressed</i>. The tombstone matched the hash; nobody had to remember why.</li>
+    <li><b>Trip the breaker.</b> Set <code>MUNINN_MONTHLY_BUDGET_USD</code> below this month's spend (Control → vendors shows it) and save → ingest a fresh URL → the lead parks with <i>"budget ceiling reached…"</i>, Telegram gets ONE ⛔ alert, and Control shows <b>BREAKER TRIPPED</b> on the budget bar. Raise the ceiling back → next call flows and a ▶ reset note arrives.</li>
+    <li><b>Exports.</b> Settings → export &amp; backup → four downloads (leads/waitlist × csv/json) land instantly off loopback.</li>
+  </ol>
+</div></section>
+
+<section><div class="wrap">
+  <h2><span class="no">03</span>What governs what, now</h2>
+  <div class="tbl"><table>
+    <thead><tr><th>Mechanism</th><th>Trigger</th><th>Effect</th></tr></thead>
+    <tbody>
+      <tr><th>erasure (G1)</th><td>drawer action · <code>POST /v1/erasure</code> · public request + your confirmation</td><td>every row about the person deleted; ledger scrubbed; <code>sha256:</code> tombstones refuse re-ingest (bot/console) and re-send (SendPolicy) forever</td></tr>
+      <tr><th>retention (G2)</th><td>daily 03:30 UTC cron</td><td>un-engaged leads older than 90d purge via the same cascade — <b>no tombstone</b>, they may return; raw vendor payloads older than 30d collapse to <code>{expired}</code>, distilled columns stay</td></tr>
+      <tr><th>budget breaker (G3)</th><td>every paid call: FullEnrich · OpenRouter (analysis + reply labels) · Apollo</td><td>refused at the monthly ceiling; leads park quietly with the reason; one alert per trip, auto-reset on month roll or a raised ceiling. Sends aren't gated here — SendPolicy owns those.</td></tr>
+      <tr><th>secrets (G4)</th><td>—</td><td>unchanged by design: vendor + service-role keys in <code>api/.env</code> only; console sees <i>configured · length</i>; edge secrets live in Supabase. Documented in Settings.</td></tr>
+      <tr><th>export (D8)</th><td>Settings buttons · <code>GET /v1/export/leads|waitlist?format=csv|json</code></td><td>flat files, fixed columns, RFC-4180 quoting</td></tr>
+    </tbody>
+  </table></div>
+  <div class="callout green">
+    <div class="ch">the six slices, closed</div>
+    <p>0 funnel · 1 raven · 2 console · 3 gate &amp; send · 4 loop · 5 governance — the plan is fully built. What remains is entirely operator-side: the five blocking decisions (domain, name+postal, vendor accounts, LinkedIn stance, wave-1 date), the runbook deploys, and the warmup clock. From here muninn changes only when the market talks back.</p>
+  </div>
+</div></section>
+
+<footer><div class="wrap">muninn slice-5 runbook · 2026-07-16 · governance &amp; retention · erasable by design, capped by design, honest by design</div></footer>
+</body>
+</html>

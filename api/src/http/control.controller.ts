@@ -202,7 +202,8 @@ export class ControlController {
     return {
       monthUsd: this.rt.cfg.MUNINN_MONTHLY_BUDGET_USD,
       spentMonthUsd: Number(row?.total ?? 0),
-      note: 'display only in slice 4 — the enforcing circuit-breaker is slice 5 (G3)',
+      tripped: this.rt.budget ? await this.rt.budget.tripped() : false,
+      note: 'enforced — enrichment/AI calls halt at the ceiling (G3); 0 disables',
     };
   }
 

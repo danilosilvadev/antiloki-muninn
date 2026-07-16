@@ -55,6 +55,10 @@ const Env = z.object({
   MUNINN_MONTHLY_BUDGET_USD: z.coerce.number().min(0).default(280),
   MUNINN_TARGET_COST_PER_POSITIVE: z.coerce.number().min(0).default(25),
   MUNINN_TARGET_REPLY_PCT: z.coerce.number().min(0).default(5.5),
+  // slice 5 · governance — the retention clock (0 disables either limb)
+  MUNINN_RETENTION_LEAD_DAYS: z.coerce.number().int().min(0).default(90),
+  MUNINN_RETENTION_RAW_DAYS: z.coerce.number().int().min(0).default(30),
+  MUNINN_RETENTION_CRON: z.string().default('30 3 * * *'),
 });
 
 export type Config = z.infer<typeof Env> & { degraded: string[] };

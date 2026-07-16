@@ -26,6 +26,10 @@ export class SuggestionsController {
   @Post('leads/:id/expand')
   async expand(@Param('id') id: string, @Body() body: { mode?: string }) {
     const mode = body?.mode === 'lookalike' ? 'lookalike' : 'colleagues';
+    if (this.rt.budget) {
+      const g = await this.rt.budget.gate('apollo'); // G3: expansion is a paid call
+      if (!g.allowed) throw new ServiceUnavailableException(g.reason);
+    }
     try {
       return await this.svc().expand(id, mode);
     } catch (e) {

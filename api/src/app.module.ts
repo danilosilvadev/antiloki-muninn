@@ -1,5 +1,6 @@
 import { Module, type DynamicModule } from '@nestjs/common';
 import { ControlController } from './http/control.controller';
+import { GovernanceController } from './http/governance.controller';
 import { HealthController } from './http/health.controller';
 import { LeadExtrasController, LeadsController } from './http/leads.controller';
 import { StatsController } from './http/stats.controller';
@@ -22,6 +23,7 @@ export class AppModule {
         SuggestionsController,
         ControlController,
         WaitlistController,
+        GovernanceController,
         SettingsController,
       ],
       providers: [

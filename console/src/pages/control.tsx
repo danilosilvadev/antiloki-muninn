@@ -92,6 +92,7 @@ export function ControlPage(): ReactNode {
             <div style={{ marginTop: 12 }}>
               <div className="mono tiny muted2" style={{ marginBottom: 4 }}>
                 month budget — ${c.budget.spentMonthUsd.toFixed(2)} / ${c.budget.monthUsd.toFixed(0)}
+                {c.budget.tripped && <span className="badge r" style={{ marginLeft: 8 }}>BREAKER TRIPPED — enrichment/AI halted</span>}
                 <span style={{ marginLeft: 6 }}>({c.budget.note})</span>
               </div>
               <div style={{ height: 8, borderRadius: 5, background: 'var(--panel-2)', overflow: 'hidden' }}>

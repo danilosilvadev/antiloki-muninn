@@ -39,9 +39,13 @@ export const KEY_DEFS: KeyDef[] = [
   { name: 'MUNINN_OPERATOR_EMAIL', group: 'tuning', secret: false, hint: 'where the weekly digest email lands (yours)' },
   { name: 'MUNINN_POSTAL_LINE', group: 'tuning', secret: false, hint: 'CAN-SPAM postal footer on invite/digest emails' },
   { name: 'MUNINN_WEEKLY_DIGEST_CRON', group: 'tuning', secret: false, hint: 'weekly targets digest, UTC cron (default Mon 12:00)' },
-  { name: 'MUNINN_MONTHLY_BUDGET_USD', group: 'tuning', secret: false, hint: 'control-center budget bar ceiling (display in slice 4; the breaker is slice 5 / G3)' },
+  { name: 'MUNINN_MONTHLY_BUDGET_USD', group: 'tuning', secret: false, hint: 'the spend ceiling — enrichment/AI calls HALT here (G3 breaker); 0 disables' },
   { name: 'MUNINN_TARGET_COST_PER_POSITIVE', group: 'tuning', secret: false, hint: 'weekly digest target: 7d spend ÷ positive replies ≤ this ($, default 25)' },
   { name: 'MUNINN_TARGET_REPLY_PCT', group: 'tuning', secret: false, hint: 'weekly digest target: replies ÷ sent ≥ this % (default 5.5)' },
+  // slice 5 · governance
+  { name: 'MUNINN_RETENTION_LEAD_DAYS', group: 'tuning', secret: false, hint: 'purge un-engaged leads after N days (G2; 0 disables, default 90)' },
+  { name: 'MUNINN_RETENTION_RAW_DAYS', group: 'tuning', secret: false, hint: 'expire raw vendor payloads after N days (G2; 0 disables, default 30)' },
+  { name: 'MUNINN_RETENTION_CRON', group: 'tuning', secret: false, hint: 'when the retention clock runs — UTC cron (default 03:30 daily)' },
 ];
 
 export interface KeyStatus extends KeyDef {

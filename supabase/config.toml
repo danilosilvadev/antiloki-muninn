@@ -25,3 +25,8 @@ verify_jwt = false
 [functions.invite]
 verify_jwt = false
 
+# slice-5 public endpoint: data-subject erasure requests (G1) — suppresses at
+# the edge immediately; deletion is operator-executed after an identity check.
+[functions.erasure]
+verify_jwt = false
+

@@ -11,6 +11,9 @@ import { ResendAdapter } from './channels/resend.adapter';
 import { SequenceService } from './channels/sequence.service';
 import { SmartleadAdapter } from './channels/smartlead.adapter';
 import { ApolloAdapter } from './enrichment/apollo.adapter';
+import { BudgetService } from './governance/budget.service';
+import { ErasureService } from './governance/erasure.service';
+import { runRetention } from './governance/retention';
 import { QUEUES, startBoss } from './jobs/boss';
 import { runTick } from './jobs/tick';
 import { registerWorkers } from './jobs/workers';
@@ -33,6 +36,8 @@ export interface Runtime {
   policy: PolicyService | null;
   sequences: SequenceService | null;
   waves: WavesService | null;
+  erasure: ErasureService | null;
+  budget: BudgetService | null;
   requestTick: (() => Promise<void>) | null;
   telegram: TelegramService | null;
   workersActive: boolean;
@@ -72,6 +77,8 @@ export async function buildRuntime(cfg: Config): Promise<Runtime> {
   let policy: PolicyService | null = null;
   let sequences: SequenceService | null = null;
   let waves: WavesService | null = null;
+  let erasure: ErasureService | null = null;
+  let budget: BudgetService | null = null;
   let requestTick: (() => Promise<void>) | null = null;
   let telegram: TelegramService | null = null;
   let workersActive = false;
@@ -119,6 +126,8 @@ export async function buildRuntime(cfg: Config): Promise<Runtime> {
       edgeSecret: cfg.MUNINN_EDGE_SECRET ?? null,
       postalLine: cfg.MUNINN_POSTAL_LINE ?? null,
     }, notify);
+    erasure = new ErasureService(db, notify);
+    budget = new BudgetService(db, policy, cfg.MUNINN_MONTHLY_BUDGET_USD, notify);
 
     const orClient = cfg.OPENROUTER_API_KEY
       ? new OpenRouterClient({
@@ -144,7 +153,7 @@ export async function buildRuntime(cfg: Config): Promise<Runtime> {
       : null;
     sequences = new SequenceService(db, policy, smartlead, notify);
 
-    const tickDeps = { db, policy, sequences, smartlead, classifier: orClient, notify };
+    const tickDeps = { db, policy, sequences, smartlead, classifier: orClient, budget, notify };
     const bossRef = boss;
     requestTick = async () => {
       await bossRef.send(QUEUES.sequenceTick, {});
@@ -188,9 +197,17 @@ export async function buildRuntime(cfg: Config): Promise<Runtime> {
           }
         },
         tick: () => runTick(tickDeps),
+        budget,
+        retention: async () => {
+          await runRetention(db!, erasure!, {
+            leadDays: cfg.MUNINN_RETENTION_LEAD_DAYS,
+            rawDays: cfg.MUNINN_RETENTION_RAW_DAYS,
+          }, notify);
+        },
       });
       await boss.schedule(QUEUES.digest, cfg.MUNINN_DIGEST_CRON);
       await boss.schedule(QUEUES.weeklyDigest, cfg.MUNINN_WEEKLY_DIGEST_CRON);
+      await boss.schedule(QUEUES.retention, cfg.MUNINN_RETENTION_CRON);
       await boss.schedule(QUEUES.sequenceTick, '* * * * *'); // the every-minute gate & send tick
       workersActive = true;
     } else {
@@ -212,5 +229,5 @@ export async function buildRuntime(cfg: Config): Promise<Runtime> {
     telegram.start();
   }
 
-  return { cfg, db, endDb, boss, leads, suggestions, policy, sequences, waves, requestTick, telegram, workersActive };
+  return { cfg, db, endDb, boss, leads, suggestions, policy, sequences, waves, erasure, budget, requestTick, telegram, workersActive };
 }

@@ -1,0 +1,24 @@
+-- ═══════════════════════════════════════════════════════════════════════════
+-- slice 5 · governance & retention (G1–G3)
+--
+-- No new tables — governance runs over the existing record. What this
+-- migration pins down is the TOMBSTONE CONTRACT and the lookup path:
+--
+--   · Erasure (G1) deletes every row about a person and leaves suppression
+--     rows whose email / linkedin_url columns hold `sha256:<hex>` (hash of
+--     the exact stored value: normalized lowercase email, normalized
+--     linkedin url) with reason='erasure'. The person's data is gone; the
+--     hash is enough to refuse re-acquisition (ingest + SendPolicy check
+--     both the plain value and its sha256: form), and it is not personal
+--     data on its own.
+--   · Retention (G2) purges via the same cascade WITHOUT a tombstone —
+--     an aged-out lead may legitimately return later; an erased person
+--     must not.
+--   · The breaker (G3) and retention clocks keep their state in ops_flags
+--     (slice 3) and vendor_calls (slice 1) — nothing new to create.
+--
+--   · suppressions(linkedin_url) gets an index: ingest now checks it on
+--     every URL (plain + hashed), same as the existing email lookup.
+-- ═══════════════════════════════════════════════════════════════════════════
+
+create index if not exists suppressions_linkedin_idx on suppressions (linkedin_url);

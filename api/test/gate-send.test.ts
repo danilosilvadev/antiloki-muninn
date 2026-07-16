@@ -112,6 +112,7 @@ function makeMachine(db: Db, overrides: Partial<typeof POLICY_CFG> = {}) {
     policy,
     sequences,
     smartlead,
+    budget: null,
     classifier: new OpenRouterClient({
       apiKey: 'or-key-000000',
       baseUrl: 'https://or.example',

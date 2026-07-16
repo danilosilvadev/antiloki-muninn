@@ -16,6 +16,7 @@ export function LeadDrawer({ id, onClose }: { id: string; onClose: () => void })
   const [remNote, setRemNote] = useState('');
   const [remDue, setRemDue] = useState('');
   const [banner, setBanner] = useState<string | null>(null);
+  const [eraseArmed, setEraseArmed] = useState(false);
 
   const refresh = (): void => {
     void qc.invalidateQueries({ queryKey: ['lead', id] });
@@ -40,6 +41,14 @@ export function LeadDrawer({ id, onClose }: { id: string; onClose: () => void })
     mutationFn: (mode: 'colleagues' | 'lookalike') => api.expand(id, mode),
     onSuccess: (r) => { setBanner(`find similar: ${r.found} found, ${r.inserted} new suggestion${r.inserted === 1 ? '' : 's'}`); void qc.invalidateQueries({ queryKey: ['suggestions'] }); },
     onError: (e) => setBanner(e instanceof Error ? e.message : 'expand failed'),
+  });
+  const erase = useMutation({
+    mutationFn: () => api.erase({ lead_id: id }),
+    onSuccess: () => {
+      void qc.invalidateQueries(); // every row about them is gone — refetch the world
+      onClose();
+    },
+    onError: (e) => { setEraseArmed(false); setBanner(e instanceof Error ? e.message : 'erasure failed'); },
   });
 
   const v = view.data;
@@ -69,6 +78,23 @@ export function LeadDrawer({ id, onClose }: { id: string; onClose: () => void })
               <a className="btn sm" href={calendly} target="_blank" rel="noreferrer">book a call ↗</a>
             ) : (
               <span className="btn sm" style={{ opacity: 0.45, cursor: 'not-allowed' }} title="set CALENDLY_URL in Settings">book a call</span>
+            )}
+            <span style={{ flex: 1 }} />
+            {eraseArmed ? (
+              <>
+                <button className="btn sm warn" disabled={erase.isPending} onClick={() => erase.mutate()}>
+                  {erase.isPending ? 'erasing…' : 'confirm: erase every row'}
+                </button>
+                <button className="btn sm" disabled={erase.isPending} onClick={() => setEraseArmed(false)}>keep</button>
+              </>
+            ) : (
+              <button
+                className="btn sm"
+                title="G1 data-subject erasure — deletes every row about this person; only a hashed tombstone remains"
+                onClick={() => setEraseArmed(true)}
+              >
+                ⌫ erase person
+              </button>
             )}
             {banner && <span className="mono tiny muted">{banner}</span>}
           </div>
