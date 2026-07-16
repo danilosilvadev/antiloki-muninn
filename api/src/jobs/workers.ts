@@ -18,6 +18,7 @@ export interface WorkerDeps {
   notify: (html: string) => Promise<void>;
   sendDossier: (leadId: string, violations: string[]) => Promise<void>;
   digest: () => Promise<void>;
+  weeklyDigest: (() => Promise<void>) | null; // slice 4: C11 — the targets digest
   tick: (() => Promise<{ drained: number }>) | null; // slice 3: the gate & send scheduler
 }
 
@@ -78,6 +79,13 @@ export async function registerWorkers(d: WorkerDeps): Promise<void> {
   await d.boss.work(QUEUES.digest, async () => {
     await d.digest();
   });
+
+  if (d.weeklyDigest) {
+    const weekly = d.weeklyDigest;
+    await d.boss.work(QUEUES.weeklyDigest, async () => {
+      await weekly();
+    });
+  }
 
   if (d.tick) {
     const tick = d.tick;

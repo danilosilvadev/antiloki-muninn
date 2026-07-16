@@ -63,10 +63,9 @@ export function Shell(): ReactNode {
           <Link to="/control" activeProps={{ className: 'active' }}>
             <span className="lbl">⏸ Control</span>
           </Link>
-          <span className="nav-off" title="arrives with slice 4">
+          <Link to="/waitlist" activeProps={{ className: 'active' }}>
             <span className="lbl">≋ Waitlist</span>
-            <small>slice 4</small>
-          </span>
+          </Link>
           <Link to="/settings" activeProps={{ className: 'active' }}>
             <span className="lbl">⚙ Settings</span>
           </Link>

@@ -137,6 +137,18 @@ export class SequenceService {
     await this.db.insert(t.events).values({ leadId, kind: 'sequence_stopped', payload: { why } });
   }
 
+  // The angle's step delays, from the D6 editor's sequence_templates row —
+  // falling back to the day-0 / +6 / +6 default when never edited.
+  async templateDelays(angle: string): Promise<number[]> {
+    const [row] = await this.db
+      .select()
+      .from(t.sequenceTemplates)
+      .where(eq(t.sequenceTemplates.angle, angle))
+      .limit(1);
+    const d = row?.delays;
+    return Array.isArray(d) && d.length === 3 && d.every((x) => Number.isInteger(x)) ? (d as number[]) : [0, 6, 6];
+  }
+
   async ensureCampaign(angle: string): Promise<string> {
     const [existing] = await this.db
       .select()
@@ -148,7 +160,7 @@ export class SequenceService {
 
     const remote = await this.smartlead.listCampaigns();
     const hit = remote.find((c) => c.name === `muninn-${angle}`);
-    const campaignId = hit ? hit.id : await this.smartlead.createCampaign(angle);
+    const campaignId = hit ? hit.id : await this.smartlead.createCampaign(angle, await this.templateDelays(angle));
     await this.db.insert(t.smartleadCampaigns).values({ angle, campaignId });
     await this.db.insert(t.vendorCalls).values({
       provider: 'smartlead',
@@ -161,5 +173,54 @@ export class SequenceService {
   async allCampaigns(): Promise<{ angle: string; campaignId: string }[]> {
     const rows = await this.db.select().from(t.smartleadCampaigns);
     return rows.map((r) => ({ angle: r.angle, campaignId: r.campaignId }));
+  }
+
+  // D6 editor: persist per-angle step delays and, when the angle's campaign
+  // already exists, push the new timing to Smartlead in the same call.
+  async setTemplateDelays(angle: string, delays: number[]): Promise<{ pushedToSmartlead: boolean }> {
+    const existing = await this.db
+      .select({ angle: t.sequenceTemplates.angle })
+      .from(t.sequenceTemplates)
+      .where(eq(t.sequenceTemplates.angle, angle))
+      .limit(1);
+    if (existing.length > 0) {
+      await this.db
+        .update(t.sequenceTemplates)
+        .set({ delays, updatedAt: new Date() })
+        .where(eq(t.sequenceTemplates.angle, angle));
+    } else {
+      await this.db.insert(t.sequenceTemplates).values({ angle, delays });
+    }
+    let pushedToSmartlead = false;
+    if (this.smartlead) {
+      const [camp] = await this.db
+        .select()
+        .from(t.smartleadCampaigns)
+        .where(eq(t.smartleadCampaigns.angle, angle))
+        .limit(1);
+      if (camp) {
+        await this.smartlead.updateSequences(camp.campaignId, delays);
+        pushedToSmartlead = true;
+      }
+    }
+    await this.db.insert(t.events).values({
+      kind: 'sequence_template_updated',
+      payload: { angle, delays, pushed_to_smartlead: pushedToSmartlead },
+    });
+    return { pushedToSmartlead };
+  }
+
+  // D6 per-angle pause/resume: flips the angle's Smartlead campaign if one
+  // exists. Callers own the flag bookkeeping (FLAG_ANGLE_PAUSED).
+  async setAngleCampaignStatus(angle: string, status: 'PAUSED' | 'START'): Promise<boolean> {
+    if (!this.smartlead) return false;
+    const [camp] = await this.db
+      .select()
+      .from(t.smartleadCampaigns)
+      .where(eq(t.smartleadCampaigns.angle, angle))
+      .limit(1);
+    if (!camp) return false;
+    await this.smartlead.setCampaignStatus(camp.campaignId, status);
+    return true;
   }
 }

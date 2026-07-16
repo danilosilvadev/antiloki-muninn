@@ -328,6 +328,18 @@ window.MUNINN = {
   .wl-share code{font-family:var(--mono);font-size:12.5px;color:var(--text);background:var(--panel);border:1px solid var(--line);border-radius:7px;padding:8px 12px;word-break:break-all}
   .wl-share button{font-family:var(--mono);font-size:11.5px;color:var(--muted);background:transparent;border:1px solid var(--line);border-radius:7px;padding:8px 12px;cursor:pointer}
   .wl-share button:hover{color:var(--text);border-color:var(--muted)}
+  .wl-wave{font-family:var(--mono);font-size:12px;color:var(--muted);margin-top:14px}
+  .wl-wave b{color:var(--text)}
+  .wl-optin{margin:18px auto 0;padding:14px;border:1px solid var(--line);border-radius:10px;background:var(--panel);max-width:560px}
+  .wl-optin-t{font-family:var(--mono);font-size:11.5px;color:var(--muted-2);margin-bottom:10px}
+  .wl-optin-t a{color:var(--orange)}
+  .wl-optin-row{display:flex;gap:8px;flex-wrap:wrap;justify-content:center}
+  .wl-optin-row input{font-family:var(--mono);font-size:12.5px;background:var(--base);border:1px solid var(--line);border-radius:7px;padding:8px 10px;color:var(--text);min-width:170px;flex:1}
+  .wl-optin-row input:disabled{opacity:.5}
+  .wl-optin-row button{font-family:var(--mono);font-size:11.5px;color:var(--muted);background:transparent;border:1px solid var(--line);border-radius:7px;padding:8px 12px;cursor:pointer;white-space:nowrap}
+  .wl-optin-row button:hover:not(:disabled){color:var(--text);border-color:var(--muted)}
+  .wl-optin-row button:disabled{opacity:.5;cursor:not-allowed}
+  .wl-optin-msg{font-family:var(--mono);font-size:11.5px;color:var(--green);margin-top:8px;min-height:14px}
   @media(max-width:540px){.wl{flex-direction:column}}
 
   footer{border-top:1px solid var(--line);padding:40px 0}
@@ -1012,11 +1024,55 @@ expect(res.status).toBe(200)</pre></div>
           var html=d.message||"✓ You're on the list. We'll be in touch.";
           var link=d.referral_url||(d.referral_code?(((cfg.origin&&cfg.origin.indexOf('__')<0)?cfg.origin:location.origin)+'/r/'+d.referral_code):null);
           if(link)html+='<div class="wl-share"><code>'+link+'</code><button type="button" id="wlcopy">copy</button></div>';
+          /* A8 v2 · the loop — honest standing: position is join order, jumps are derived */
+          var refs=typeof d.referrals==='number'?d.referrals:0;
+          if(d.position!=null){
+            var jumps=Math.floor(refs/3),toJump=3-(refs%3);
+            html+='<div class="wl-wave">invites go out in waves — <b>every 3 referrals jump you a wave</b>'
+              +(refs>0
+                ?' · banked <b>'+refs+'</b>'+(refs===1?' referral':' referrals')+(jumps>0?' — jumped '+jumps+(jumps>1?' waves':' wave')+' ▲':' — '+toJump+' more to jump')
+                :'')
+              +'</div>';
+            html+='<div class="wl-optin" id="wloptin">'
+              +'<div class="wl-optin-t">want your invite beyond email? opt in — deleted on request, never cold-messaged · <a href="privacy.html">privacy</a></div>'
+              +'<div class="wl-optin-row"><input id="wlwa" type="tel" placeholder="+55 11 91234 5678 · WhatsApp"><input id="wltg" type="text" placeholder="@telegram_handle"><button type="button" id="wlconsent">notify me there</button></div>'
+              +'<div class="wl-optin-msg" id="wlcmsg"></div>'
+              +'</div>';
+          }
           ok.innerHTML=html;ok.style.display='block';
           var cp=document.getElementById('wlcopy');
           if(cp)cp.addEventListener('click',function(){
             var w=(navigator.clipboard&&navigator.clipboard.writeText)?navigator.clipboard.writeText(link):Promise.reject();
             w.then(function(){cp.textContent='copied ✓';},function(){cp.textContent=link;});
+          });
+          var cbtn=document.getElementById('wlconsent');
+          if(cbtn)cbtn.addEventListener('click',function(){
+            var wa=(document.getElementById('wlwa').value||'').trim();
+            var tg=(document.getElementById('wltg').value||'').trim();
+            var msg=document.getElementById('wlcmsg');
+            var posts=[];
+            if(wa)posts.push({channel:'whatsapp',handle:wa});
+            if(tg)posts.push({channel:'telegram',handle:tg});
+            if(!posts.length){msg.textContent='// leave a number or a handle first';return;}
+            cbtn.disabled=true;
+            Promise.all(posts.map(function(p){
+              return fetch(base+'/consent',{
+                method:'POST',
+                headers:{'content-type':'application/json'},
+                body:JSON.stringify({email:v,channel:p.channel,handle:p.handle})
+              }).then(function(r){return r.json();}).catch(function(){return{ok:false};});
+            })).then(function(rs){
+              var okCount=rs.filter(function(r){return r&&r.ok;}).length;
+              muninnTrack('consent_optin',{granted:okCount,asked:posts.length});
+              if(okCount===posts.length){
+                msg.textContent='✓ opt-in recorded — your invite will reach you there too';
+                document.getElementById('wlwa').disabled=true;
+                document.getElementById('wltg').disabled=true;
+              }else{
+                msg.textContent='// '+(posts.length-okCount)+' of '+posts.length+' didn\'t stick — check the number/handle shape and try again';
+                cbtn.disabled=false;
+              }
+            });
           });
         })
         .catch(function(){muninnTrack('waitlist_join_error',{status:0,error:'network'});fail('// network hiccup — try again');});

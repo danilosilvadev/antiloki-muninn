@@ -4,6 +4,7 @@ import { HealthController } from './http/health.controller';
 import { LeadExtrasController, LeadsController } from './http/leads.controller';
 import { StatsController } from './http/stats.controller';
 import { SuggestionsController } from './http/suggestions.controller';
+import { WaitlistController } from './http/waitlist.controller';
 import { SettingsController } from './settings/settings.controller';
 import type { SettingsService } from './settings/settings.service';
 import type { Runtime } from './runtime';
@@ -20,6 +21,7 @@ export class AppModule {
         StatsController,
         SuggestionsController,
         ControlController,
+        WaitlistController,
         SettingsController,
       ],
       providers: [

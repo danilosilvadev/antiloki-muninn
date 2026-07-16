@@ -7,6 +7,7 @@ import { DashboardPage } from './pages/dashboard';
 import { LeadsPage } from './pages/leads';
 import { ReviewPage } from './pages/review';
 import { ControlPage } from './pages/control';
+import { WaitlistPage } from './pages/waitlist';
 import { SettingsPage } from './pages/settings';
 import './theme.css';
 
@@ -19,9 +20,10 @@ const dashboardRoute = createRoute({ getParentRoute: () => rootRoute, path: '/',
 const leadsRoute = createRoute({ getParentRoute: () => rootRoute, path: '/leads', component: LeadsPage });
 const reviewRoute = createRoute({ getParentRoute: () => rootRoute, path: '/review', component: ReviewPage });
 const controlRoute = createRoute({ getParentRoute: () => rootRoute, path: '/control', component: ControlPage });
+const waitlistRoute = createRoute({ getParentRoute: () => rootRoute, path: '/waitlist', component: WaitlistPage });
 const settingsRoute = createRoute({ getParentRoute: () => rootRoute, path: '/settings', component: SettingsPage });
 
-const routeTree = rootRoute.addChildren([dashboardRoute, leadsRoute, reviewRoute, controlRoute, settingsRoute]);
+const routeTree = rootRoute.addChildren([dashboardRoute, leadsRoute, reviewRoute, controlRoute, waitlistRoute, settingsRoute]);
 const router = createRouter({ routeTree });
 
 declare module '@tanstack/react-router' {

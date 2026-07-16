@@ -17,3 +17,11 @@ verify_jwt = false
 [functions.webhook-sink]
 verify_jwt = false
 
+# slice-4 public endpoints: the thank-you page's consent opt-in POST and the
+# invite link inside wave emails — callers carry no Supabase JWT.
+[functions.consent]
+verify_jwt = false
+
+[functions.invite]
+verify_jwt = false
+

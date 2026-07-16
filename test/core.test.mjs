@@ -4,9 +4,9 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {
   b64urlDecode, b64urlEncode, clampText, corsHeadersFor, escapeHtml,
-  honeypotTripped, normalizeEmail, normalizeReferralCode, operatorLine,
-  parseAllowedOrigins, pickUtm, referralUrl, sha256Hex, unsubToken,
-  unsubUrl, verifyUnsubToken,
+  honeypotTripped, normalizeConsentChannel, normalizeEmail, normalizeHandle,
+  normalizeReferralCode, operatorLine, parseAllowedOrigins, pickUtm,
+  referralUrl, sha256Hex, unsubToken, unsubUrl, verifyUnsubToken,
 } from '../supabase/functions/_shared/core.ts';
 
 test('normalizeEmail accepts, trims and lowercases valid addresses', () => {
@@ -119,4 +119,31 @@ test('unsubUrl builds the canonical link shape', async () => {
   const token = await unsubToken('a@b.co', 's3cret');
   const url = unsubUrl('https://ref.supabase.co/functions/v1/', 'a@b.co', token);
   assert.equal(url, `https://ref.supabase.co/functions/v1/unsub?e=${b64urlEncode('a@b.co')}&t=${token}`);
+});
+
+test('consent channels: only whatsapp/telegram, verbatim', () => {
+  assert.equal(normalizeConsentChannel('whatsapp'), 'whatsapp');
+  assert.equal(normalizeConsentChannel('telegram'), 'telegram');
+  assert.equal(normalizeConsentChannel('email'), null);
+  assert.equal(normalizeConsentChannel('WHATSAPP'), null);
+  assert.equal(normalizeConsentChannel(null), null);
+});
+
+test('whatsapp handles: E.164 shape, separators tolerated, + canonical', () => {
+  assert.equal(normalizeHandle('whatsapp', '+55 (11) 91234-5678'), '+5511912345678');
+  assert.equal(normalizeHandle('whatsapp', '5511912345678'), '+5511912345678');
+  assert.equal(normalizeHandle('whatsapp', '123456'), null);        // too short
+  assert.equal(normalizeHandle('whatsapp', '1'.repeat(16)), null);  // too long
+  assert.equal(normalizeHandle('whatsapp', 'call-me-maybe'), null);
+  assert.equal(normalizeHandle('whatsapp', ''), null);
+  assert.equal(normalizeHandle('whatsapp', 42), null);
+});
+
+test('telegram handles: 5..32 word chars, letter first, @ canonical + lowercased', () => {
+  assert.equal(normalizeHandle('telegram', '@Dani_Dev'), '@dani_dev');
+  assert.equal(normalizeHandle('telegram', 'dani_dev'), '@dani_dev');
+  assert.equal(normalizeHandle('telegram', '@dani'), null);          // 4 chars — too short
+  assert.equal(normalizeHandle('telegram', '@1dani'), null);         // digit first
+  assert.equal(normalizeHandle('telegram', '@' + 'a'.repeat(33)), null);
+  assert.equal(normalizeHandle('telegram', 'has space'), null);
 });

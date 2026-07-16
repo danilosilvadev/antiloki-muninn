@@ -1,0 +1,149 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>muninn — slice 4 runbook · the loop · 2026-07-16</title>
+<meta name="description" content="Wire Resend + deploy the consent/invite functions, then run the exit test: issue a wave of 10 (codes + emails + activation), watch a referral move a position, and prove pause-all survives an api restart." />
+<style>
+  :root{
+    --base:#FBF9F6; --panel:#F4F0EA; --panel2:#ECE7DE; --line:#E0D9CD; --ink:#26221D; --muted:#6E6558; --faint:#9A9184;
+    --orange:#C44A24; --green:#1E8F4E; --amber:#A8720F; --red:#C03A28; --violet:#6D4FD8;
+    --green-bg:rgba(30,143,78,.08); --amber-bg:rgba(168,114,15,.09); --violet-bg:rgba(109,79,216,.08); --red-bg:rgba(192,58,40,.07);
+    --mono:'Cascadia Code','JetBrains Mono',Consolas,ui-monospace,monospace;
+    --sans:'Segoe UI Variable Text','Segoe UI',system-ui,-apple-system,sans-serif;
+  }
+  @media (prefers-color-scheme: dark){
+    :root{ --base:#0F0E0C; --panel:#171512; --panel2:#1E1B18; --line:#2B2723; --ink:#EDE8E0; --muted:#9A9083; --faint:#6A6257;
+      --orange:#E8623A; --green:#4ADE80; --amber:#F0A93B; --red:#F0533B; --violet:#A78BFA;
+      --green-bg:rgba(74,222,128,.08); --amber-bg:rgba(240,169,59,.09); --violet-bg:rgba(167,139,250,.09); --red-bg:rgba(240,83,59,.08); }
+  }
+  :root[data-theme="dark"]{ --base:#0F0E0C; --panel:#171512; --panel2:#1E1B18; --line:#2B2723; --ink:#EDE8E0; --muted:#9A9083; --faint:#6A6257;
+    --orange:#E8623A; --green:#4ADE80; --amber:#F0A93B; --red:#F0533B; --violet:#A78BFA;
+    --green-bg:rgba(74,222,128,.08); --amber-bg:rgba(240,169,59,.09); --violet-bg:rgba(167,139,250,.09); --red-bg:rgba(240,83,59,.08); }
+  :root[data-theme="light"]{ --base:#FBF9F6; --panel:#F4F0EA; --panel2:#ECE7DE; --line:#E0D9CD; --ink:#26221D; --muted:#6E6558; --faint:#9A9184;
+    --orange:#C44A24; --green:#1E8F4E; --amber:#A8720F; --red:#C03A28; --violet:#6D4FD8;
+    --green-bg:rgba(30,143,78,.08); --amber-bg:rgba(168,114,15,.09); --violet-bg:rgba(109,79,216,.08); --red-bg:rgba(192,58,40,.07); }
+  *{box-sizing:border-box}
+  body{background:var(--base);color:var(--ink);font-family:var(--sans);font-size:16px;line-height:1.65;margin:0;-webkit-font-smoothing:antialiased}
+  .wrap{max-width:920px;margin:0 auto;padding:0 26px}
+  a{color:var(--orange);text-decoration:none} a:hover{text-decoration:underline}
+  header{padding:52px 0 8px}
+  .eyebrow{font-family:var(--mono);font-size:11.5px;letter-spacing:.15em;text-transform:uppercase;color:var(--orange);display:flex;align-items:center;gap:10px;margin-bottom:16px}
+  .eyebrow::before{content:"";width:28px;height:1px;background:var(--orange);opacity:.6}
+  h1{font-size:clamp(27px,4vw,38px);line-height:1.1;letter-spacing:-.025em;margin:0;font-weight:700;text-wrap:balance}
+  .sub{color:var(--muted);font-size:16.5px;max-width:68ch;margin:16px 0 0}
+  .sub b{color:var(--ink)}
+  h2{font-size:clamp(20px,2.6vw,26px);letter-spacing:-.02em;margin:52px 0 6px;font-weight:700}
+  h2 .no{font-family:var(--mono);font-size:.6em;font-weight:500;color:var(--faint);vertical-align:.3em;margin-right:10px}
+  p{margin:12px 0;color:var(--muted)} p b,li b{color:var(--ink);font-weight:600}
+  ul,ol{margin:12px 0;padding-left:22px;color:var(--muted)} li{margin:6px 0}
+  code{font-family:var(--mono);font-size:.84em;background:var(--panel2);border:1px solid var(--line);border-radius:5px;padding:1px 6px;color:var(--ink)}
+  kbd{font-family:var(--mono);font-size:.78em;border:1px solid var(--line);border-bottom-width:2px;border-radius:5px;padding:0 6px;background:var(--panel2);color:var(--ink)}
+  pre{font-family:var(--mono);font-size:12.5px;line-height:1.65;background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:14px 17px;overflow-x:auto;color:var(--ink);margin:14px 0}
+  pre .c{color:var(--faint)}
+  .tbl{border:1px solid var(--line);border-radius:10px;overflow-x:auto;margin:16px 0;background:var(--panel)}
+  table{border-collapse:collapse;width:100%;font-size:13.5px;min-width:560px}
+  th,td{padding:10px 13px;text-align:left;border-bottom:1px solid var(--line);vertical-align:top}
+  thead th{font-family:var(--mono);font-size:10.5px;letter-spacing:.07em;text-transform:uppercase;color:var(--faint);background:var(--panel2);font-weight:500}
+  tbody tr:last-child th,tbody tr:last-child td{border-bottom:none}
+  tbody th{font-weight:600;color:var(--ink);font-size:13px;font-family:var(--mono);white-space:nowrap}
+  td{color:var(--muted)} td b{color:var(--ink)}
+  .callout{border:1px solid var(--line);border-radius:10px;padding:15px 19px;margin:18px 0;background:var(--panel)}
+  .callout.green{border-color:color-mix(in srgb,var(--green) 40%,var(--line));background:var(--green-bg)}
+  .callout.amber{border-color:color-mix(in srgb,var(--amber) 45%,var(--line));background:var(--amber-bg)}
+  .callout.red{border-color:color-mix(in srgb,var(--red) 45%,var(--line));background:var(--red-bg)}
+  .callout.violet{border-color:color-mix(in srgb,var(--violet) 40%,var(--line));background:var(--violet-bg)}
+  .callout .ch{font-family:var(--mono);font-size:11px;letter-spacing:.12em;text-transform:uppercase;margin-bottom:8px;font-weight:600}
+  .callout.green .ch{color:var(--green)} .callout.amber .ch{color:var(--amber)} .callout.red .ch{color:var(--red)} .callout.violet .ch{color:var(--violet)}
+  .callout p{font-size:14.5px;margin:7px 0}
+  footer{border-top:1px solid var(--line);margin-top:64px;padding:28px 0 56px;font-family:var(--mono);font-size:11.5px;color:var(--faint)}
+</style>
+</head>
+<body>
+<header><div class="wrap">
+  <div class="eyebrow">muninn · slice 4 · operator runbook · 2026-07-16</div>
+  <h1>The loop closes. Waves go out, referrals move the line, the machine reports to you.</h1>
+  <p class="sub">Slice 4 ships the last two console surfaces — the <b>full control-center</b> (sequence timing editor, per-angle pause, vendor spend vs budget, the compliance board) and <b>waitlist &amp; waves</b> (referral leaderboard, wave manager, activation tracking) — plus the machinery under them: <b>3-referrals-jump-a-wave</b> math that never fakes a position, invite codes mailed over <b>Resend on the canonical domain</b>, redemption tracking at the edge, thank-you v2 with WhatsApp/Telegram opt-in, and the <b>weekly targets digest</b>. One vendor wiring, two function deploys, then the exit test.</p>
+  <div class="callout amber" style="margin-top:20px">
+    <div class="ch">prerequisite — the canonical domain on Resend</div>
+    <p>Invites and the digest are <b>consented</b> mail and ride the canonical domain — never the secondary sending domains (two-mail-paths rule). Create a Resend account, verify the canonical domain (SPF + DKIM records Resend shows you), and pick the From: identity you'll use, e.g. <code>Danilo &lt;dani@yourdomain.dev&gt;</code>. Cold mail keeps leaving through Smartlead only.</p>
+  </div>
+</div></header>
+
+<section><div class="wrap">
+  <h2><span class="no">01</span>Migrate + deploy the new edge pieces</h2>
+  <pre><span class="c"># the slice-4 tables (waves, invite issue stamps, consent columns, sequence templates):</span>
+supabase db push
+
+<span class="c"># two NEW public functions (config.toml already sets verify_jwt=false):</span>
+supabase functions deploy consent   <span class="c"># thank-you opt-in → consents rows</span>
+supabase functions deploy invite    <span class="c"># invite-email link → stamps redeemed_at, lands on the manual</span>
+
+<span class="c"># the join function changed (it now returns the referral count for thank-you v2):</span>
+supabase functions deploy waitlist-join
+
+<span class="c"># the landing changed (thank-you v2 is static) — re-bake + redeploy site/ the slice-0 way:</span>
+npm run configure -- <span class="c">…same flags as slice 0…</span>   <span class="c"># then upload site/ to your host</span></pre>
+</div></section>
+
+<section><div class="wrap">
+  <h2><span class="no">02</span>The new keys (⚙ Settings panel — hot-reloads)</h2>
+  <pre>RESEND_API_KEY               <span class="c"># resend.com → API keys — REQUIRED for invite emails + digest email</span>
+MUNINN_INVITE_FROM           <span class="c"># e.g. Danilo &lt;dani@yourdomain.dev&gt; — REQUIRED (pairs with the key)</span>
+MUNINN_FUNCTIONS_BASE        <span class="c"># https://&lt;REF&gt;.supabase.co/functions/v1 — redeem + unsub links</span>
+MUNINN_EDGE_SECRET           <span class="c"># the SAME secret the edge functions hold — signs unsub links</span>
+MUNINN_OPERATOR_EMAIL        <span class="c"># where the weekly digest email lands (optional — Telegram always gets it)</span>
+MUNINN_POSTAL_LINE           <span class="c"># CAN-SPAM postal footer on invite/digest emails</span>
+<span class="c"># optional dials (defaults shown):</span>
+MUNINN_WEEKLY_DIGEST_CRON=0 12 * * 1        <span class="c"># Monday noon UTC</span>
+MUNINN_MONTHLY_BUDGET_USD=280               <span class="c"># the control-center budget bar (display; breaker = slice 5)</span>
+MUNINN_TARGET_COST_PER_POSITIVE=25          <span class="c"># weekly digest target</span>
+MUNINN_TARGET_REPLY_PCT=5.5                 <span class="c"># weekly digest target</span></pre>
+  <p>Until <code>RESEND_API_KEY</code> + <code>MUNINN_INVITE_FROM</code> are set, wave issuing still works — <b>codes mint, emails skip</b>, and the console names the reason. Nothing silently half-happens.</p>
+</div></section>
+
+<section><div class="wrap">
+  <h2><span class="no">03</span>The exit test — wave of 10 · referral moves a position · pause-all survives restart</h2>
+  <ol>
+    <li><b>Create the wave.</b> Console → <b>≋ Waitlist</b> → new wave: <code>10</code> slots, opens-date if you've picked one (blocking decision #5) → <b>create wave</b>.</li>
+    <li><b>Preview the selection.</b> Click the wave row — "next up" lists exactly who the math picked: referral tier first (▲), then join order. Nobody suppressed, nobody already invited.</li>
+    <li><b>Issue.</b> <b>issue 10 code(s) + invites</b> → each pick gets an 8-hex code (an <code>invites</code> row + <code>invite_issued</code> event) and a Resend email from the canonical domain with the code, the redeem link, an unsub link, and your postal line. The result line reports issued/emailed/failed honestly.</li>
+    <li><b>Redeem.</b> Open the invite email (use test addresses you own for the dry run) and click <b>claim your seat</b> → the edge function stamps <code>redeemed_at</code> (first click only) and lands on the manual. The wave row now shows <b>✓ redeemed</b>.</li>
+    <li><b>Activate.</b> When a person actually starts, click <b>mark activated</b> on their invite row — the funnel's last column moves. A click is interest; activation is your call, deliberately.</li>
+    <li><b>Referral moves a position.</b> Visit <code>/r/&lt;someone's code&gt;</code>, join with three fresh emails → the thank-you page shows "banked 3 referrals — jumped 1 wave ▲", the leaderboard shows the jump, and the next wave's preview picks them first. Their <i>join position never changed</i> — the ranking is derived, the history honest.</li>
+    <li><b>Pause-all survives restart.</b> Control → <b>⏸ PAUSE ALL SENDING</b> → kill the api (<kbd>Ctrl-C</kbd>) → <code>npm start</code> → Control still shows <b>PAUSED</b>. It's a DB flag (<code>ops_flags</code>), not process state.</li>
+  </ol>
+  <pre><span class="c"># verify from the terminal instead of the UI, if you prefer:</span>
+curl -s 127.0.0.1:41945/v1/waitlist | jq .funnel
+<span class="c">#   → { "joined": N, "referred": 3, "invited": 10, "redeemed": ≥1, "activated": ≥1, ... }</span>
+curl -s 127.0.0.1:41945/v1/control | jq '{pauseAll, budget, suppressionsCount}'</pre>
+</div></section>
+
+<section><div class="wrap">
+  <h2><span class="no">04</span>The new dials, in one tour</h2>
+  <div class="tbl"><table>
+    <thead><tr><th>Dial</th><th>Where</th><th>What it does</th></tr></thead>
+    <tbody>
+      <tr><th>timing editor</th><td>Control → sequences</td><td>Per-angle step delays (day 0 → +d → +d). Saving persists the template; if the angle's campaign is live it updates Smartlead in the same call. <b>Words stay per-lead</b> — only timing lives here.</td></tr>
+      <tr><th>pause angle</th><td>Control → sequences</td><td>Pauses one angle's campaign without touching the rest. Lifting the global kill switch <b>respects</b> individually-paused angles.</td></tr>
+      <tr><th>vendors + budget</th><td>Control → vendors</td><td>30-day spend per vendor from the cost ledger, connection status, and the month bar vs <code>MUNINN_MONTHLY_BUDGET_USD</code>. Display in slice 4; the enforcing breaker is slice 5 (G3).</td></tr>
+      <tr><th>compliance board</th><td>Control → compliance</td><td>Geo blocks, cap/day and quiet hours (edit inline — Settings hot-reload), and the suppression list: searchable, appendable, <b>never deletable</b>.</td></tr>
+      <tr><th>weekly digest</th><td>Telegram + email</td><td>Monday noon UTC (cron-tunable): sent · replies (rate vs target) · positives · meetings · cost-per-positive vs target · waitlist delta. Email goes out only if Resend + <code>MUNINN_OPERATOR_EMAIL</code> are set; Telegram always.</td></tr>
+      <tr><th>opt-in consents</th><td>thank-you v2</td><td>WhatsApp/Telegram handles volunteered on the thank-you page write <code>consents</code> rows (P6: opt-in only — no cold messaging exists anywhere). Counts show on the waitlist screen.</td></tr>
+    </tbody>
+  </table></div>
+  <div class="callout violet">
+    <div class="ch">the honest-exclusivity engine</div>
+    <p><code>position</code> is the real join order — slice 0 promised it's never faked, and slice 4 keeps that promise: referral standing is <b>derived</b> (every 3 confirmed referrals = one tier; tiers outrank join order when a wave selects). A junk referral code counts for nobody, because only codes that belong to a real member are ever read.</p>
+  </div>
+</div></section>
+
+<section><div class="wrap">
+  <h2><span class="no">05</span>What's next</h2>
+  <p><b>Slice 5 — governance &amp; retention</b>: data-subject erasure ("delete everything on person X" end-to-end, hashed tombstone), retention limits on raw enrichment payloads, the spend circuit-breaker that turns the budget bar from display into a gate, and Settings/export. It flips the P3/P4 concern from "harvesting" to "responsibly governed" — the audit's biggest flag, answered in-plan.</p>
+</div></section>
+
+<footer><div class="wrap">muninn slice-4 runbook · 2026-07-16 · the loop · waves out, referrals up, positions honest, the machine reports weekly</div></footer>
+</body>
+</html>

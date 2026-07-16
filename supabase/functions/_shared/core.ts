@@ -51,6 +51,29 @@ export function referralUrl(origin: string, code: string): string {
   return origin.replace(/\/+$/, '') + '/r/' + code;
 }
 
+// ── slice 4 · consent opt-in (A8/P6) ─────────────────────────────────────────
+export type ConsentChannel = 'whatsapp' | 'telegram';
+
+export function normalizeConsentChannel(raw: unknown): ConsentChannel | null {
+  return raw === 'whatsapp' || raw === 'telegram' ? raw : null;
+}
+
+// WhatsApp: an international number — digits with optional +, 7..15 digits
+// (E.164 shape), separators tolerated. Telegram: @username, 5..32 chars of
+// [a-z0-9_], first char a letter, @ optional on input, canonical with @.
+export function normalizeHandle(channel: ConsentChannel, raw: unknown): string | null {
+  if (typeof raw !== 'string') return null;
+  const s = raw.trim();
+  if (!s) return null;
+  if (channel === 'whatsapp') {
+    const digits = s.replace(/[\s().-]/g, '');
+    if (!/^\+?\d{7,15}$/.test(digits)) return null;
+    return digits.startsWith('+') ? digits : '+' + digits;
+  }
+  const m = /^@?([A-Za-z][A-Za-z0-9_]{4,31})$/.exec(s);
+  return m ? '@' + m[1].toLowerCase() : null;
+}
+
 export function operatorLine(position: number, deduped: boolean): string {
   return (deduped ? '✓ already in line — operator #' : '✓ operator #') + position +
     ' — share your link to skip the line';

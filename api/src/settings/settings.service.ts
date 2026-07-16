@@ -31,6 +31,17 @@ export const KEY_DEFS: KeyDef[] = [
   { name: 'MUNINN_DIGEST_CRON', group: 'tuning', secret: false, hint: 'daily digest, UTC cron (5 fields)' },
   { name: 'FULLENRICH_USD_PER_CREDIT', group: 'tuning', secret: false, hint: 'cost-ledger conversion (starter: 29/500 = 0.058)' },
   { name: 'CALENDLY_URL', group: 'tuning', secret: false, hint: 'the “book a call” link in the lead drawer' },
+  // slice 4 · the loop
+  { name: 'RESEND_API_KEY', group: 'vendors', secret: true, hint: 'resend.com → API keys — the CONSENTED path: invites + digest, canonical domain (slice 4)' },
+  { name: 'MUNINN_INVITE_FROM', group: 'tuning', secret: false, hint: 'invite/digest From: on the canonical domain — e.g. Danilo <dani@yourdomain.dev>' },
+  { name: 'MUNINN_FUNCTIONS_BASE', group: 'core', secret: false, hint: 'https://<ref>.supabase.co/functions/v1 — redeem + unsub links in invite emails' },
+  { name: 'MUNINN_EDGE_SECRET', group: 'core', secret: true, hint: 'the SAME MUNINN_EDGE_SECRET the edge functions hold — signs unsub links in emails' },
+  { name: 'MUNINN_OPERATOR_EMAIL', group: 'tuning', secret: false, hint: 'where the weekly digest email lands (yours)' },
+  { name: 'MUNINN_POSTAL_LINE', group: 'tuning', secret: false, hint: 'CAN-SPAM postal footer on invite/digest emails' },
+  { name: 'MUNINN_WEEKLY_DIGEST_CRON', group: 'tuning', secret: false, hint: 'weekly targets digest, UTC cron (default Mon 12:00)' },
+  { name: 'MUNINN_MONTHLY_BUDGET_USD', group: 'tuning', secret: false, hint: 'control-center budget bar ceiling (display in slice 4; the breaker is slice 5 / G3)' },
+  { name: 'MUNINN_TARGET_COST_PER_POSITIVE', group: 'tuning', secret: false, hint: 'weekly digest target: 7d spend ÷ positive replies ≤ this ($, default 25)' },
+  { name: 'MUNINN_TARGET_REPLY_PCT', group: 'tuning', secret: false, hint: 'weekly digest target: replies ÷ sent ≥ this % (default 5.5)' },
 ];
 
 export interface KeyStatus extends KeyDef {

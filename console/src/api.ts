@@ -126,15 +126,123 @@ export interface ApproveResult {
   notes?: string[];
 }
 
+export interface AngleStat {
+  angle: string;
+  campaignId: string | null;
+  paused: boolean;
+  pushed: number;
+  replied: number;
+  positive: number;
+}
+
+export interface VendorStat {
+  provider: string;
+  configured: boolean;
+  spend30dUsd: number;
+  calls30d: number;
+}
+
+export interface TemplateRow {
+  angle: string;
+  delays: number[];
+  edited: boolean;
+  updatedAt: string | null;
+}
+
 export interface Control {
   pauseAll: boolean;
   healthPaused: { on: boolean; rates?: unknown; at?: string };
   sentToday: number;
   dailyCap: number;
+  quietHours: string;
+  utcOffset: number;
+  geoBlocked: string;
   health: { sent: number; bounceRate: number | null; complaintRate: number | null };
   campaigns: { angle: string; campaignId: string }[];
+  angles: AngleStat[];
+  templates: TemplateRow[];
+  vendors: VendorStat[];
+  budget: { monthUsd: number; spentMonthUsd: number; note: string };
+  suppressionsCount: number;
   refusals: { id: string; channel: string; code: string; reason: string; at: string; leadId: string | null }[];
   senderReady: boolean;
+}
+
+export interface Suppression {
+  id: string;
+  email: string | null;
+  emailDomain: string | null;
+  linkedinUrl: string | null;
+  reason: string;
+  at: string;
+}
+
+export interface StandingRow {
+  id: string;
+  email: string;
+  name: string | null;
+  position: number | null;
+  referralCode: string;
+  referrals: number;
+  tier: number;
+  effectiveRank: number;
+  invitedAt: string | null;
+  activatedAt: string | null;
+  suppressed: boolean;
+}
+
+export interface WaveInvite {
+  memberId: string | null;
+  email: string | null;
+  name: string | null;
+  code: string;
+  issuedAt: string;
+  redeemedAt: string | null;
+  activatedAt: string | null;
+}
+
+export interface WaveRow {
+  wave: number;
+  label: string | null;
+  opensAt: string | null;
+  size: number;
+  issued: number;
+  redeemed: number;
+  activated: number;
+  createdAt: string;
+  invites: WaveInvite[];
+}
+
+export interface WaitlistView {
+  totals: { members: number; last7d: number };
+  funnel: {
+    joined: number;
+    referred: number;
+    invited: number;
+    redeemed: number;
+    activated: number;
+    referralVisits7d: number;
+  };
+  waves: WaveRow[];
+  leaderboard: {
+    memberId: string;
+    email: string;
+    name: string | null;
+    referrals: number;
+    tier: number;
+    position: number | null;
+    toNextJump: number;
+  }[];
+  consents: { email: number; whatsapp: number; telegram: number };
+  referralsPerJump: number;
+}
+
+export interface IssueResult {
+  wave: number;
+  issued: { memberId: string; email: string; code: string; emailed: boolean }[];
+  skipped: { memberId: string; email: string; reason: string }[];
+  emailsSkippedReason: string | null;
+  emailErrors: { email: string; error: string }[];
 }
 
 function qs(params: Record<string, string | number | undefined>): string {
@@ -199,6 +307,36 @@ export const api = {
   pauseAll: (on: boolean) =>
     http<{ ok: boolean; pauseAll: boolean }>('/control/pause-all', { method: 'POST', body: JSON.stringify({ on }) }),
   clearHealthPause: () => http<{ ok: boolean; note: string }>('/control/clear-health-pause', { method: 'POST' }),
+
+  suppressions: (q?: string) => http<{ rows: Suppression[] }>(`/control/suppressions${qs({ q })}`),
+  addSuppression: (body: { email?: string; email_domain?: string; linkedin_url?: string }) =>
+    http<{ ok: boolean }>('/control/suppressions', { method: 'POST', body: JSON.stringify(body) }),
+  saveTemplate: (angle: string, delays: number[]) =>
+    http<{ ok: boolean; pushedToSmartlead: boolean; note: string }>(`/control/templates/${angle}`, {
+      method: 'PUT',
+      body: JSON.stringify({ delays }),
+    }),
+  anglePause: (angle: string, on: boolean) =>
+    http<{ ok: boolean; campaignApplied: boolean; note: string | null }>(`/control/angles/${angle}/pause`, {
+      method: 'POST',
+      body: JSON.stringify({ on }),
+    }),
+
+  waitlist: () => http<WaitlistView>('/waitlist'),
+  createWave: (size: number, opensAt?: string, label?: string) =>
+    http<{ wave: number }>('/waitlist/waves', {
+      method: 'POST',
+      body: JSON.stringify({ size, opens_at: opensAt || undefined, label: label || undefined }),
+    }),
+  waveSelection: (wave: number) =>
+    http<{ remaining: number; picks: StandingRow[] }>(`/waitlist/waves/${wave}/selection`),
+  issueWave: (wave: number, memberIds?: string[]) =>
+    http<IssueResult>(`/waitlist/waves/${wave}/issue`, {
+      method: 'POST',
+      body: JSON.stringify(memberIds ? { member_ids: memberIds } : {}),
+    }),
+  activateMember: (id: string) =>
+    http<{ ok: boolean; already: boolean }>(`/waitlist/members/${id}/activate`, { method: 'POST' }),
 };
 
 export function slugName(url: string): string {

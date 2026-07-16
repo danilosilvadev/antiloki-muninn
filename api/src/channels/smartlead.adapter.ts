@@ -56,25 +56,35 @@ export class SmartleadAdapter {
     return (Array.isArray(arr) ? arr : []).map((c) => ({ id: String(c['id']), name: String(c['name'] ?? '') }));
   }
 
-  // One campaign per angle: day-0 / day-6 / day-12 email steps whose subject +
-  // body are per-lead custom variables. Day-3 LinkedIn is NOT here — it stays
-  // a manual, operator-executed touch (P1 discipline).
-  async createCampaign(angle: string): Promise<string> {
+  // One campaign per angle: three email steps whose subject + body are
+  // per-lead custom variables; delays come from the angle's sequence template
+  // (D6 editor), defaulting to day-0 / +6 / +6. Day-3 LinkedIn is NOT here —
+  // it stays a manual, operator-executed touch (P1 discipline).
+  async createCampaign(angle: string, delays: number[] = [0, 6, 6]): Promise<string> {
     const created = (await this.call('POST', '/campaigns/create', { name: `muninn-${angle}` })) as
       Record<string, unknown>;
     const id = created['id'] ?? (created['data'] as Record<string, unknown> | undefined)?.['id'];
     if (id == null) throw new Error(`smartlead create campaign: no id in ${JSON.stringify(created).slice(0, 200)}`);
     const campaignId = String(id);
+    await this.pushSequenceSteps(campaignId, delays);
+    return campaignId;
+  }
 
+  // Same payload as creation — Smartlead replaces the campaign's step list.
+  // Only timing changes; the words stay per-lead custom fields, always.
+  async updateSequences(campaignId: string, delays: number[]): Promise<void> {
+    await this.pushSequenceSteps(campaignId, delays);
+  }
+
+  private async pushSequenceSteps(campaignId: string, delays: number[]): Promise<void> {
     await this.call('POST', `/campaigns/${campaignId}/sequences`, {
-      sequences: [1, 2, 3].map((n) => ({
-        seq_number: n,
-        seq_delay_details: { delay_in_days: n === 1 ? 0 : 6 },
-        subject: `{{muninn_subject_${n}}}`,
-        email_body: `{{muninn_body_${n}}}`,
+      sequences: delays.map((d, i) => ({
+        seq_number: i + 1,
+        seq_delay_details: { delay_in_days: d },
+        subject: `{{muninn_subject_${i + 1}}}`,
+        email_body: `{{muninn_body_${i + 1}}}`,
       })),
     });
-    return campaignId;
   }
 
   async addLead(campaignId: string, lead: SmartleadLeadInput): Promise<unknown> {

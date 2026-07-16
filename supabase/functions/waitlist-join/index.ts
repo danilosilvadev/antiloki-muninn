@@ -120,12 +120,25 @@ Deno.serve(async (req) => {
     console.error('event insert failed:', e);
   }
 
+  // Referrals banked so far — cosmetic for the thank-you page, never fails the join.
+  let referrals = 0;
+  try {
+    const counted = await supabase
+      .from('waitlist_members')
+      .select('id', { count: 'exact', head: true })
+      .eq('referred_by', row.referral_code);
+    referrals = counted.count ?? 0;
+  } catch (e) {
+    console.error('referral count failed (cosmetic):', e);
+  }
+
   return json(200, {
     ok: true,
     position: row.position,
     referral_code: row.referral_code,
     referral_url: LANDING ? referralUrl(LANDING, row.referral_code) : null,
     deduped,
+    referrals,
     message: operatorLine(row.position, deduped),
   }, cors);
 });

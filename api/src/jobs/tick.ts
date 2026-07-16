@@ -9,7 +9,7 @@ import { OpenRouterClient } from '../analysis/openrouter.client';
 import { classifyReply } from '../channels/classify';
 import { SequenceService } from '../channels/sequence.service';
 import { SmartleadAdapter } from '../channels/smartlead.adapter';
-import { FLAG_HEALTH_PAUSED, FLAG_PAUSE_ALL, FLAG_PAUSE_APPLIED, PolicyService } from '../policy/policy.service';
+import { FLAG_ANGLE_PAUSED, FLAG_HEALTH_PAUSED, FLAG_PAUSE_ALL, FLAG_PAUSE_APPLIED, PolicyService } from '../policy/policy.service';
 import { escapeHtml } from '../telegram/dossier';
 
 export interface TickDeps {
@@ -151,8 +151,11 @@ async function enforcePauseAll(d: TickDeps): Promise<void> {
   const applied = await d.policy.getFlag<boolean>(FLAG_PAUSE_APPLIED, false);
   if (on === applied) return;
   const campaigns = await d.sequences.allCampaigns();
+  // lifting pause-all must NOT resume an angle the operator paused individually
+  const anglePaused = await d.policy.getFlag<Record<string, boolean>>(FLAG_ANGLE_PAUSED, {});
   if (d.smartlead) {
     for (const c of campaigns) {
+      if (!on && anglePaused[c.angle]) continue;
       try {
         await d.smartlead.setCampaignStatus(c.campaignId, on ? 'PAUSED' : 'START');
       } catch (e) {

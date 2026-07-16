@@ -7,6 +7,7 @@ import { AnalysisService } from './analysis/analysis.service';
 import { OpenRouterClient } from './analysis/openrouter.client';
 import { EnrichmentService } from './enrichment/enrichment.service';
 import { FullEnrichAdapter } from './enrichment/fullenrich.adapter';
+import { ResendAdapter } from './channels/resend.adapter';
 import { SequenceService } from './channels/sequence.service';
 import { SmartleadAdapter } from './channels/smartlead.adapter';
 import { ApolloAdapter } from './enrichment/apollo.adapter';
@@ -16,7 +17,8 @@ import { registerWorkers } from './jobs/workers';
 import { LeadsService } from './leads/leads.service';
 import { SuggestionsService } from './leads/suggestions.service';
 import { PolicyService } from './policy/policy.service';
-import { buildDigest } from './telegram/digest';
+import { buildDigest, buildWeeklyDigest } from './telegram/digest';
+import { WavesService } from './waves/waves.service';
 import { renderDossier } from './telegram/dossier';
 import { TelegramClient } from './telegram/telegram.client';
 import { TelegramService } from './telegram/telegram.service';
@@ -30,6 +32,7 @@ export interface Runtime {
   suggestions: SuggestionsService | null;
   policy: PolicyService | null;
   sequences: SequenceService | null;
+  waves: WavesService | null;
   requestTick: (() => Promise<void>) | null;
   telegram: TelegramService | null;
   workersActive: boolean;
@@ -68,6 +71,7 @@ export async function buildRuntime(cfg: Config): Promise<Runtime> {
   let suggestions: SuggestionsService | null = null;
   let policy: PolicyService | null = null;
   let sequences: SequenceService | null = null;
+  let waves: WavesService | null = null;
   let requestTick: (() => Promise<void>) | null = null;
   let telegram: TelegramService | null = null;
   let workersActive = false;
@@ -105,7 +109,17 @@ export async function buildRuntime(cfg: Config): Promise<Runtime> {
     console.log('[notify]', html.replace(/<[^>]+>/g, ''));
   };
 
+  const resend = cfg.RESEND_API_KEY && cfg.MUNINN_INVITE_FROM
+    ? new ResendAdapter({ apiKey: cfg.RESEND_API_KEY, baseUrl: cfg.RESEND_BASE_URL, from: cfg.MUNINN_INVITE_FROM })
+    : null;
+
   if (db && boss && leads && policy) {
+    waves = new WavesService(db, resend, {
+      functionsBase: cfg.MUNINN_FUNCTIONS_BASE ?? null,
+      edgeSecret: cfg.MUNINN_EDGE_SECRET ?? null,
+      postalLine: cfg.MUNINN_POSTAL_LINE ?? null,
+    }, notify);
+
     const orClient = cfg.OPENROUTER_API_KEY
       ? new OpenRouterClient({
           apiKey: cfg.OPENROUTER_API_KEY,
@@ -154,9 +168,29 @@ export async function buildRuntime(cfg: Config): Promise<Runtime> {
         digest: async () => {
           await notify(await buildDigest(db!));
         },
+        weeklyDigest: async () => {
+          const w = await buildWeeklyDigest(db!, {
+            costPerPositive: cfg.MUNINN_TARGET_COST_PER_POSITIVE,
+            replyPct: cfg.MUNINN_TARGET_REPLY_PCT,
+          });
+          await notify(w.html);
+          if (resend && cfg.MUNINN_OPERATOR_EMAIL) {
+            try {
+              await resend.send({
+                to: cfg.MUNINN_OPERATOR_EMAIL,
+                subject: w.subject,
+                html: w.html.replace(/\n/g, '<br>\n'),
+                text: w.html.replace(/<[^>]+>/g, ''),
+              });
+            } catch (e) {
+              console.error('[weekly digest] email failed (telegram already sent):', e instanceof Error ? e.message : e);
+            }
+          }
+        },
         tick: () => runTick(tickDeps),
       });
       await boss.schedule(QUEUES.digest, cfg.MUNINN_DIGEST_CRON);
+      await boss.schedule(QUEUES.weeklyDigest, cfg.MUNINN_WEEKLY_DIGEST_CRON);
       await boss.schedule(QUEUES.sequenceTick, '* * * * *'); // the every-minute gate & send tick
       workersActive = true;
     } else {
@@ -178,5 +212,5 @@ export async function buildRuntime(cfg: Config): Promise<Runtime> {
     telegram.start();
   }
 
-  return { cfg, db, endDb, boss, leads, suggestions, policy, sequences, requestTick, telegram, workersActive };
+  return { cfg, db, endDb, boss, leads, suggestions, policy, sequences, waves, requestTick, telegram, workersActive };
 }

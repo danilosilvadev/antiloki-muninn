@@ -16,13 +16,13 @@ six-slice plan this repo implements).
 ## Layout
 
 ```
-site/       the public static site — landing (index.html), paper, manual, deck, privacy
-supabase/   migrations (waitlist + engine + gate/send) + edge functions (waitlist-join · unsub · r · webhook-sink)
-api/        muninn api — NestJS :41945 — ingest → enrich → analyze → dossier → SendPolicy → Smartlead
-console/    muninn console — Vite+React :5177 — dashboard · leads · review · control · drawer · settings
+site/       the public static site — landing (index.html, thank-you v2), paper, manual, deck, privacy
+supabase/   migrations (waitlist + engine + gate/send + loop) + edge functions (waitlist-join · unsub · r · webhook-sink · consent · invite)
+api/        muninn api — NestJS :41945 — ingest → enrich → analyze → dossier → SendPolicy → Smartlead · waves + invites (Resend)
+console/    muninn console — Vite+React :5177 — dashboard · leads · review · control · waitlist · drawer · settings
 scripts/    configure-site.mjs (bakes site values) · unsub-link.mjs (exit-test links)
 test/       node --test suite over the shared edge-function logic (api has its own suite)
-docs/       runbook-slice-0.html · runbook-slice-1.html — the operator runbooks
+docs/       runbook-slice-0.html … runbook-slice-4.html — the operator runbooks
 ```
 
 ## Slice status
@@ -33,7 +33,7 @@ docs/       runbook-slice-0.html · runbook-slice-1.html — the operator runboo
 | 1 · The raven flies | ingest → enrich → analyze → Telegram dossier | **built — needs keys + run (runbook-slice-1)** |
 | 2 · The console appears | shell + dashboard + CRM + drawer + **settings/keys panel** | **built — run it (runbook-slice-2)** |
 | 3 · The gate & the send | SendPolicy + sequences + Smartlead + review queue + webhooks + kill switch | **built — wire Smartlead (runbook-slice-3)** |
-| 4 · The loop | control-center + waitlist & waves + referral + digest | pending |
+| 4 · The loop | control-center + waitlist & waves + referral math + weekly digest + thank-you v2 | **built — wire Resend (runbook-slice-4)** |
 | 5 · Governance | erasure + retention + spend breaker + settings | pending |
 
 ## Quickstart
@@ -47,8 +47,10 @@ node scripts/configure-site.mjs --help   # bake real values into site/ (domain, 
 Deploying is the operator's half, runbook by runbook: `docs/runbook-slice-0.html` (funnel
 + warmup) → `runbook-slice-2.html` (run api + console, paste keys, triage from the UI) →
 `runbook-slice-3.html` (wire Smartlead + the webhook sink, then approve → send → reply-pause
-→ kill switch). `runbook-slice-1.html` covers the Telegram-only path and the day-6
-manual-outreach play — still valid, but Settings now replaces its hand-edited `.env` steps.
+→ kill switch) → `runbook-slice-4.html` (wire Resend + deploy consent/invite, then wave of
+10 → referral moves a position → pause-all survives restart). `runbook-slice-1.html` covers
+the Telegram-only path and the day-6 manual-outreach play — still valid, but Settings now
+replaces its hand-edited `.env` steps.
 
 ## Rules of this repo
 

@@ -70,6 +70,8 @@ export const consents = pgTable('consents', {
   channel: text('channel').notNull(),
   grantedAt: timestamp('granted_at', { withTimezone: true }),
   source: text('source').notNull(),
+  email: text('email'),
+  handle: text('handle'),
 });
 
 export const invites = pgTable('invites', {
@@ -78,6 +80,7 @@ export const invites = pgTable('invites', {
   wave: integer('wave').notNull(),
   issuedTo: uuid('issued_to'),
   redeemedAt: timestamp('redeemed_at', { withTimezone: true }),
+  issuedAt: timestamp('issued_at', { withTimezone: true }).notNull().defaultNow(),
 });
 
 export const vendorCalls = pgTable('vendor_calls', {
@@ -159,6 +162,21 @@ export const smartleadCampaigns = pgTable('smartlead_campaigns', {
   angle: text('angle').primaryKey(),
   campaignId: text('campaign_id').notNull(),
   createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
+});
+
+// slice-4 loop tables
+export const waves = pgTable('waves', {
+  wave: integer('wave').primaryKey(),
+  label: text('label'),
+  opensAt: timestamp('opens_at', { withTimezone: true }),
+  size: integer('size').notNull(),
+  createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
+});
+
+export const sequenceTemplates = pgTable('sequence_templates', {
+  angle: text('angle').primaryKey(),
+  delays: jsonb('delays').notNull(),
+  updatedAt: timestamp('updated_at', { withTimezone: true }).notNull().defaultNow(),
 });
 
 export const waitlistMembers = pgTable('waitlist_members', {

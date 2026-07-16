@@ -43,6 +43,18 @@ const Env = z.object({
   MUNINN_QUIET_HOURS: z.string().regex(/^\d{1,2}-\d{1,2}$/).default('20-8'),
   MUNINN_UTC_OFFSET: z.coerce.number().min(-12).max(14).default(-3),
   MUNINN_GEO_BLOCKED: z.string().default('DE,CA'),
+  // slice 4 · the loop — consented path (Resend) + wave links + targets
+  RESEND_API_KEY: z.string().min(10).optional(),
+  RESEND_BASE_URL: z.string().default('https://api.resend.com'),
+  MUNINN_INVITE_FROM: z.string().min(3).optional(),
+  MUNINN_FUNCTIONS_BASE: z.string().min(10).optional(),
+  MUNINN_EDGE_SECRET: z.string().min(8).optional(),
+  MUNINN_OPERATOR_EMAIL: z.string().regex(/^[^@\s]+@[^@\s]+\.[^@\s]+$/).optional(),
+  MUNINN_POSTAL_LINE: z.string().optional(),
+  MUNINN_WEEKLY_DIGEST_CRON: z.string().default('0 12 * * 1'),
+  MUNINN_MONTHLY_BUDGET_USD: z.coerce.number().min(0).default(280),
+  MUNINN_TARGET_COST_PER_POSITIVE: z.coerce.number().min(0).default(25),
+  MUNINN_TARGET_REPLY_PCT: z.coerce.number().min(0).default(5.5),
 });
 
 export type Config = z.infer<typeof Env> & { degraded: string[] };
@@ -60,5 +72,8 @@ export function loadConfig(env: NodeJS.ProcessEnv = process.env): Config {
   if (!parsed.TELEGRAM_BOT_TOKEN) degraded.push('telegram: TELEGRAM_BOT_TOKEN missing');
   else if (!parsed.TELEGRAM_OPERATOR_CHAT_ID) degraded.push('telegram: TELEGRAM_OPERATOR_CHAT_ID missing — bot replies with your chat id, then set it');
   if (!parsed.SMARTLEAD_API_KEY) degraded.push('sending: SMARTLEAD_API_KEY missing — approvals will be refused (not_ready)');
+  if (!parsed.RESEND_API_KEY || !parsed.MUNINN_INVITE_FROM) {
+    degraded.push('invites: RESEND_API_KEY / MUNINN_INVITE_FROM missing — wave codes mint, emails skip');
+  }
   return { ...parsed, degraded };
 }

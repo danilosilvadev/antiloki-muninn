@@ -19,6 +19,7 @@ export interface PolicyConfig {
 export const FLAG_PAUSE_ALL = 'pause_all';
 export const FLAG_PAUSE_APPLIED = 'pause_all_applied';
 export const FLAG_HEALTH_PAUSED = 'domain_health_paused';
+export const FLAG_ANGLE_PAUSED = 'angle_paused'; // { [angle]: true } — operator-paused angles
 
 export class PolicyService {
   constructor(
