@@ -24,7 +24,7 @@ export interface TgUpdate {
 export type InlineKeyboard = { text: string; callback_data: string }[][];
 
 export interface ITelegramClient {
-  getUpdates(offset: number, timeoutSec: number): Promise<TgUpdate[]>;
+  getUpdates(offset: number, timeoutSec: number, signal?: AbortSignal): Promise<TgUpdate[]>;
   sendMessage(chatId: number | string, html: string, keyboard?: InlineKeyboard): Promise<unknown>;
   answerCallback(id: string, text?: string): Promise<unknown>;
 }
@@ -49,23 +49,24 @@ export class TelegramClient implements ITelegramClient {
     return this.opts.fetchFn ?? fetch;
   }
 
-  private async call(method: string, payload: Record<string, unknown>): Promise<unknown> {
+  private async call(method: string, payload: Record<string, unknown>, signal?: AbortSignal): Promise<unknown> {
     const res = await this.fetchFn(`${this.base}/${method}`, {
       method: 'POST',
       headers: { 'content-type': 'application/json' },
       body: JSON.stringify(payload),
+      ...(signal ? { signal } : {}),
     });
     const json = (await res.json().catch(() => null)) as { ok?: boolean; result?: unknown } | null;
     if (!json?.ok) throw new Error(`telegram ${method} failed: ${JSON.stringify(json).slice(0, 300)}`);
     return json.result;
   }
 
-  async getUpdates(offset: number, timeoutSec: number): Promise<TgUpdate[]> {
-    return (await this.call('getUpdates', {
-      offset,
-      timeout: timeoutSec,
-      allowed_updates: ['message', 'callback_query'],
-    })) as TgUpdate[];
+  async getUpdates(offset: number, timeoutSec: number, signal?: AbortSignal): Promise<TgUpdate[]> {
+    return (await this.call(
+      'getUpdates',
+      { offset, timeout: timeoutSec, allowed_updates: ['message', 'callback_query'] },
+      signal,
+    )) as TgUpdate[];
   }
 
   sendMessage(chatId: number | string, html: string, keyboard?: InlineKeyboard): Promise<unknown> {

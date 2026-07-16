@@ -28,6 +28,7 @@ export class TelegramService {
   private stopped = false;
   private offset = 0;
   private noteFor: string | null = null;
+  private readonly aborter = new AbortController();
 
   constructor(private readonly deps: TelegramDeps) {}
 
@@ -35,15 +36,18 @@ export class TelegramService {
     void this.loop();
   }
 
+  // Aborts the in-flight long poll too — a runtime reload must kill this
+  // poller instantly, or the fresh one would 409 against Telegram.
   stop(): void {
     this.stopped = true;
+    this.aborter.abort();
   }
 
   private async loop(): Promise<void> {
     console.log('[telegram] long-poll started');
     while (!this.stopped) {
       try {
-        const updates = await this.deps.client.getUpdates(this.offset, 30);
+        const updates = await this.deps.client.getUpdates(this.offset, 30, this.aborter.signal);
         for (const u of updates ?? []) {
           this.offset = Math.max(this.offset, u.update_id + 1);
           try {

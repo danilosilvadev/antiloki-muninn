@@ -6,15 +6,20 @@ import { join } from 'node:path';
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { loadConfig, loadDotEnv } from './config/config';
-import { buildRuntime } from './runtime';
+import { buildRuntime, reloadRuntime, stopRuntime } from './runtime';
+import { SettingsService } from './settings/settings.service';
 
 async function main(): Promise<void> {
-  loadDotEnv(join(__dirname, '..', '..')); // api/.env (running from dist/src)
+  const apiRoot = join(__dirname, '..', '..'); // running from dist/src
+  loadDotEnv(apiRoot);
   const cfg = loadConfig();
   const rt = await buildRuntime(cfg);
+  const settings = new SettingsService(join(apiRoot, '.env'), () => reloadRuntime(rt, loadConfig));
 
-  const app = await NestFactory.create(AppModule.register(rt), { logger: ['log', 'warn', 'error'] });
+  const app = await NestFactory.create(AppModule.register(rt, settings), { logger: ['log', 'warn', 'error'] });
   app.setGlobalPrefix('v1');
+  // the console is the only browser caller — strict allowlist, loopback origins only
+  app.enableCors({ origin: ['http://localhost:5177', 'http://127.0.0.1:5177'] });
   await app.listen(cfg.PORT, '127.0.0.1');
 
   console.log(`\n🐦 muninn api · http://127.0.0.1:${cfg.PORT}/v1/health`);
@@ -29,15 +34,7 @@ async function main(): Promise<void> {
     if (closing) return;
     closing = true;
     console.log(`\n[${sig}] shutting down…`);
-    try {
-      rt.telegram?.stop();
-    } catch { /* best effort */ }
-    try {
-      if (rt.boss) await rt.boss.stop();
-    } catch { /* best effort */ }
-    try {
-      if (rt.endDb) await rt.endDb();
-    } catch { /* best effort */ }
+    await stopRuntime(rt);
     try {
       await app.close();
     } catch { /* best effort */ }

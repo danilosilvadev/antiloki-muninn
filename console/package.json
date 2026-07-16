@@ -1,0 +1,26 @@
+{
+  "name": "muninn-console",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "muninn console — dashboard · leads/CRM · lead drawer · settings (slice 2). strictPort 5177.",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc --noEmit && vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "@tanstack/react-query": "^5",
+    "@tanstack/react-router": "^1",
+    "react": "^19",
+    "react-dom": "^19",
+    "recharts": "^3"
+  },
+  "devDependencies": {
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "@vitejs/plugin-react": "^5",
+    "typescript": "^5.8",
+    "vite": "^7"
+  }
+}

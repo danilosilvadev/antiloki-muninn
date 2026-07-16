@@ -34,12 +34,19 @@ const Env = z.object({
   TELEGRAM_OPERATOR_CHAT_ID: z.string().optional(),
   MUNINN_FIT_THRESHOLD: z.coerce.number().int().min(0).max(100).default(70),
   MUNINN_DIGEST_CRON: z.string().default('0 9 * * *'),
+  APOLLO_API_KEY: z.string().min(10).optional(),
+  APOLLO_BASE_URL: z.string().default('https://api.apollo.io/api/v1'),
+  CALENDLY_URL: z.string().optional(),
 });
 
 export type Config = z.infer<typeof Env> & { degraded: string[] };
 
 export function loadConfig(env: NodeJS.ProcessEnv = process.env): Config {
-  const parsed = Env.parse(env);
+  // empty string = unset, uniformly (panel clears + KEY= lines in .env)
+  const cleaned = Object.fromEntries(
+    Object.entries(env).filter(([, v]) => v !== ''),
+  ) as NodeJS.ProcessEnv;
+  const parsed = Env.parse(cleaned);
   const degraded: string[] = [];
   if (!parsed.SUPABASE_DB_URL) degraded.push('db: SUPABASE_DB_URL missing — pipeline + jobs disabled');
   if (!parsed.FULLENRICH_API_KEY) degraded.push('enrichment: FULLENRICH_API_KEY missing');

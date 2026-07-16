@@ -91,6 +91,31 @@ export const vendorCalls = pgTable('vendor_calls', {
   at: timestamp('at', { withTimezone: true }).notNull().defaultNow(),
 });
 
+// slice-2 console tables
+export const reminders = pgTable('reminders', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  leadId: uuid('lead_id').notNull(),
+  note: text('note').notNull(),
+  dueAt: timestamp('due_at', { withTimezone: true }).notNull(),
+  doneAt: timestamp('done_at', { withTimezone: true }),
+  createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
+});
+
+export const leadSuggestions = pgTable('lead_suggestions', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  sourceLeadId: uuid('source_lead_id').notNull(),
+  mode: text('mode').notNull(),
+  name: text('name'),
+  title: text('title'),
+  company: text('company'),
+  linkedinUrl: text('linkedin_url'),
+  provider: text('provider').notNull().default('apollo'),
+  raw: jsonb('raw').notNull(),
+  state: text('state').notNull().default('pending'),
+  leadId: uuid('lead_id'),
+  createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
+});
+
 // slice-0 tables the api reads/writes too
 export const suppressions = pgTable('suppressions', {
   id: uuid('id').primaryKey().defaultRandom(),

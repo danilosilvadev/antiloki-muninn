@@ -7,9 +7,11 @@ import { AnalysisService } from './analysis/analysis.service';
 import { OpenRouterClient } from './analysis/openrouter.client';
 import { EnrichmentService } from './enrichment/enrichment.service';
 import { FullEnrichAdapter } from './enrichment/fullenrich.adapter';
+import { ApolloAdapter } from './enrichment/apollo.adapter';
 import { QUEUES, startBoss } from './jobs/boss';
 import { registerWorkers } from './jobs/workers';
 import { LeadsService } from './leads/leads.service';
+import { SuggestionsService } from './leads/suggestions.service';
 import { buildDigest } from './telegram/digest';
 import { renderDossier } from './telegram/dossier';
 import { TelegramClient } from './telegram/telegram.client';
@@ -21,8 +23,34 @@ export interface Runtime {
   endDb: (() => Promise<void>) | null;
   boss: PgBoss | null;
   leads: LeadsService | null;
+  suggestions: SuggestionsService | null;
   telegram: TelegramService | null;
   workersActive: boolean;
+}
+
+export async function stopRuntime(rt: Runtime): Promise<void> {
+  try {
+    rt.telegram?.stop();
+  } catch { /* best effort */ }
+  try {
+    if (rt.boss) await rt.boss.stop();
+  } catch { /* best effort */ }
+  try {
+    if (rt.endDb) await rt.endDb();
+  } catch { /* best effort */ }
+}
+
+// Settings updates hot-swap the runtime: stop everything, rebuild from the
+// fresh env, and mutate the SAME object the controllers hold by reference.
+export async function reloadRuntime(
+  rt: Runtime,
+  loadCfg: () => Config,
+): Promise<{ degraded: string[]; workersActive: boolean }> {
+  await stopRuntime(rt);
+  const fresh = await buildRuntime(loadCfg());
+  Object.assign(rt, fresh);
+  console.log('[runtime] reloaded — degraded:', rt.cfg.degraded.length ? rt.cfg.degraded.join(' | ') : 'none');
+  return { degraded: rt.cfg.degraded, workersActive: rt.workersActive };
 }
 
 export async function buildRuntime(cfg: Config): Promise<Runtime> {
@@ -30,6 +58,7 @@ export async function buildRuntime(cfg: Config): Promise<Runtime> {
   let endDb: (() => Promise<void>) | null = null;
   let boss: PgBoss | null = null;
   let leads: LeadsService | null = null;
+  let suggestions: SuggestionsService | null = null;
   let telegram: TelegramService | null = null;
   let workersActive = false;
 
@@ -39,6 +68,10 @@ export async function buildRuntime(cfg: Config): Promise<Runtime> {
     endDb = created.end;
     boss = await startBoss(cfg.SUPABASE_DB_URL);
     leads = new LeadsService(db, boss);
+    const apollo = cfg.APOLLO_API_KEY
+      ? new ApolloAdapter({ apiKey: cfg.APOLLO_API_KEY, baseUrl: cfg.APOLLO_BASE_URL })
+      : null;
+    suggestions = new SuggestionsService(db, apollo, leads);
   }
 
   const tgClient = cfg.TELEGRAM_BOT_TOKEN ? new TelegramClient({ token: cfg.TELEGRAM_BOT_TOKEN }) : null;
@@ -118,5 +151,5 @@ export async function buildRuntime(cfg: Config): Promise<Runtime> {
     telegram.start();
   }
 
-  return { cfg, db, endDb, boss, leads, telegram, workersActive };
+  return { cfg, db, endDb, boss, leads, suggestions, telegram, workersActive };
 }
