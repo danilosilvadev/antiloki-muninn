@@ -39,10 +39,19 @@ docs/       runbook-slice-0.html … runbook-slice-5.html — the operator runbo
 ## Quickstart
 
 ```bash
+# run it (two terminals — loopback only, boots degraded without keys):
+cd api && npm install && npm run build && npm start      # http://127.0.0.1:41945/v1/health
+cd console && npm install && npm run dev                 # http://localhost:5177 (strictPort)
+
+# test it:
 npm test                      # edge-function core logic (Node 24, zero deps)
-cd api && npm install && npm test    # api suite: unit + pglite integration over the real migrations
+cd api && npm test            # api suite: unit + pglite integration over the real migrations
 node scripts/configure-site.mjs --help   # bake real values into site/ (domain, Supabase ref, PostHog)
 ```
+
+**Start here → [`docs/launch-runway.html`](docs/launch-runway.html)** — the operator kit:
+five decisions, the exact signup list, the `.env` template, the edge-secrets call,
+and the day-by-day path from built to wave 1.
 
 Deploying is the operator's half, runbook by runbook: `docs/runbook-slice-0.html` (funnel
 + warmup) → `runbook-slice-2.html` (run api + console, paste keys, triage from the UI) →

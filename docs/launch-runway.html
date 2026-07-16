@@ -1,0 +1,214 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>muninn — the launch runway · from built to wave 1 · 2026-07-16</title>
+<meta name="description" content="Everything is built. What remains: five decisions, one shopping trip, four secrets, and a 3–4 week warmup clock. The whole operator path, in order, with the exact signup list and .env template." />
+<style>
+  :root{
+    --base:#FBF9F6; --panel:#F4F0EA; --panel2:#ECE7DE; --line:#E0D9CD; --ink:#26221D; --muted:#6E6558; --faint:#9A9184;
+    --orange:#C44A24; --green:#1E8F4E; --amber:#A8720F; --red:#C03A28; --violet:#6D4FD8;
+    --green-bg:rgba(30,143,78,.08); --amber-bg:rgba(168,114,15,.09); --violet-bg:rgba(109,79,216,.08); --red-bg:rgba(192,58,40,.07);
+    --mono:'Cascadia Code','JetBrains Mono',Consolas,ui-monospace,monospace;
+    --sans:'Segoe UI Variable Text','Segoe UI',system-ui,-apple-system,sans-serif;
+  }
+  @media (prefers-color-scheme: dark){
+    :root{ --base:#0F0E0C; --panel:#171512; --panel2:#1E1B18; --line:#2B2723; --ink:#EDE8E0; --muted:#9A9083; --faint:#6A6257;
+      --orange:#E8623A; --green:#4ADE80; --amber:#F0A93B; --red:#F0533B; --violet:#A78BFA;
+      --green-bg:rgba(74,222,128,.08); --amber-bg:rgba(240,169,59,.09); --violet-bg:rgba(167,139,250,.09); --red-bg:rgba(240,83,59,.08); }
+  }
+  :root[data-theme="dark"]{ --base:#0F0E0C; --panel:#171512; --panel2:#1E1B18; --line:#2B2723; --ink:#EDE8E0; --muted:#9A9083; --faint:#6A6257;
+    --orange:#E8623A; --green:#4ADE80; --amber:#F0A93B; --red:#F0533B; --violet:#A78BFA;
+    --green-bg:rgba(74,222,128,.08); --amber-bg:rgba(240,169,59,.09); --violet-bg:rgba(167,139,250,.09); --red-bg:rgba(240,83,59,.08); }
+  :root[data-theme="light"]{ --base:#FBF9F6; --panel:#F4F0EA; --panel2:#ECE7DE; --line:#E0D9CD; --ink:#26221D; --muted:#6E6558; --faint:#9A9184;
+    --orange:#C44A24; --green:#1E8F4E; --amber:#A8720F; --red:#C03A28; --violet:#6D4FD8;
+    --green-bg:rgba(30,143,78,.08); --amber-bg:rgba(168,114,15,.09); --violet-bg:rgba(109,79,216,.08); --red-bg:rgba(192,58,40,.07); }
+  *{box-sizing:border-box}
+  body{background:var(--base);color:var(--ink);font-family:var(--sans);font-size:16px;line-height:1.65;margin:0;-webkit-font-smoothing:antialiased}
+  .wrap{max-width:960px;margin:0 auto;padding:0 26px}
+  a{color:var(--orange);text-decoration:none} a:hover{text-decoration:underline}
+  header{padding:52px 0 8px}
+  .eyebrow{font-family:var(--mono);font-size:11.5px;letter-spacing:.15em;text-transform:uppercase;color:var(--orange);display:flex;align-items:center;gap:10px;margin-bottom:16px}
+  .eyebrow::before{content:"";width:28px;height:1px;background:var(--orange);opacity:.6}
+  h1{font-size:clamp(27px,4vw,38px);line-height:1.1;letter-spacing:-.025em;margin:0;font-weight:700;text-wrap:balance}
+  .sub{color:var(--muted);font-size:16.5px;max-width:70ch;margin:16px 0 0}
+  .sub b{color:var(--ink)}
+  h2{font-size:clamp(20px,2.6vw,26px);letter-spacing:-.02em;margin:52px 0 6px;font-weight:700}
+  h2 .no{font-family:var(--mono);font-size:.6em;font-weight:500;color:var(--faint);vertical-align:.3em;margin-right:10px}
+  h3{font-size:16.5px;margin:26px 0 4px;font-weight:650}
+  p{margin:12px 0;color:var(--muted)} p b,li b{color:var(--ink);font-weight:600}
+  ul,ol{margin:12px 0;padding-left:22px;color:var(--muted)} li{margin:6px 0}
+  code{font-family:var(--mono);font-size:.84em;background:var(--panel2);border:1px solid var(--line);border-radius:5px;padding:1px 6px;color:var(--ink)}
+  pre{font-family:var(--mono);font-size:12.5px;line-height:1.65;background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:14px 17px;overflow-x:auto;color:var(--ink);margin:14px 0}
+  pre .c{color:var(--faint)}
+  .tbl{border:1px solid var(--line);border-radius:10px;overflow-x:auto;margin:16px 0;background:var(--panel)}
+  table{border-collapse:collapse;width:100%;font-size:13.5px;min-width:620px}
+  th,td{padding:10px 13px;text-align:left;border-bottom:1px solid var(--line);vertical-align:top}
+  thead th{font-family:var(--mono);font-size:10.5px;letter-spacing:.07em;text-transform:uppercase;color:var(--faint);background:var(--panel2);font-weight:500}
+  tbody tr:last-child th,tbody tr:last-child td{border-bottom:none}
+  tbody th{font-weight:600;color:var(--ink);font-size:13px;font-family:var(--mono);white-space:nowrap}
+  td{color:var(--muted)} td b{color:var(--ink)} td.num{font-family:var(--mono);white-space:nowrap}
+  .callout{border:1px solid var(--line);border-radius:10px;padding:15px 19px;margin:18px 0;background:var(--panel)}
+  .callout.green{border-color:color-mix(in srgb,var(--green) 40%,var(--line));background:var(--green-bg)}
+  .callout.amber{border-color:color-mix(in srgb,var(--amber) 45%,var(--line));background:var(--amber-bg)}
+  .callout.red{border-color:color-mix(in srgb,var(--red) 45%,var(--line));background:var(--red-bg)}
+  .callout.violet{border-color:color-mix(in srgb,var(--violet) 40%,var(--line));background:var(--violet-bg)}
+  .callout .ch{font-family:var(--mono);font-size:11px;letter-spacing:.12em;text-transform:uppercase;margin-bottom:8px;font-weight:600}
+  .callout.green .ch{color:var(--green)} .callout.amber .ch{color:var(--amber)} .callout.red .ch{color:var(--red)} .callout.violet .ch{color:var(--violet)}
+  .callout p{font-size:14.5px;margin:7px 0}
+  footer{border-top:1px solid var(--line);margin-top:64px;padding:28px 0 56px;font-family:var(--mono);font-size:11.5px;color:var(--faint)}
+</style>
+</head>
+<body>
+<header><div class="wrap">
+  <div class="eyebrow">muninn · the launch runway · operator kit · 2026-07-16</div>
+  <h1>Everything is built. The machine waits on five decisions, one shopping trip, and a clock.</h1>
+  <p class="sub">All six slices are code-complete and tested (145 green). Nothing that remains is buildable — it's <b>ownable</b>: decisions only you can make, accounts only you can open, and a <b>3–4 week warmup</b> that starts the day the domains exist and gates every cold send behind it. This kit is the plan's promised hand-off — the exact signup list, the exact <code>.env</code>, the exact secrets, and the day-by-day path to wave 1. Do § 00 and § 01 <b>today</b>; everything else fits inside the warmup window.</p>
+</div></header>
+
+<section><div class="wrap">
+  <h2><span class="no">00</span>The five decisions (30 minutes, pen and paper)</h2>
+  <div class="tbl"><table>
+    <thead><tr><th>#</th><th>Decision</th><th>Why it blocks</th><th>Recommendation</th></tr></thead>
+    <tbody>
+      <tr><th>1</th><td><b>Canonical domain</b></td><td>Gates the site deploy, OG cards, Resend identity, secondary-domain naming, and the warmup start — <b>the one true blocker</b>.</td><td>Decide today; taste doesn't compound but the warmup clock does. Any clean <code>.dev</code>/<code>.com</code> you'd say out loud on a call.</td></tr>
+      <tr><th>2</th><td><b>Founder name + postal line</b></td><td>Goes on the paper (E-workstream needs a named author), the privacy page, and every email footer (CAN-SPAM).</td><td>Full name you already ship under. A virtual-mailbox address satisfies CAN-SPAM — get one, don't publish your home.</td></tr>
+      <tr><th>3</th><td><b>Vendor accounts</b></td><td>Every subsystem lights up off one key each.</td><td>The shopping list in § 01 — in that order, ~1 hour total.</td></tr>
+      <tr><th>4</th><td><b>LinkedIn stance</b></td><td>Determines whether day-3 touches stay manual.</td><td><b>Manual-assisted for 60 days</b> (the default; unflagged; the P1 auto adapter stays off — it's yours to enable, never silently built).</td></tr>
+      <tr><th>5</th><td><b>Wave-1 date</b></td><td>The whole funnel — landing copy, waves screen, invite emails — aims at it.</td><td>Soft-pick <b>warmup-end + ~2 weeks</b> (≈ 6 weeks from today). You can move it; pick it anyway.</td></tr>
+    </tbody>
+  </table></div>
+</div></section>
+
+<section><div class="wrap">
+  <h2><span class="no">01</span>The shopping list — accounts, keys, and where each key goes</h2>
+  <p>Order matters only for the first three (domains before inboxes before warmup). Prices are <b>ballpark from the audit — verify at signup</b>; the month lands roughly $150–190 + domains, comfortably under the $280 breaker default.</p>
+  <div class="tbl"><table>
+    <thead><tr><th>Service</th><th>What to get</th><th>What to grab</th><th>Where it goes</th><th>≈/mo</th></tr></thead>
+    <tbody>
+      <tr><th>registrar</th><td>canonical + <b>2 secondary sending domains</b> (e.g. <code>get&lt;name&gt;.dev</code>, <code>try&lt;name&gt;.dev</code>)</td><td>—</td><td>DNS work in runbook-0 § 06</td><td class="num">~$3</td></tr>
+      <tr><th>Supabase</th><td>one project (free tier starts fine)</td><td>project ref · session-pooler URI · service-role key stays in Supabase</td><td>ref → site bake; pooler URI → <code>SUPABASE_DB_URL</code> (Settings)</td><td class="num">$0</td></tr>
+      <tr><th>Google Workspace</th><td>2 inboxes on the secondary domains (never the canonical)</td><td>the mailboxes themselves</td><td>connected to Smartlead for warmup + sending</td><td class="num">~$14</td></tr>
+      <tr><th>Smartlead</th><td>base plan; connect both inboxes; <b>warmup ON day 0</b></td><td>API key (Settings → API)</td><td><code>SMARTLEAD_API_KEY</code></td><td class="num">~$39</td></tr>
+      <tr><th>FullEnrich</th><td>starter (500 credits)</td><td>API key</td><td><code>FULLENRICH_API_KEY</code> (per-credit 0.058 is the default already)</td><td class="num">~$29</td></tr>
+      <tr><th>OpenRouter</th><td>pay-as-you-go — <b>set a monthly limit there too</b></td><td>API key</td><td><code>OPENROUTER_API_KEY</code></td><td class="num">~$15</td></tr>
+      <tr><th>Resend</th><td>free tier; <b>verify the canonical domain</b> (SPF/DKIM it shows you)</td><td>API key</td><td><code>RESEND_API_KEY</code> + <code>MUNINN_INVITE_FROM</code></td><td class="num">$0</td></tr>
+      <tr><th>Apollo</th><td>basic — optional until you want "find similar" (slice 2)</td><td>API key</td><td><code>APOLLO_API_KEY</code></td><td class="num">~$49</td></tr>
+      <tr><th>PostHog</th><td>free tier</td><td>project key <code>phc_…</code></td><td>site bake (<code>--posthog-key</code>)</td><td class="num">$0</td></tr>
+      <tr><th>Telegram</th><td>@BotFather → <code>/newbot</code></td><td>bot token</td><td><code>TELEGRAM_BOT_TOKEN</code> (chat id arrives in runbook-1's two-step)</td><td class="num">$0</td></tr>
+      <tr><th>Calendly</th><td>free</td><td>booking URL</td><td><code>CALENDLY_URL</code></td><td class="num">$0</td></tr>
+      <tr><th>Netlify (or any static host)</th><td>free — <code>site/_redirects</code> already speaks Netlify</td><td>—</td><td>hosts <code>site/</code> on the canonical domain</td><td class="num">$0</td></tr>
+    </tbody>
+  </table></div>
+  <div class="callout amber">
+    <div class="ch">the two-mail-paths rule, at purchase time</div>
+    <p>Cold mail: Smartlead, <b>secondary domains only</b>. Consented mail (invites, digest): Resend, <b>canonical only</b>. The canonical domain never sends cold — that's why it needs no warmup and why a burned secondary never touches your name.</p>
+  </div>
+</div></section>
+
+<section><div class="wrap">
+  <h2><span class="no">02</span>The <code>api/.env</code> template — every key the api reads</h2>
+  <p>You don't have to hand-edit this: the <b>⚙ Settings panel writes this exact file</b> over loopback and hot-reloads. The template exists so you know the full surface and can restore from backup. Required-to-fly keys marked ★; everything else has a sane default baked in.</p>
+  <pre><span class="c"># ── core ────────────────────────────────────────────────────────────────────</span>
+SUPABASE_DB_URL=            <span class="c"># ★ session-pooler URI — dashboard → Connect → Session pooler</span>
+MUNINN_FUNCTIONS_BASE=      <span class="c"># ★ https://&lt;ref&gt;.supabase.co/functions/v1 — redeem + unsub links</span>
+MUNINN_EDGE_SECRET=         <span class="c"># ★ SAME value as the edge secret in § 03 — signs unsub links</span>
+
+<span class="c"># ── vendors ─────────────────────────────────────────────────────────────────</span>
+FULLENRICH_API_KEY=         <span class="c"># ★ enrichment</span>
+OPENROUTER_API_KEY=         <span class="c"># ★ analysis + reply labels</span>
+SMARTLEAD_API_KEY=          <span class="c"># ★ before slice-3's first approve (cold path)</span>
+RESEND_API_KEY=             <span class="c"># ★ before slice-4's first wave (consented path)</span>
+APOLLO_API_KEY=             <span class="c"># optional — "find similar"</span>
+
+<span class="c"># ── telegram ────────────────────────────────────────────────────────────────</span>
+TELEGRAM_BOT_TOKEN=         <span class="c"># ★ @BotFather</span>
+TELEGRAM_OPERATOR_CHAT_ID=  <span class="c"># ★ message the bot once — it replies with this id</span>
+
+<span class="c"># ── identity on the consented path ──────────────────────────────────────────</span>
+MUNINN_INVITE_FROM=         <span class="c"># ★ e.g. Danilo &lt;dani@yourdomain.dev&gt; — canonical domain</span>
+MUNINN_OPERATOR_EMAIL=      <span class="c"># weekly digest inbox (yours)</span>
+MUNINN_POSTAL_LINE=         <span class="c"># CAN-SPAM postal footer (decision #2)</span>
+CALENDLY_URL=               <span class="c"># the "book a call" link in the drawer</span>
+
+<span class="c"># ── tuning — defaults shown, uncomment to change ────────────────────────────</span>
+<span class="c"># MUNINN_DAILY_SEND_CAP=30          # the conversation ceiling</span>
+<span class="c"># MUNINN_QUIET_HOURS=20-8           # no pushes 20:00–08:00 on your clock</span>
+<span class="c"># MUNINN_UTC_OFFSET=-3</span>
+<span class="c"># MUNINN_GEO_BLOCKED=DE,CA</span>
+<span class="c"># MUNINN_FIT_THRESHOLD=70           # park below this fit</span>
+<span class="c"># MUNINN_ANALYSIS_MODEL=anthropic/claude-sonnet-4.5</span>
+<span class="c"># FULLENRICH_USD_PER_CREDIT=0.058</span>
+<span class="c"># MUNINN_DIGEST_CRON=0 9 * * *      # daily · UTC</span>
+<span class="c"># MUNINN_WEEKLY_DIGEST_CRON=0 12 * * 1</span>
+<span class="c"># MUNINN_MONTHLY_BUDGET_USD=280     # the G3 breaker — 0 disables</span>
+<span class="c"># MUNINN_TARGET_COST_PER_POSITIVE=25</span>
+<span class="c"># MUNINN_TARGET_REPLY_PCT=5.5</span>
+<span class="c"># MUNINN_RETENTION_LEAD_DAYS=90     # G2 — 0 disables</span>
+<span class="c"># MUNINN_RETENTION_RAW_DAYS=30</span>
+<span class="c"># MUNINN_RETENTION_CRON=30 3 * * *</span></pre>
+</div></section>
+
+<section><div class="wrap">
+  <h2><span class="no">03</span>The always-on half — one push, one secrets call, seven functions, one bake</h2>
+  <pre><span class="c"># link once, then apply all five migrations:</span>
+supabase link --project-ref &lt;REF&gt;
+supabase db push
+
+<span class="c"># the four custom edge secrets (SUPABASE_URL / SERVICE_ROLE are auto-injected):</span>
+supabase secrets set \
+  MUNINN_EDGE_SECRET=&lt;long-random — same value goes in api/.env&gt; \
+  ALLOWED_ORIGINS=https://&lt;canonical&gt; \
+  LANDING_URL=https://&lt;canonical&gt; \
+  RATE_LIMIT_PER_HOUR=20
+
+<span class="c"># all seven public functions (config.toml already sets verify_jwt=false):</span>
+supabase functions deploy waitlist-join unsub r webhook-sink consent invite erasure
+
+<span class="c"># bake the real values into site/ and put it on the canonical host:</span>
+node scripts/configure-site.mjs \
+  --domain &lt;canonical&gt; --supabase-ref &lt;REF&gt; --posthog-key phc_&lt;…&gt; \
+  --contact-email you@&lt;canonical&gt; --postal "&lt;decision #2&gt;"</pre>
+  <div class="tbl"><table>
+    <thead><tr><th>Function</th><th>Serves</th><th>Reads</th></tr></thead>
+    <tbody>
+      <tr><th>waitlist-join</th><td>the landing form (A1) + referral counts for thank-you v2</td><td>ALLOWED_ORIGINS · LANDING_URL · EDGE_SECRET · RATE_LIMIT</td></tr>
+      <tr><th>unsub</th><td>one-click unsubscribe in every email</td><td>EDGE_SECRET</td></tr>
+      <tr><th>r</th><td>referral links <code>/r/&lt;code&gt;</code> → landing with attribution</td><td>LANDING_URL · EDGE_SECRET</td></tr>
+      <tr><th>webhook-sink</th><td>Smartlead events; suppresses opt-outs machine-off</td><td>EDGE_SECRET (as <code>?t=</code> token)</td></tr>
+      <tr><th>consent</th><td>thank-you WhatsApp/Telegram opt-in (P6: opt-in only)</td><td>ALLOWED_ORIGINS · EDGE_SECRET · RATE_LIMIT</td></tr>
+      <tr><th>invite</th><td>invite-email redeem link → stamps + lands on the manual</td><td>LANDING_URL</td></tr>
+      <tr><th>erasure</th><td>public data-subject requests (suppress now, you delete)</td><td>ALLOWED_ORIGINS · EDGE_SECRET · RATE_LIMIT</td></tr>
+    </tbody>
+  </table></div>
+</div></section>
+
+<section><div class="wrap">
+  <h2><span class="no">04</span>The runway — day by day, runbook by runbook</h2>
+  <div class="tbl"><table>
+    <thead><tr><th>When</th><th>Do</th><th>Runbook</th></tr></thead>
+    <tbody>
+      <tr><th>day 0</th><td>Decisions § 00 · buy the 3 domains · Supabase project · §&nbsp;03 deploys · site live on HTTPS · inboxes + DNS (SPF/DKIM/DMARC) · <b>Smartlead warmup ON — the clock starts here</b> · exit test: form submit lands "operator #N"</td><td>slice-0</td></tr>
+      <tr><th>day 1–2</th><td><code>api: npm start</code> + <code>console: npm run dev</code> (loopback :41945/:5177) · paste every ★ key in ⚙ Settings (hot-reloads) · bind Telegram (two-step) · health shows "all systems go"</td><td>slice-2 · slice-1</td></tr>
+      <tr><th>day 2–5</th><td>First raven flights: text 10 LinkedIn URLs to the bot → dossiers &lt; 2 min · triage from the console · tune <code>MUNINN_FIT_THRESHOLD</code> if parking too much/little</td><td>slice-1 · slice-2</td></tr>
+      <tr><th>day 6 →</th><td><b>Manual outreach begins</b> — 10 first-touches/day from your own inbox, dossier-armed; LinkedIn manual-assisted connects (10–15/day). Conversations don't wait for automation.</td><td>slice-1 § day-6</td></tr>
+      <tr><th>weekly, from week 1</th><td>E-workstream, one substantial post/week: <b>(1)</b> the "it blocked its own creator's commit" incident thread (X + HN) · <b>(2)</b> the paper, now with a named author + stable URL · <b>(3)</b> the 30-second tamper-refused GIF. HN gets the <i>ideas</i>, never the waitlist link.</td><td>audit § channels</td></tr>
+      <tr><th>week 3–4</th><td>Warmup dashboards green → wire Smartlead webhooks + first approve → <b>slice-3 exit test</b>: approve → day-0 send from a warm domain → reply pauses &lt; 5 min → kill switch halts</td><td>slice-3</td></tr>
+      <tr><th>week 4–5</th><td>Resend keys in → <b>slice-4 exit test</b> (dry-run wave of 10 at addresses you own; referral moves a position; pause-all survives restart) · <b>slice-5 exit test</b> (erase a seeded person → tombstone; trip the breaker)</td><td>slice-4 · slice-5</td></tr>
+      <tr><th>wave-1 date</th><td>≋ Waitlist → create wave 1 → preview the selection (tiers first) → <b>issue for real</b> · activation tracking begins · weekly digest reports the loop, measured</td><td>slice-4</td></tr>
+    </tbody>
+  </table></div>
+  <div class="callout red">
+    <div class="ch">the four don'ts</div>
+    <p><b>Don't</b> cold-send from the canonical domain (ever). <b>Don't</b> send cold before warmup finishes — the code will let you as soon as keys exist; the domains won't survive it. <b>Don't</b> enable the LinkedIn auto adapter (P1 — operator-owned, deliberately unbuilt). <b>Don't</b> post the waitlist to HN — post the incident and the paper; the profile does the linking.</p>
+  </div>
+  <div class="callout green">
+    <div class="ch">how you'll know it's working</div>
+    <p>The weekly digest is the scoreboard: replies ≥ 5.5% of sends and cost-per-positive ≤ $25 are the targets it measures against. Under those, adjust the angle mix and the dossier steering (reject-reasons feed the prompts) — not the volume. The 30/day cap is the conversation ceiling, not the infra ceiling, by design.</p>
+  </div>
+</div></section>
+
+<footer><div class="wrap">muninn launch runway · 2026-07-16 · six slices built · five decisions, one shopping trip, one clock — then wave 1</div></footer>
+</body>
+</html>
