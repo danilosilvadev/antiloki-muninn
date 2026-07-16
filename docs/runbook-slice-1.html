@@ -1,0 +1,162 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>muninn — slice 1 runbook · keys + bot + first dossiers · 2026-07-16</title>
+<meta name="description" content="The operator's runbook for slice 1: three vendor keys, one Telegram bot, api/.env, and the exit test — a LinkedIn URL from your phone returns a dossier." />
+<style>
+  :root{
+    --base:#FBF9F6; --panel:#F4F0EA; --panel2:#ECE7DE; --line:#E0D9CD; --ink:#26221D; --muted:#6E6558; --faint:#9A9184;
+    --orange:#C44A24; --green:#1E8F4E; --amber:#A8720F; --red:#C03A28; --violet:#6D4FD8;
+    --green-bg:rgba(30,143,78,.08); --amber-bg:rgba(168,114,15,.09); --violet-bg:rgba(109,79,216,.08);
+    --mono:'Cascadia Code','JetBrains Mono',Consolas,ui-monospace,monospace;
+    --sans:'Segoe UI Variable Text','Segoe UI',system-ui,-apple-system,sans-serif;
+  }
+  @media (prefers-color-scheme: dark){
+    :root{ --base:#0F0E0C; --panel:#171512; --panel2:#1E1B18; --line:#2B2723; --ink:#EDE8E0; --muted:#9A9083; --faint:#6A6257;
+      --orange:#E8623A; --green:#4ADE80; --amber:#F0A93B; --red:#F0533B; --violet:#A78BFA;
+      --green-bg:rgba(74,222,128,.08); --amber-bg:rgba(240,169,59,.09); --violet-bg:rgba(167,139,250,.09); }
+  }
+  :root[data-theme="dark"]{ --base:#0F0E0C; --panel:#171512; --panel2:#1E1B18; --line:#2B2723; --ink:#EDE8E0; --muted:#9A9083; --faint:#6A6257;
+    --orange:#E8623A; --green:#4ADE80; --amber:#F0A93B; --red:#F0533B; --violet:#A78BFA;
+    --green-bg:rgba(74,222,128,.08); --amber-bg:rgba(240,169,59,.09); --violet-bg:rgba(167,139,250,.09); }
+  :root[data-theme="light"]{ --base:#FBF9F6; --panel:#F4F0EA; --panel2:#ECE7DE; --line:#E0D9CD; --ink:#26221D; --muted:#6E6558; --faint:#9A9184;
+    --orange:#C44A24; --green:#1E8F4E; --amber:#A8720F; --red:#C03A28; --violet:#6D4FD8;
+    --green-bg:rgba(30,143,78,.08); --amber-bg:rgba(168,114,15,.09); --violet-bg:rgba(109,79,216,.08); }
+  *{box-sizing:border-box}
+  body{background:var(--base);color:var(--ink);font-family:var(--sans);font-size:16px;line-height:1.65;margin:0;-webkit-font-smoothing:antialiased}
+  .wrap{max-width:920px;margin:0 auto;padding:0 26px}
+  a{color:var(--orange);text-decoration:none} a:hover{text-decoration:underline}
+  header{padding:52px 0 8px}
+  .eyebrow{font-family:var(--mono);font-size:11.5px;letter-spacing:.15em;text-transform:uppercase;color:var(--orange);display:flex;align-items:center;gap:10px;margin-bottom:16px}
+  .eyebrow::before{content:"";width:28px;height:1px;background:var(--orange);opacity:.6}
+  h1{font-size:clamp(27px,4vw,38px);line-height:1.1;letter-spacing:-.025em;margin:0;font-weight:700;text-wrap:balance}
+  .sub{color:var(--muted);font-size:16.5px;max-width:68ch;margin:16px 0 0}
+  .sub b{color:var(--ink)}
+  h2{font-size:clamp(20px,2.6vw,26px);letter-spacing:-.02em;margin:52px 0 6px;font-weight:700}
+  h2 .no{font-family:var(--mono);font-size:.6em;font-weight:500;color:var(--faint);vertical-align:.3em;margin-right:10px}
+  p{margin:12px 0;color:var(--muted)} p b,li b{color:var(--ink);font-weight:600}
+  ul,ol{margin:12px 0;padding-left:22px;color:var(--muted)} li{margin:6px 0}
+  code{font-family:var(--mono);font-size:.84em;background:var(--panel2);border:1px solid var(--line);border-radius:5px;padding:1px 6px;color:var(--ink)}
+  pre{font-family:var(--mono);font-size:12.5px;line-height:1.65;background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:14px 17px;overflow-x:auto;color:var(--ink);margin:14px 0}
+  pre .c{color:var(--faint)}
+  .tbl{border:1px solid var(--line);border-radius:10px;overflow-x:auto;margin:16px 0;background:var(--panel)}
+  table{border-collapse:collapse;width:100%;font-size:13.5px;min-width:560px}
+  th,td{padding:10px 13px;text-align:left;border-bottom:1px solid var(--line);vertical-align:top}
+  thead th{font-family:var(--mono);font-size:10.5px;letter-spacing:.07em;text-transform:uppercase;color:var(--faint);background:var(--panel2);font-weight:500}
+  tbody tr:last-child th,tbody tr:last-child td{border-bottom:none}
+  tbody th{font-weight:600;color:var(--ink);font-size:13px;font-family:var(--mono);white-space:nowrap}
+  td{color:var(--muted)} td b{color:var(--ink)}
+  .callout{border:1px solid var(--line);border-radius:10px;padding:15px 19px;margin:18px 0;background:var(--panel)}
+  .callout.green{border-color:color-mix(in srgb,var(--green) 40%,var(--line));background:var(--green-bg)}
+  .callout.amber{border-color:color-mix(in srgb,var(--amber) 45%,var(--line));background:var(--amber-bg)}
+  .callout.violet{border-color:color-mix(in srgb,var(--violet) 40%,var(--line));background:var(--violet-bg)}
+  .callout .ch{font-family:var(--mono);font-size:11px;letter-spacing:.12em;text-transform:uppercase;margin-bottom:8px;font-weight:600}
+  .callout.green .ch{color:var(--green)} .callout.amber .ch{color:var(--amber)} .callout.violet .ch{color:var(--violet)}
+  .callout p{font-size:14.5px;margin:7px 0}
+  footer{border-top:1px solid var(--line);margin-top:64px;padding:28px 0 56px;font-family:var(--mono);font-size:11.5px;color:var(--faint)}
+</style>
+</head>
+<body>
+<header><div class="wrap">
+  <div class="eyebrow">muninn · slice 1 · operator runbook · 2026-07-16</div>
+  <h1>The raven is built and tested. Give it three keys and a phone number.</h1>
+  <p class="sub">The api is complete — 44 tests green, including an offline integration run of the real migrations and the whole pipeline. What it can't have without you: <b>an OpenRouter key, a FullEnrich key, a Telegram bot</b>, and the Supabase connection string from slice 0. Thirty minutes of clicking, then the exit test: <b>text a LinkedIn URL to your bot → a dossier lands in under two minutes</b> — and day-6 of the plan (10 manual first touches) is unlocked.</p>
+</div></header>
+
+<section><div class="wrap">
+  <h2><span class="no">·</span>The board</h2>
+  <div class="tbl"><table>
+    <thead><tr><th>Step</th><th>What</th><th>Time</th></tr></thead>
+    <tbody>
+      <tr><th>0</th><td>Prereq: slice-0 runbook step 3 done (Supabase project + <code>supabase db push</code>)</td><td>—</td></tr>
+      <tr><th>1</th><td>Apply the slice-1 migration (one more <code>supabase db push</code>)</td><td>2 min</td></tr>
+      <tr><th>2</th><td>Keys: OpenRouter + FullEnrich · bot via @BotFather</td><td>20 min</td></tr>
+      <tr><th>3</th><td><code>api/.env</code> + install + run + chat-id lock</td><td>10 min</td></tr>
+      <tr><th>4</th><td>Exit test (below) — includes the first live FullEnrich contract check</td><td>10 min</td></tr>
+      <tr><th>5</th><td>The day-6 play: 10 manual first touches from dossiers · record the proof video (A5)</td><td>ongoing</td></tr>
+    </tbody>
+  </table></div>
+</div></section>
+
+<section><div class="wrap">
+  <h2><span class="no">01</span>Migrate</h2>
+  <pre><span class="c"># from the repo root (project already linked in slice 0):</span>
+supabase db push        <span class="c"># applies 20260717000000_slice1_engine.sql — 8 engine tables, RLS deny-all</span></pre>
+  <p>pg-boss creates its own <code>pgboss</code> schema on first api boot — no action needed.</p>
+</div></section>
+
+<section><div class="wrap">
+  <h2><span class="no">02</span>Keys &amp; the bot</h2>
+  <div class="tbl"><table>
+    <thead><tr><th>Vendor</th><th>Do</th><th>Grab</th></tr></thead>
+    <tbody>
+      <tr><th>OpenRouter</th><td>Create account → Keys → new key. <b>Set a monthly spending limit</b> (e.g. $20) in settings — the in-app circuit breaker arrives in slice 5.</td><td><code>OPENROUTER_API_KEY</code>. Model default is <code>anthropic/claude-sonnet-4.5</code>; any capable slug works (<code>MUNINN_ANALYSIS_MODEL</code>).</td></tr>
+      <tr><th>FullEnrich</th><td>Create account → starter plan ($29/mo · 500 credits ≈ 1 credit per found email) → API key.</td><td><code>FULLENRICH_API_KEY</code></td></tr>
+      <tr><th>Telegram</th><td>Chat <code>@BotFather</code> → <code>/newbot</code> → name it (e.g. <code>muninn_raven_bot</code>).</td><td><code>TELEGRAM_BOT_TOKEN</code>. Chat id comes in step 3.</td></tr>
+      <tr><th>Supabase</th><td>Dashboard → Connect → <b>Session pooler</b> → copy the URI (with your db password).</td><td><code>SUPABASE_DB_URL</code> — session pooler specifically (pg-boss needs it).</td></tr>
+    </tbody>
+  </table></div>
+</div></section>
+
+<section><div class="wrap">
+  <h2><span class="no">03</span>Configure &amp; run</h2>
+  <pre><span class="c"># api/.env — copy the [api] lines from .env.example and fill:</span>
+SUPABASE_DB_URL=postgresql://postgres.&lt;ref&gt;:&lt;password&gt;@aws-0-&lt;region&gt;.pooler.supabase.com:5432/postgres
+OPENROUTER_API_KEY=sk-or-…
+FULLENRICH_API_KEY=…
+TELEGRAM_BOT_TOKEN=123456:ABC-…
+<span class="c"># leave TELEGRAM_OPERATOR_CHAT_ID empty for the first boot</span>
+
+cd api
+npm install
+npm run build
+npm start               <span class="c"># → 🐦 muninn api · http://127.0.0.1:41945/v1/health</span></pre>
+  <ol>
+    <li>Message your bot anything. It replies: <i>"your chat id is <code>123456789</code> — set TELEGRAM_OPERATOR_CHAT_ID…"</i></li>
+    <li>Put that id in <code>api/.env</code>, restart. From now on the bot serves <b>only that chat</b> — every other chat is ignored.</li>
+    <li><code>curl http://127.0.0.1:41945/v1/health</code> → expect <code>"degraded":[]</code> and <code>workers:true</code>.</li>
+  </ol>
+</div></section>
+
+<section><div class="wrap">
+  <h2><span class="no">04</span>The exit test</h2>
+  <div class="tbl"><table>
+    <thead><tr><th>#</th><th>Do</th><th>Expect</th></tr></thead>
+    <tbody>
+      <tr><th>1</th><td>Text the bot a real LinkedIn profile URL <b>from your phone</b></td><td>"🐦 raven dispatched — <code>&lt;id&gt;</code>", then a dossier message <b>in &lt; 2 min</b>: fit score, ICP, angle, pains with evidence, brief, 4 drafts, ✅/✏️/❌ buttons. <i>(This is also the live FullEnrich contract check — if enrichment parks with an error, read the api log; the adapter stores the raw response verbatim.)</i></td></tr>
+      <tr><th>2</th><td>Send the same URL again</td><td>"already tracked — status <b>analyzed</b>" (no double spend — check <code>vendor_calls</code>: one enrich, one analyze)</td></tr>
+      <tr><th>3</th><td>Tap ✅ on the dossier</td><td>"queued ✓" — lead status flips to <code>queued</code> (your manual-outreach shortlist until slice 3)</td></tr>
+      <tr><th>4</th><td>Tap ✏️, reply "warm intro possible"</td><td>"noted ✓" — an <code>operator_note</code> event row lands</td></tr>
+      <tr><th>5</th><td><code>/digest</code></td><td>pipeline counts + waitlist + vendor spend (real dollars from the ledger)</td></tr>
+      <tr><th>6</th><td><code>curl -s -X POST http://127.0.0.1:41945/v1/leads -H "content-type: application/json" -d "{\"linkedin_url\":\"linkedin.com/in/&lt;someone&gt;\"}"</code></td><td>202 + <code>lead_id</code>; <code>GET /v1/leads/&lt;id&gt;</code> returns lead + enrichment + analysis + drafts</td></tr>
+      <tr><th>7</th><td>Supabase SQL: <code>select status, count(*) from leads group by 1;</code> · <code>select provider, kind, cost_usd from vendor_calls order by at desc;</code></td><td>statuses mirror what Telegram told you; every vendor call has a ledger row</td></tr>
+    </tbody>
+  </table></div>
+  <div class="callout green">
+    <div class="ch">then the plan's day-6 move</div>
+    <p>Hand-pick 10–20 ICP-A prospects (agency owners), feed each URL to the bot, ✅ the good ones, and send <b>10 manual first touches from your normal inbox</b> — personal, one-to-one, no sequence, the day-0 draft as raw material rewritten in your voice, reply-to-close ("reply no and I'll close the file"). Manual 1:1 email needs no unsubscribe machinery; that's what makes it legal to start <i>today</i> while the domains warm. In parallel: record the 60–90s real-product video (A5) and embed it under the hero film.</p>
+  </div>
+</div></section>
+
+<section><div class="wrap">
+  <h2><span class="no">05</span>Boundaries &amp; the flag log</h2>
+  <ul>
+    <li><b>Nothing sends automatically.</b> ✅ queue only stages a lead; Smartlead + SendPolicy + the review queue are slice 3. The bot messages <i>you</i>, nobody else.</li>
+    <li><b>Costs at this slice:</b> ~$0.06/enriched lead (FullEnrich) + ~$0.01–0.04/dossier (OpenRouter mid-tier) → 300 leads ≈ $30–40 total.</li>
+    <li><b>Data honesty:</b> the analysis prompt is hard-scoped to role-relevant professional signals, evidence quoted verbatim from the enrichment or absent, "thin data" said out loud. If a dossier ever reads as more than that, that's a bug — file it.</li>
+  </ul>
+  <div class="callout amber">
+    <div class="ch">flag log (§ pendencies)</div>
+    <p><b>P3</b> (enrichment = PII acquisition) and <b>P4</b> (AI dossiers on named people) are now <b>built, as the plan disposed</b> — licensed provider, legitimate-interest basis, suppression checked at ingest, guardrails in the prompt, human review on everything. Their governance half (erasure, retention clocks) remains slice 5, unchanged. No new flags were hit building slice 1. <b>P1</b> (LinkedIn auto-send) stays operator-owned and unscheduled — the day-3 LinkedIn draft is for <i>manual</i> sending in the real UI.</p>
+  </div>
+  <div class="callout violet">
+    <div class="ch">what's next</div>
+    <p>Slice 2 — the console appears: shell + dashboard + leads/CRM + the lead drawer on <code>:5177</code>, talking only to this api. Say <b>go slice 2</b> when you want it.</p>
+  </div>
+</div></section>
+
+<footer><div class="wrap">muninn slice-1 runbook · 2026-07-16 · companion to the six-slice plan · the raven flies, the operator aims</div></footer>
+</body>
+</html>

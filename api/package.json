@@ -1,0 +1,27 @@
+{
+  "name": "muninn-api",
+  "version": "0.1.0",
+  "private": true,
+  "description": "muninn api — ingest → enrich → analyze → Telegram dossier (slice 1). Loopback 127.0.0.1:41945.",
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "start": "node dist/src/main.js",
+    "test": "npm run build && node --test \"dist/test/*.test.js\""
+  },
+  "dependencies": {
+    "@nestjs/common": "^11",
+    "@nestjs/core": "^11",
+    "@nestjs/platform-express": "^11",
+    "drizzle-orm": "^0.44",
+    "pg-boss": "^10",
+    "postgres": "^3.4",
+    "reflect-metadata": "^0.2",
+    "rxjs": "^7",
+    "zod": "^4"
+  },
+  "devDependencies": {
+    "@electric-sql/pglite": "^0.3",
+    "@types/node": "^24",
+    "typescript": "^5.8"
+  }
+}

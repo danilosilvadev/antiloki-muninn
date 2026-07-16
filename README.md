@@ -17,20 +17,20 @@ six-slice plan this repo implements).
 
 ```
 site/       the public static site — landing (index.html), paper, manual, deck, privacy
-supabase/   migrations + edge functions (waitlist-join · unsub · r)
-api/        muninn api — NestJS            (arrives in slice 1)
+supabase/   migrations (waitlist + full engine schema) + edge functions (waitlist-join · unsub · r)
+api/        muninn api — NestJS :41945 — ingest → enrich → analyze → Telegram dossier
 console/    muninn console — React         (arrives in slice 2)
-scripts/    configure-site.mjs — bakes domain / endpoints / keys into site/
-test/       node --test suite over the shared edge-function logic
-docs/       runbook-slice-0.html — the operator's deploy + warmup runbook
+scripts/    configure-site.mjs (bakes site values) · unsub-link.mjs (exit-test links)
+test/       node --test suite over the shared edge-function logic (api has its own suite)
+docs/       runbook-slice-0.html · runbook-slice-1.html — the operator runbooks
 ```
 
 ## Slice status
 
 | Slice | Ships | Status |
 |---|---|---|
-| 0 · Unblock | Landing wired + instrumented · Supabase waitlist · warmup runbook | **built — needs operator deploy (runbook)** |
-| 1 · The raven flies | ingest → enrich → analyze → Telegram dossier | pending |
+| 0 · Unblock | Landing wired + instrumented · Supabase waitlist · warmup runbook | **built — needs operator deploy (runbook-slice-0)** |
+| 1 · The raven flies | ingest → enrich → analyze → Telegram dossier | **built — needs keys + run (runbook-slice-1)** |
 | 2 · The console appears | shell + dashboard + CRM + lead drawer | pending |
 | 3 · The gate & the send | SendPolicy + sequences + Smartlead + review queue | pending |
 | 4 · The loop | control-center + waitlist & waves + referral + digest | pending |
@@ -39,11 +39,13 @@ docs/       runbook-slice-0.html — the operator's deploy + warmup runbook
 ## Quickstart
 
 ```bash
-npm test                      # unit tests for the edge-function core logic (Node 24, zero deps)
+npm test                      # edge-function core logic (Node 24, zero deps)
+cd api && npm install && npm test    # api suite: unit + pglite integration over the real migrations
 node scripts/configure-site.mjs --help   # bake real values into site/ (domain, Supabase ref, PostHog)
 ```
 
-Deploying slice 0 end-to-end is the operator's runbook: open `docs/runbook-slice-0.html`.
+Deploying is the operator's half: `docs/runbook-slice-0.html` (funnel + warmup), then
+`docs/runbook-slice-1.html` (keys + bot + first dossiers).
 
 ## Rules of this repo
 
@@ -54,4 +56,6 @@ Deploying slice 0 end-to-end is the operator's runbook: open `docs/runbook-slice
 - **Every send passes SendPolicy** (arrives slice 3). Refusals are logged, not remembered.
 - **Flagged work is annotated, never silently built** — see § Pendencies in the plan.
   The LinkedIn auto-send adapter (P1) is operator-owned and not scheduled in any slice.
-- Zero runtime npm dependencies in this repo until the api lands (slice 1).
+- Dependencies stay thin: the repo root has zero; the api carries Nest + drizzle +
+  pg-boss + zod only — vendors are plain-fetch adapters with injected `fetchFn`
+  (tests can never reach a paid API).
