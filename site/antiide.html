@@ -261,77 +261,88 @@ window.MUNINN = {
 </header>
 
 
-<!-- THE DEMO — the real screen, boxed (operator 2026-07-20: pixel-faithful, clickable) -->
+<!-- THE DEMO — the real screen, boxed (rebuilt pixel-faithful from app screenshots, 2026-07-20) -->
 <section id="demo" style="padding:64px 0">
   <style>
-  .dm{--dbg:oklch(0.15 0.006 55);--dpanel:oklch(0.18 0.007 55);--dpanel2:oklch(0.21 0.008 55);--dborder:oklch(0.26 0.006 55);--dfg:oklch(0.93 0.006 60);--ddim:oklch(0.66 0.012 58);--dmuted:oklch(0.5 0.01 58);--dok:oklch(0.74 0.13 150);--dwarn:oklch(0.8 0.14 80);--dbad:oklch(0.64 0.19 25);--dbrand:oklch(0.64 0.11 38);
+  .dm{--dbg:oklch(0.15 0.006 55);--dpanel:oklch(0.18 0.007 55);--dpanel2:oklch(0.21 0.008 55);--dborder:oklch(0.26 0.006 55);--dfg:oklch(0.93 0.006 60);--ddim:oklch(0.66 0.012 58);--dmuted:oklch(0.5 0.01 58);--dok:oklch(0.74 0.13 150);--dwarn:oklch(0.8 0.14 80);--dbad:oklch(0.64 0.19 25);--dbrand:oklch(0.64 0.11 38);--dactive:oklch(0.24 0.01 55);--dviolet:oklch(0.72 0.11 300);--dblue:oklch(0.72 0.09 260);
     margin-top:44px;border:1px solid var(--line);border-radius:16px;overflow:hidden;background:var(--dbg);box-shadow:0 24px 70px -20px rgba(0,0,0,.6)}
   .dm-bar{display:flex;align-items:center;gap:7px;padding:11px 15px;border-bottom:1px solid var(--line);background:var(--panel-2);font-family:var(--mono);font-size:11px;color:var(--muted-2)}
   .dm-bar i{width:10px;height:10px;border-radius:50%;background:var(--line);flex-shrink:0}
   .dm-bar i:first-child{background:var(--red)}.dm-bar i:nth-child(2){background:var(--amber)}.dm-bar i:nth-child(3){background:var(--green)}
   .dm-bar .t{margin-left:8px}.dm-bar .live{margin-left:auto;color:var(--accent)}
-  .dm-app{position:relative;height:540px;background:var(--dbg);color:var(--dfg);font-family:'Geist',-apple-system,system-ui,sans-serif;display:flex;flex-direction:column;overflow:hidden;text-align:left;cursor:default}
+  .dm-app{position:relative;height:560px;background:var(--dbg);color:var(--dfg);font-family:'Geist',-apple-system,system-ui,sans-serif;display:flex;flex-direction:column;overflow:hidden;text-align:left;cursor:default;font-size:13px}
   .dm-mono{font-family:var(--mono)}
-  /* the corner circle (settings/workspace) — top right, like the app */
   .dm-corner{position:absolute;top:10px;right:12px;width:26px;height:26px;border-radius:50%;background:color-mix(in oklch,var(--dpanel) 72%,transparent);border:1px solid var(--dborder);color:var(--dmuted);font-size:11px;font-weight:600;display:grid;place-items:center;z-index:9}
-  /* THE DOCK — the product-tabs text field, floating bottom center, ghost at rest */
-  .dm-dock{position:absolute;left:50%;transform:translateX(-50%);bottom:12px;z-index:8;width:min(540px,92%);background:color-mix(in oklch,var(--dpanel) 62%,transparent);backdrop-filter:blur(10px);border:1px solid var(--dborder);border-radius:14px;padding:7px 11px 6px;opacity:.92}
+  .dm-dock{position:absolute;left:50%;transform:translateX(-50%);bottom:12px;z-index:8;width:min(540px,88%);background:color-mix(in oklch,var(--dpanel) 62%,transparent);backdrop-filter:blur(10px);border:1px solid var(--dborder);border-radius:14px;padding:7px 11px 6px;opacity:.94}
   .dm-dock .in{font-size:12.5px;color:var(--dmuted);padding:1px 2px 6px}
   .dm-tabs{display:flex;align-items:center;gap:2px;background:var(--dbg);border-radius:8px;padding:2px;width:max-content;margin-left:auto}
   .dm-tab{display:inline-flex;align-items:center;gap:4px;border-radius:6px;padding:2px 8px;font-size:10.5px;color:var(--dmuted);white-space:nowrap}
   .dm-tab i{font-style:normal;font-size:9px;opacity:.85}
   .dm-tab.on{background:var(--dpanel2);color:var(--dbrand);font-weight:500}
-  /* shared bits */
-  .dm-btn{font-family:var(--mono);font-size:11px;color:var(--dbg);background:var(--dbrand);border:none;border-radius:7px;padding:6px 13px;cursor:pointer;font-weight:600}
-  .dm-ghostbtn{font-family:var(--mono);font-size:10.5px;color:var(--dmuted);background:transparent;border:1px solid var(--dborder);border-radius:6px;padding:4px 10px;cursor:pointer}
-  .dm-hint{position:absolute;top:10px;left:14px;z-index:9;font-family:var(--mono);font-size:9.5px;color:var(--ddim);background:color-mix(in oklch,var(--dpanel) 75%,transparent);border:1px solid var(--dborder);border-radius:6px;padding:3px 9px}
+  .dm-hint{position:absolute;top:10px;left:14px;z-index:9;font-family:var(--mono);font-size:9.5px;color:var(--ddim);background:color-mix(in oklch,var(--dpanel) 80%,transparent);border:1px solid var(--dborder);border-radius:6px;padding:3px 9px}
   .dm-note{font-family:var(--mono);font-size:11px;color:var(--muted-2);margin-top:14px}
 
-  .dm-ex{flex:1;display:flex;min-height:0}
-  .dm-mosaic{flex:1;overflow:auto;padding:44px 14px 70px;display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));grid-auto-rows:82px;grid-auto-flow:dense;gap:8px;align-content:start}
-  .dm-tile{border-radius:8px;padding:8px 10px;display:flex;flex-direction:column;gap:3px;cursor:pointer;overflow:hidden;transition:outline-color .15s;outline:2px solid transparent}
-  .dm-tile code{font-family:var(--mono);font-size:11px;color:var(--dfg);font-weight:600;line-height:1.2}
-  .dm-tile .m{display:flex;gap:6px;font-family:var(--mono);font-size:8.5px;color:var(--dmuted)}
-  .dm-tile .intent{font-size:10px;color:var(--ddim);line-height:1.3}
-  .dm-tile.lg{grid-column:span 2;grid-row:span 2}.dm-tile.wide{grid-column:span 2}
-  .dm-tile.hit{outline-color:var(--dbad)}
-  .dm-tile.src{outline-color:var(--dbrand)}
-  .dm-blast{width:250px;flex-shrink:0;border-left:1px solid var(--dborder);background:var(--dpanel);padding:46px 14px 70px;display:none;flex-direction:column;gap:8px;overflow:auto}
-  .dm-blast.on{display:flex}
-  .dm-blast h5{font-family:var(--mono);font-size:9.5px;letter-spacing:1px;text-transform:uppercase;color:var(--dbrand)}
-  .dm-blast .warn{font-family:var(--mono);font-size:11px;color:var(--dbad)}
-  .dm-blast .dep{font-family:var(--mono);font-size:10.5px;color:var(--ddim);padding:4px 8px;border:1px solid var(--dborder);border-radius:6px}
-  .dm-blast .dep b{color:var(--dfg);font-weight:500}
+  .dx{flex:1;display:flex;min-height:0}
+  .dx-tree{width:206px;flex-shrink:0;background:var(--dbg);border-right:1px solid var(--dborder);display:flex;flex-direction:column;min-height:0}
+  .dx-tt{display:flex;align-items:center;gap:10px;padding:9px 12px;font-size:12px;color:var(--dmuted)}
+  .dx-tt .rb{margin-left:auto;color:var(--dbrand);font-family:var(--mono);font-size:11px}
+  .dx-rows{flex:1;overflow:auto;padding-bottom:70px}
+  .dx-row{display:flex;align-items:center;gap:6px;padding:3px 10px 3px 14px;font-family:var(--mono);font-size:11px;color:var(--ddim);cursor:pointer}
+  .dx-row .w{margin-left:auto;font-size:9px;color:var(--dmuted)}
+  .dx-row.dir{color:var(--dfg);padding-left:8px}
+  .dx-row.f{padding-left:22px}
+  .dx-row.f i{width:7px;height:7px;border-radius:50%;flex-shrink:0;font-style:normal}
+  .dx-row.f:hover{background:var(--dpanel)}
+  .dx-row.f.sel{background:var(--dactive);color:var(--dfg)}
+  .dx-main{flex:1;min-width:0;display:flex;flex-direction:column;min-height:0}
+  .dx-tabbar{display:flex;align-items:center;padding:8px 14px;border-bottom:1px solid var(--dborder);font-family:var(--mono);font-size:11px;color:var(--ddim)}
+  .dx-tabbar .z{margin-left:auto;color:var(--dmuted);display:flex;gap:10px;padding-right:36px}
+  .dx-fh{display:flex;align-items:center;gap:8px;padding:9px 16px;border-bottom:1px solid var(--dborder)}
+  .dx-fh b{font-family:var(--mono);font-size:12px;color:var(--dfg);font-weight:600}
+  .dx-fh .docs{margin-left:auto;font-family:var(--mono);font-size:10px;color:var(--dbg);background:var(--dbrand);border-radius:5px;padding:2px 9px}
+  .dx-code{flex:1;overflow:auto;padding:14px 18px 76px;font-family:var(--mono);font-size:11.5px;line-height:1.75;color:var(--ddim);white-space:pre}
+  .dx-code .c{color:var(--dmuted)} .dx-code .k{color:var(--dbrand)} .dx-code .s{color:var(--dok)} .dx-code .fg{color:var(--dfg)}
+  .dx-rail{width:30px;flex-shrink:0;border-left:1px solid var(--dborder);display:flex;flex-direction:column;align-items:center;gap:14px;padding-top:40px;color:var(--dmuted);font-size:11px}
+  .dx-scripts{position:absolute;left:0;right:0;bottom:0;z-index:7;display:flex;align-items:center;gap:14px;padding:8px 14px;background:color-mix(in oklch,var(--dbg) 88%,transparent);border-top:1px solid var(--dborder);font-family:var(--mono);font-size:9px;color:var(--dmuted)}
+  .dx-scripts .lbl{color:var(--dbad);letter-spacing:1px}
+  .dx-scripts b{color:var(--dfg);font-weight:500}
 </style>
   <div class="wrap">
     <div class="sec-eyebrow" style="color:var(--accent)">Try it — right here</div>
     <h2>This is the real screen. Boxed.</h2>
-    <p class="sec-lede">Pixel-faithful to the app — same layout, same design tokens, same tabs. The data is scripted; the feel is real. <b>Click around.</b></p>
-<div class="dm"><div class="dm-bar"><i></i><i></i><i></i><span class="t">antiloki — AntiIDE — the Explorer tab</span><span class="live">● interactive demo · scripted data</span></div><div class="dm-app"><div class="dm-corner">a</div><div class="dm-hint">click a file — its blast radius appears</div><div class="dm-ex"><div class="dm-mosaic"><div class="dm-tile" data-i="0" id="dmt0" style="background:color-mix(in oklch,oklch(0.72 0.09 260) 11%,var(--dpanel));border:1px solid color-mix(in oklch,oklch(0.72 0.09 260) 26%,var(--dborder));border-top:2px solid oklch(0.72 0.09 260)"><code>engine/dispatch.ts</code><div class="m"><span style="color:oklch(0.72 0.09 260)">.ts</span><span>14 defs</span><span style="color:var(--ddim)">→ 9</span></div><div class="intent">routes every action through permission checks, audit and the law hooks</div></div><div class="dm-tile" data-i="1" id="dmt1" style="background:color-mix(in oklch,oklch(0.72 0.09 260) 11%,var(--dpanel));border:1px solid color-mix(in oklch,oklch(0.72 0.09 260) 26%,var(--dborder));border-top:2px solid oklch(0.72 0.09 260)"><code>auth/guard.ts</code><div class="m"><span style="color:oklch(0.72 0.09 260)">.ts</span><span>6 defs</span><span style="color:var(--ddim)">→ 3</span></div></div><div class="dm-tile" data-i="2" id="dmt2" style="background:color-mix(in oklch,oklch(0.7 0.1 300) 11%,var(--dpanel));border:1px solid color-mix(in oklch,oklch(0.7 0.1 300) 26%,var(--dborder));border-top:2px solid oklch(0.7 0.1 300)"><code>checkout.tsx</code><div class="m"><span style="color:oklch(0.7 0.1 300)">.tsx</span><span>9 defs</span><span style="color:var(--ddim)">→ 7</span></div><div class="intent">the checkout flow — cart, payment intent, confirmation</div></div><div class="dm-tile" data-i="3" id="dmt3" style="background:color-mix(in oklch,oklch(0.72 0.09 260) 11%,var(--dpanel));border:1px solid color-mix(in oklch,oklch(0.72 0.09 260) 26%,var(--dborder));border-top:2px solid oklch(0.72 0.09 260)"><code>api/client.ts</code><div class="m"><span style="color:oklch(0.72 0.09 260)">.ts</span><span>4 defs</span><span style="color:var(--ddim)">→ 2</span></div></div><div class="dm-tile" data-i="4" id="dmt4" style="background:color-mix(in oklch,oklch(0.8 0.14 80) 11%,var(--dpanel));border:1px solid color-mix(in oklch,oklch(0.8 0.14 80) 26%,var(--dborder));border-top:2px solid oklch(0.8 0.14 80)"><code>db/schema.sql</code><div class="m"><span style="color:oklch(0.8 0.14 80)">.sql</span><span>12 defs</span></div></div><div class="dm-tile" data-i="5" id="dmt5" style="background:color-mix(in oklch,oklch(0.74 0.13 150) 11%,var(--dpanel));border:1px solid color-mix(in oklch,oklch(0.74 0.13 150) 26%,var(--dborder));border-top:2px solid oklch(0.74 0.13 150)"><code>theme.css</code><div class="m"><span style="color:oklch(0.74 0.13 150)">.css</span><span>41 defs</span></div></div><div class="dm-tile" data-i="6" id="dmt6" style="background:color-mix(in oklch,oklch(0.72 0.09 260) 11%,var(--dpanel));border:1px solid color-mix(in oklch,oklch(0.72 0.09 260) 26%,var(--dborder));border-top:2px solid oklch(0.72 0.09 260)"><code>api/routes.ts</code><div class="m"><span style="color:oklch(0.72 0.09 260)">.ts</span><span>8 defs</span><span style="color:var(--ddim)">→ 5</span></div></div><div class="dm-tile" data-i="7" id="dmt7" style="background:color-mix(in oklch,oklch(0.8 0.14 80) 11%,var(--dpanel));border:1px solid color-mix(in oklch,oklch(0.8 0.14 80) 26%,var(--dborder));border-top:2px solid oklch(0.8 0.14 80)"><code>db/orders.sql</code><div class="m"><span style="color:oklch(0.8 0.14 80)">.sql</span><span>6 defs</span></div></div><div class="dm-tile" data-i="8" id="dmt8" style="background:color-mix(in oklch,oklch(0.64 0.11 38) 11%,var(--dpanel));border:1px solid color-mix(in oklch,oklch(0.64 0.11 38) 26%,var(--dborder));border-top:2px solid oklch(0.64 0.11 38)"><code>utils/money.ts</code><div class="m"><span style="color:oklch(0.64 0.11 38)">.ts</span><span>3 defs</span><span style="color:var(--ddim)">→ 1</span></div></div><div class="dm-tile" data-i="9" id="dmt9" style="background:color-mix(in oklch,oklch(0.72 0.09 260) 11%,var(--dpanel));border:1px solid color-mix(in oklch,oklch(0.72 0.09 260) 26%,var(--dborder));border-top:2px solid oklch(0.72 0.09 260)"><code>session/store.ts</code><div class="m"><span style="color:oklch(0.72 0.09 260)">.ts</span><span>5 defs</span><span style="color:var(--ddim)">→ 4</span></div></div></div><aside class="dm-blast" id="dmblast"><h5 id="dmbt">blast radius</h5><div class="warn" id="dmbw"></div><div id="dmbd"></div></aside></div><div class="dm-dock"><div class="in">Message antiloki — from anywhere…</div><div style="display:flex;align-items:center;gap:6px"><span class="dm-mono" style="font-size:8.5px;color:var(--ddim)">⏎ sends · ⠿ docks the chat</span><div class="dm-tabs"><span class="dm-tab"><i>✦</i>Chat</span><span class="dm-tab"><i>❯</i>Canvas</span><span class="dm-tab"><i>◈</i>Hub</span><span class="dm-tab on"><i>⟨⟩</i>Explorer</span><span class="dm-tab"><i>⚙</i>Harness</span></div></div></div></div></div>
+    <p class="sec-lede">Rebuilt from screenshots of the actual app in demo mode — same layout, same tokens, same tabs. The data is scripted; the pixels are real. <b>Click around.</b></p>
+<div class="dm"><div class="dm-bar"><i></i><i></i><i></i><span class="t">antiloki — AntiIDE — the Explorer tab</span><span class="live">● interactive demo · scripted data</span></div><div class="dm-app"><div class="dm-corner">a</div><div class="dm-hint" style="top:auto;bottom:64px">click guard.ts or checkout.tsx — the reading pane follows</div><div class="dx"><div class="dx-tree"><div class="dx-tt">⌕ ⚙<span class="rb">↻ rebuild</span></div><div class="dx-rows"><div class="dx-row dir">▾ api<span class="w">~3.0k</span></div><div class="dx-row f"><i style="background:var(--dblue)"></i>client.ts<span class="w">~900</span></div><div class="dx-row f"><i style="background:var(--dblue)"></i>routes.ts<span class="w">~2.1k</span></div><div class="dx-row dir">▾ auth<span class="w">~1.8k</span></div><div class="dx-row f" data-f="guard.ts"><i style="background:var(--dblue)"></i>guard.ts<span class="w">~1.8k</span></div><div class="dx-row dir">▾ db<span class="w">~2.3k</span></div><div class="dx-row f"><i style="background:var(--dwarn)"></i>orders.sql<span class="w">~700</span></div><div class="dx-row f"><i style="background:var(--dwarn)"></i>schema.sql<span class="w">~1.6k</span></div><div class="dx-row dir">▾ engine<span class="w">~4.2k</span></div><div class="dx-row f sel" data-f="dispatch.ts"><i style="background:var(--dblue)"></i>dispatch.ts<span class="w">~4.2k</span></div><div class="dx-row dir">▾ session<span class="w">~1.1k</span></div><div class="dx-row f"><i style="background:var(--dblue)"></i>store.ts<span class="w">~1.1k</span></div><div class="dx-row dir">▾ utils<span class="w">~300</span></div><div class="dx-row f"><i style="background:var(--dblue)"></i>money.ts<span class="w">~300</span></div><div class="dx-row f" data-f="checkout.tsx"><i style="background:var(--dviolet)"></i>checkout.tsx<span class="w">~3.1k</span></div><div class="dx-row f"><i style="background:var(--dok)"></i>theme.css<span class="w">~2.6k</span></div></div></div><div class="dx-main"><div class="dx-tabbar"><span id="dxp">engine/dispatch.ts</span><span class="z">A- 100% A+ ⛶</span></div><div class="dx-fh"><i style="width:8px;height:8px;border-radius:50%;background:var(--dblue)"></i><b id="dxh">engine/dispatch.ts</b><span class="docs">◆ docs</span></div><div class="dx-code" id="dxc"><span class="c">// engine/dispatch.ts — every action passes through here.</span>
+<span class="c">// Permission first, audit always, laws enforced at the gate.</span>
+<span class="k">import</span> { verifyToken, requireGrant } <span class="k">from</span> <span class="s">"../auth/guard"</span>;
+<span class="k">import</span> { withAudit } <span class="k">from</span> <span class="s">"./audit"</span>;
+
+<span class="k">export async function</span> <span class="fg">dispatchAction</span>(call, ctx) {
+  <span class="k">const</span> agent = <span class="k">await</span> verifyToken(ctx.token);
+  requireGrant(agent, call.action);           <span class="c">// no grant, no run</span>
+  <span class="k">return</span> withAudit(ctx, call, <span class="k">async</span> () =&gt; {  <span class="c">// every mutation leaves a row</span>
+    <span class="k">const</span> skill = resolveSkill(call.action);
+    <span class="k">return</span> skill(call.input, ctx);
+  });
+}</div></div><div class="dx-rail">A̴<span>≡</span><span>▤</span><span>◉</span><span>§</span><span>▷</span></div></div><div class="dx-scripts"><span class="lbl">SCRIPTS REGISTRY</span><span>build · <b>none</b></span><span>dev / run · <b>detected (npm run dev)</b></span><span>test · <b>detected (npm test)</b></span><span style="margin-left:auto">install · <b>detected (npm ci)</b></span></div><div class="dm-dock"><div class="in">Message antiloki — from anywhere…</div><div style="display:flex;align-items:center;gap:6px"><span class="dm-mono" style="font-size:8.5px;color:var(--ddim)">⏎ sends · ⠀⣿ docks the chat</span><div class="dm-tabs"><span class="dm-tab"><i>✦</i>Chat</span><span class="dm-tab"><i>❯</i>Canvas</span><span class="dm-tab"><i>◈</i>Hub</span><span class="dm-tab on"><i>⟨⟩</i>Explorer</span><span class="dm-tab"><i>⚙</i>Harness</span></div></div></div></div></div>
     <p class="dm-note">// scripted demo — the real one runs on your machine, on your repo. <a href="#waitlist" style="color:var(--accent)">get in line →</a></p>
   </div>
 </section>
 <script>
 (function(){
-  var deps={0:['auth/guard.ts','api/routes.ts','api/client.ts','session/store.ts','checkout.tsx','db/orders.sql'],
-            2:['api/client.ts','utils/money.ts','db/orders.sql'],
-            1:['engine/dispatch.ts','session/store.ts']};
-  var names=['engine/dispatch.ts','auth/guard.ts','checkout.tsx','api/client.ts','db/schema.sql','theme.css','api/routes.ts','db/orders.sql','utils/money.ts','session/store.ts'];
-  var blast=document.getElementById('dmblast'),bt=document.getElementById('dmbt'),bw=document.getElementById('dmbw'),bd=document.getElementById('dmbd');
-  document.querySelectorAll('.dm-tile').forEach(function(t){
-    t.addEventListener('click',function(){
-      var i=+t.getAttribute('data-i');var d=deps[i]||deps[0];
-      document.querySelectorAll('.dm-tile').forEach(function(x){x.classList.remove('hit','src');});
-      t.classList.add('src');
-      d.forEach(function(n){var k=names.indexOf(n);if(k>=0){var el=document.getElementById('dmt'+k);if(el)el.classList.add('hit');}});
-      blast.classList.add('on');
-      bt.textContent='blast radius · '+names[i];
-      bw.textContent='⚠ '+d.length+' file'+(d.length===1?'':'s')+' depend on this one';
-      bd.innerHTML=d.map(function(n,x){return '<div class="dep" style="margin-top:'+(x?6:0)+'px"><b>'+n+'</b> — breaks if the contract changes</div>';}).join('');
+  var code={"dispatch.ts": "<span class=\"c\">// engine/dispatch.ts \u2014 every action passes through here.</span>\n<span class=\"c\">// Permission first, audit always, laws enforced at the gate.</span>\n<span class=\"k\">import</span> { verifyToken, requireGrant } <span class=\"k\">from</span> <span class=\"s\">\"../auth/guard\"</span>;\n<span class=\"k\">import</span> { withAudit } <span class=\"k\">from</span> <span class=\"s\">\"./audit\"</span>;\n\n<span class=\"k\">export async function</span> <span class=\"fg\">dispatchAction</span>(call, ctx) {\n  <span class=\"k\">const</span> agent = <span class=\"k\">await</span> verifyToken(ctx.token);\n  requireGrant(agent, call.action);           <span class=\"c\">// no grant, no run</span>\n  <span class=\"k\">return</span> withAudit(ctx, call, <span class=\"k\">async</span> () =&gt; {  <span class=\"c\">// every mutation leaves a row</span>\n    <span class=\"k\">const</span> skill = resolveSkill(call.action);\n    <span class=\"k\">return</span> skill(call.input, ctx);\n  });\n}", "guard.ts": "<span class=\"c\">// auth/guard.ts \u2014 the one door.</span>\n<span class=\"k\">export async function</span> <span class=\"fg\">verifyToken</span>(token) {\n  <span class=\"k\">const</span> claims = <span class=\"k\">await</span> jwt.verify(token, KEY);\n  <span class=\"k\">if</span> (!claims) <span class=\"k\">throw new</span> AuthError(<span class=\"s\">\"invalid token\"</span>);\n  <span class=\"k\">return</span> agentFrom(claims);\n}\n\n<span class=\"k\">export function</span> <span class=\"fg\">requireGrant</span>(agent, action) {\n  <span class=\"k\">if</span> (!agent.grants.includes(action))\n    <span class=\"k\">throw new</span> PermissionError(action);  <span class=\"c\">// 14 files depend on this contract</span>\n}", "checkout.tsx": "<span class=\"c\">// checkout.tsx \u2014 cart, payment intent, confirmation.</span>\n<span class=\"k\">export function</span> <span class=\"fg\">CheckoutPage</span>() {\n  <span class=\"k\">const</span> intent = useIntent();\n  <span class=\"k\">return</span> (\n    &lt;<span class=\"fg\">CartSummary</span> total={formatCents(intent.total)}&gt;\n      &lt;<span class=\"fg\">PayButton</span> onPay={() =&gt; api.post(<span class=\"s\">\"/api/login\"</span>)} /&gt;\n    &lt;/<span class=\"fg\">CartSummary</span>&gt;\n  );\n}"};
+  var c=document.getElementById('dxc'),h=document.getElementById('dxh'),p=document.getElementById('dxp');
+  document.querySelectorAll('.dx-row.f[data-f]').forEach(function(r){
+    r.addEventListener('click',function(){
+      document.querySelectorAll('.dx-row.f').forEach(function(x){x.classList.remove('sel');});
+      r.classList.add('sel');
+      var f=r.getAttribute('data-f');
+      var full=(f==='guard.ts'?'auth/':f==='checkout.tsx'?'':'engine/')+f;
+      c.innerHTML=code[f]||'';h.textContent=full;p.textContent=full;
     });
   });
 })();
 </script>
+
 <div class="proofstrip">
   <div class="wrap" style="padding:0"><div class="ps-in">
     <div class="ps"><div class="v">every file</div><div class="k">mapped from the AST — symbols, imports, connections. not generated docs: recomputed from the code, it can't drift</div></div>
