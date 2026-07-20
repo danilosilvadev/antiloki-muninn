@@ -7,15 +7,19 @@
 /antiloki-landing.html     /   301
 
 # The product landings (tabs shell, 2026-07-20): pretty paths.
-/nide     /nide.html     200
-/lab      /lab.html      200
-/canvas   /canvas.html   200
-/harness  /harness.html  200
-# first-draft names (never deployed, but committed once) → the real ones
-/atlas.html      /nide.html     301
-/scholar.html    /lab.html      301
-/cockpit.html    /canvas.html   301
-/autopilot.html  /harness.html  301
+/antiide   /antiide.html   200
+/antidocs  /antidocs.html  200
+/antivibe  /antivibe.html  200
+/antiflow  /antiflow.html  200
+# earlier-draft names (never deployed, but committed once) → the real ones
+/atlas.html      /antiide.html   301
+/scholar.html    /antidocs.html  301
+/cockpit.html    /antivibe.html  301
+/autopilot.html  /antiflow.html  301
+/nide.html       /antiide.html   301
+/lab.html        /antidocs.html  301
+/canvas.html     /antivibe.html  301
+/harness.html    /antiflow.html  301
 
 # Short referral links: /r/<code> → the r edge function (logs the visit into the
 # events audit chain, then 302s back to /?ref=<code>). configure-site.mjs bakes

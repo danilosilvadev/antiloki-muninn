@@ -3,15 +3,15 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>antiloki Canvas — a crew of AI agents on one board.</title>
-<meta name="description" content="Canvas runs parallel AI agents in real terminals, one isolated git worktree each, with every dollar live on screen and gates before merge. One goal becomes a planned session. An antiloki instrument." />
-<link rel="canonical" href="https://__MUNINN_DOMAIN__/canvas.html" />
+<title>AntiIDE — Not an IDE. A code explorer &amp; review.</title>
+<meta name="description" content="AntiIDE — Not an IDE. You don't type code into it; you finally see it: every file, every connection, the blast radius of any change. A code explorer and review, read-only, on your machine." />
+<link rel="canonical" href="https://__MUNINN_DOMAIN__/antiide.html" />
 <link rel="icon" type="image/svg+xml" href="favicon.svg" />
 <meta property="og:type" content="website" />
 <meta property="og:site_name" content="antiloki" />
-<meta property="og:url" content="https://__MUNINN_DOMAIN__/canvas.html" />
-<meta property="og:title" content="antiloki Canvas — one agent is slow. Ten agents are chaos. Put them on one canvas." />
-<meta property="og:description" content="Parallel AI agents in real terminals, one isolated worktree each, every dollar on screen, gates before merge. Local-first, your keys." />
+<meta property="og:url" content="https://__MUNINN_DOMAIN__/antiide.html" />
+<meta property="og:title" content="AntiIDE — Not an IDE. Your architecture lives in someone's head. Now it's a map." />
+<meta property="og:description" content="It looks like an IDE. You don't type code into it — you finally SEE the code: the map, the health, the design surface. Local, read-only, zero risk." />
 <meta property="og:image" content="https://__MUNINN_DOMAIN__/og-card.png" />
 <meta name="twitter:card" content="summary_large_image" />
 <script>
@@ -31,7 +31,7 @@ window.MUNINN = {
     --base:#0E0D0B; --panel:#161412; --panel-2:#1E1B18; --line:#2A2622;
     --orange:#E8623A; --green:#4ADE80; --amber:#F0A93B; --red:#F0533B; --violet:#A78BFA;
     --text:#EDE8E0; --muted:#8C8378; --muted-2:#5E574E;
-    --accent:var(--orange); /* COCKPIT wears the house ember */
+    --accent:var(--green); /* ATLAS wears green */
     --display:'Space Grotesk',sans-serif; --mono:'JetBrains Mono',ui-monospace,monospace;
     --maxw:1100px;
   }
@@ -133,12 +133,12 @@ window.MUNINN = {
 
 <nav>
   <div class="wrap nav-in">
-    <a class="brand" href="index.html">antiloki<span class="dot">.</span><span class="blip" aria-hidden="true"></span><span class="prod">canvas</span></a>
+    <a class="brand" href="index.html">antiloki<span class="dot">.</span><span class="blip" aria-hidden="true"></span><span class="prod">AntiIDE</span></a>
     <div class="nav-links">
-      <a href="nide.html">N·IDE</a>
-      <a href="lab.html">Lab</a>
-      <a href="harness.html">Harness</a>
-      <a href="index.html">the full story</a>
+      <a href="antidocs.html">AntiDocs</a>
+      <a href="antivibe.html">AntiVibe</a>
+      <a href="antiflow.html">AntiFlow</a>
+      <a href="index.html">antiloki — the full story</a>
     </div>
     <a href="#waitlist" class="nav-cta">Point it at a repo</a>
   </div>
@@ -146,48 +146,48 @@ window.MUNINN = {
 
 <header class="hero">
   <div class="wrap">
-    <div class="eyebrow"><span class="bar"></span>an antiloki instrument · the ❯ Vibe tab</div>
-    <h1>Run ten agents <span class="strike">and pray</span>.<br><span class="keep">Put them on one canvas.</span></h1>
-    <p class="lede">Parallel agents in one repo means clobbered files, invisible spend and merge hell. <b>Canvas gives each agent a real terminal in its own git worktree</b>, arranged on one board — with <b>the money on screen</b> and gates before anything merges.</p>
+    <div class="eyebrow"><span class="bar"></span>AntiIDE — <em>Not an IDE. A code explorer &amp; review</em> · the ⟨⟩ Explorer tab</div>
+    <h1>Your architecture lives <span class="strike">in someone's head</span>.<br><span class="keep">Now it's a map.</span></h1>
+    <p class="lede">It looks like an IDE. It reads like an IDE. But <b>you don't type code into it</b> — AntiIDE is where you finally <b>see</b> the code: the living model read from the source itself — every file, every connection, <b>what breaks if you touch something</b>.</p>
     <div class="hero-cta">
-      <a class="btn-primary" href="#waitlist">Spawn a crew →</a>
+      <a class="btn-primary" href="#waitlist">See your map →</a>
       <a class="btn-ghost" href="index.html">the full antiloki story</a>
     </div>
-    <div class="hero-note">// your keys — OpenRouter or local models · the meter reads real usage, not estimates</div>
+    <div class="hero-note">// Not an IDE: read-only by design — it never writes to your repo · runs on your machine · $0 cloud</div>
   </div>
 </header>
 
 <div class="proofstrip">
   <div class="wrap" style="padding:0"><div class="ps-in">
-    <div class="ps"><div class="v">1 worktree</div><div class="k">per agent — physically isolated checkouts, so agents can't clobber each other's files</div></div>
-    <div class="ps"><div class="v">every $</div><div class="k">metered live, per agent per session — real usage from your own keys, never an estimate</div></div>
-    <div class="ps"><div class="v">1 sentence</div><div class="k">becomes a planned session — the concierge proposes crew, context and panes; nothing spawns without your click</div></div>
-    <div class="ps"><div class="v">gated</div><div class="k">real builds and real tests stand between every pane's output and your main branch</div></div>
+    <div class="ps"><div class="v">every file</div><div class="k">mapped from the AST — symbols, imports, connections. not generated docs: recomputed from the code, it can't drift</div></div>
+    <div class="ps"><div class="v">blast radius</div><div class="k">per change — see what depends on the thing you're about to touch, before you touch it</div></div>
+    <div class="ps"><div class="v">read-only</div><div class="k">it never writes to your repository — Not an IDE means zero risk to point it at anything</div></div>
+    <div class="ps"><div class="v">minutes</div><div class="k">from clone to first map — the fastest way to meet a codebase you've never seen</div></div>
   </div></div>
 </div>
 
 <section id="features">
   <div class="wrap">
-    <div class="sec-eyebrow" style="color:var(--accent)">What Canvas gives you</div>
-    <h2>Many hands. One canvas. Zero chaos.</h2>
+    <div class="sec-eyebrow" style="color:var(--accent)">What AntiIDE gives you</div>
+    <h2>The map, the health, the design — read from reality.</h2>
     <div class="feats">
       <div class="feat reveal">
-        <div class="fn">01 · real terminals, isolated</div>
-        <div class="ft">Each agent flies its own pane.</div>
-        <div class="fd">Every pane is a real terminal in <b>its own git worktree</b> — agents work in parallel without touching each other's files, and you review <b>one coherent diff per pane</b> when they land.</div>
-        <div class="term">pane 1 · auth refactor · <span class="ok">✓ diff ready</span><br>pane 2 · checkout page · <span class="hi">▮ working…</span></div>
+        <div class="fn">01 · the living map</div>
+        <div class="ft">Every file. Every connection.</div>
+        <div class="fd">Files, symbols and imports as one graph, read from the syntax tree. Click any node and see <b>what breaks if you change it</b> — the map a senior carries in their head, drawn.</div>
+        <div class="term"><span class="hi">checkout.tsx</span> → api/client → <span class="hi">auth/guard</span><br><span class="er">⚠ 14 files depend on this one</span></div>
       </div>
       <div class="feat reveal">
-        <div class="fn">02 · the concierge</div>
-        <div class="ft">One sentence. A whole session.</div>
-        <div class="fd">Type what you want to ship. It proposes <b>the crew, the shared context and the panes</b> as an editable preview — you toggle, adjust, then spawn. <b>Nothing runs without your click.</b></div>
-        <div class="term">goal: "ship the login screen"<br><span class="ok">⚑ 3 panes proposed · context attached · GO?</span></div>
+        <div class="fn">02 · health &amp; concepts</div>
+        <div class="ft">Where it's weak. What ideas live where.</div>
+        <div class="fd">Every file scored on real signals — tests, coupling, churn. The concept atlas shows <b>which ideas the code embodies</b>, which are scattered across many files, and which are untested.</div>
+        <div class="term">audit chain · <span class="ok">2 files · tested</span><br>token bucket · <span class="er">5 files · scattered</span></div>
       </div>
       <div class="feat reveal">
-        <div class="fn">03 · the meter &amp; the gates</div>
-        <div class="ft">The money on screen. Broken work stopped.</div>
-        <div class="fd">Spend per agent, per session, live — from your own keys, so the meter reads <b>real usage</b>. And real builds + real tests gate every pane: <b>a red result can't reach your main branch</b>.</div>
-        <div class="term">session spend <span class="hi">$0.47</span> · pane 2 <span class="hi">$0.18</span><br><span class="er">✗ pane 3 broke the build — held at the gate</span></div>
+        <div class="fn">03 · the design surface</div>
+        <div class="ft">The design system you actually shipped.</div>
+        <div class="fd">Tokens, screens and flows extracted from the code — <b>the design your app implements</b>, not the one in a Figma file from last quarter. Read-only truth for designers and reviewers.</div>
+        <div class="term">--brand <span class="hi">#E8623A</span> · 41 uses<br><span class="ok">✓ 12 screens mapped to routes</span></div>
       </div>
     </div>
   </div>
@@ -197,10 +197,10 @@ window.MUNINN = {
   <div class="wrap suite-in">
     <b>Part of antiloki</b>
     <span>one chat, four tabs — the chat is free, each tab is a license you buy <em>once</em></span>
-    <a href="nide.html">⟨⟩ N·IDE</a>
-    <a href="lab.html">◈ Lab</a>
-    <a class="this" href="canvas.html">❯ Canvas</a>
-    <a href="harness.html">⛭ Harness</a>
+    <a class="this" href="antiide.html">⟨⟩ AntiIDE</a>
+    <a href="antidocs.html">◈ AntiDocs</a>
+    <a href="antivibe.html">❯ AntiVibe</a>
+    <a href="antiflow.html">⛭ AntiFlow</a>
     <a href="index.html">the full story →</a>
   </div>
 </div>
@@ -208,7 +208,7 @@ window.MUNINN = {
 <section id="waitlist" style="text-align:center;scroll-margin-top:80px">
   <div class="wrap">
     <div class="sec-eyebrow" style="color:var(--accent)">Early access</div>
-    <h2 style="margin:0 auto;max-width:22ch">The first thing you'll do is watch three agents work at once.</h2>
+    <h2 style="margin:0 auto;max-width:22ch">The first thing you'll do is watch your architecture appear.</h2>
     <p class="sec-lede" style="margin:18px auto 0">30-day trial with every tab unlocked. Keep what you buy, forever.</p>
     <form class="wl" id="wlform" novalidate>
       <input type="text" name="company" id="wlcompany" tabindex="-1" autocomplete="off" aria-hidden="true" style="position:absolute;left:-9999px;width:1px;height:1px;opacity:0" />
@@ -225,7 +225,7 @@ window.MUNINN = {
   <div class="wrap foot-in">
     <a class="brand" href="index.html">antiloki<span class="dot">.</span></a>
     <div class="foot-links">
-      <a href="nide.html">N·IDE</a><a href="lab.html">Lab</a><a href="canvas.html">Canvas</a><a href="harness.html">Harness</a><a href="index.html">antiloki</a><a href="privacy.html">privacy</a>
+      <a href="antiide.html">AntiIDE</a><a href="antidocs.html">AntiDocs</a><a href="antivibe.html">AntiVibe</a><a href="antiflow.html">AntiFlow</a><a href="index.html">antiloki</a><a href="privacy.html">privacy</a>
     </div>
   </div>
 </footer>
@@ -256,7 +256,7 @@ window.MUNINN = {
 
   /* the waitlist form — same edge function, product-tagged source */
   (function(){
-    var PRODUCT='canvas';
+    var PRODUCT='antiide';
     var f=document.getElementById('wlform'),ok=document.getElementById('wlok'),em=document.getElementById('wlemail'),
         hp=document.getElementById('wlcompany'),err=document.getElementById('wlerr'),btn=document.getElementById('wlbtn');
     var cfg=window.MUNINN||{};
