@@ -576,6 +576,7 @@ window.MUNINN = {
     <div class="nav-links">
       <a href="#idea">The idea</a>
       <a href="#machine">The machine</a>
+      <a href="#products">Products</a>
       <a href="#ownership">Yours</a>
     </div>
     <a href="#waitlist" class="nav-cta">Point it at a repo</a>
@@ -716,7 +717,7 @@ expect(res.status).toBe(200)</pre></div>
             <div class="cmt" style="animation-delay:1.15s;height:54px"><span class="mc">🌐 browser</span></div>
           </div>
           <div class="s-big fu" style="animation-delay:1.6s">Your codebase becomes a workspace.</div>
-          <div class="s-sub fu" style="animation-delay:2.6s">a chat that's an expert in <b style="color:var(--text)">your</b> repository. research over your own code — like NotebookLM, for software. panels where several AIs work the same session, together.</div>
+          <div class="s-sub fu" style="animation-delay:2.6s">the whole app is ONE chat — the products live as tabs on the text field: <b style="color:var(--text)">Atlas · Scholar · Cockpit · Autopilot</b>. the chat is free; you buy only the tabs you want, once.</div>
         </div>
 
         <!-- 03 · it builds like an engineering team -->
@@ -787,6 +788,63 @@ expect(res.status).toBe(200)</pre></div>
   </div>
 </section>
 
+<!-- THE PRODUCTS — one chat, four tabs, pay once (the tabs shell, 2026-07-20) -->
+<section id="products">
+  <style>
+    .prods{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:44px}
+    @media(max-width:820px){.prods{grid-template-columns:1fr}}
+    .prod{border:1px solid var(--line);border-radius:14px;background:var(--panel);padding:24px 24px 20px;position:relative;transition:border-color .2s,transform .2s;display:block}
+    .prod:hover{transform:translateY(-3px)}
+    .prod .pn{font-weight:700;font-size:24px;letter-spacing:-.02em;display:flex;align-items:baseline;gap:10px}
+    .prod .pi{font-family:var(--mono);font-size:13px;opacity:.85}
+    .prod .pp{font-family:var(--mono);font-size:12.5px;margin-top:10px;line-height:1.55}
+    .prod .pd{font-size:14.5px;color:var(--muted);margin-top:10px;line-height:1.6}
+    .prod .pd b{color:var(--text)}
+    .prod .pf{display:flex;align-items:center;gap:10px;margin-top:16px;font-family:var(--mono);font-size:11.5px}
+    .prod .own{color:var(--muted-2)}
+    .prod .go{margin-left:auto;font-weight:600}
+    .prod.p-atlas:hover{border-color:rgba(74,222,128,.5)} .prod.p-atlas .pn,.prod.p-atlas .go{color:var(--green)} .prod.p-atlas .pp{color:var(--green)}
+    .prod.p-scholar:hover{border-color:rgba(167,139,250,.5)} .prod.p-scholar .pn,.prod.p-scholar .go{color:var(--violet)} .prod.p-scholar .pp{color:var(--violet)}
+    .prod.p-cockpit:hover{border-color:rgba(232,98,58,.5)} .prod.p-cockpit .pn,.prod.p-cockpit .go{color:var(--orange)} .prod.p-cockpit .pp{color:var(--orange)}
+    .prod.p-auto:hover{border-color:rgba(240,169,59,.5)} .prod.p-auto .pn,.prod.p-auto .go{color:var(--amber)} .prod.p-auto .pp{color:var(--amber)}
+    .freechat{margin-top:26px;border:1px dashed var(--line);border-radius:12px;padding:16px 20px;display:flex;gap:14px;align-items:baseline;flex-wrap:wrap;font-family:var(--mono);font-size:13px;color:var(--muted)}
+    .freechat b{color:var(--green)}
+  </style>
+  <div class="wrap">
+    <div class="sec-eyebrow" style="color:var(--orange)">The products</div>
+    <h2>One chat. Four instruments.<br>Buy once — they're yours.</h2>
+    <p class="sec-lede">The whole app presents as a simple chat; the products are <b>tabs on the text field</b>. No subscription for software that runs on your machine with your keys — <b>a license is a purchase, not a rental</b>. The only recurring thing is the optional cloud lane (sync between your machines), because that's the only thing that recurs for us too.</p>
+    <div class="freechat"><b>✦ Agent — free, forever.</b> the chat itself: widgets, artifacts, and real intelligence about your codebase (it reads the AST, not vibes). tagging included.</div>
+    <div class="prods">
+      <a class="prod p-atlas reveal" href="atlas.html">
+        <div class="pn">Atlas <span class="pi">⟨⟩ the Code tab</span></div>
+        <div class="pp">"the architecture lives in someone's head."</div>
+        <div class="pd">the living map of your codebase — every file, every connection, <b>what breaks if you touch something</b>. health, concepts, the design surface. read-only: zero risk.</div>
+        <div class="pf"><span class="own">own it · one license</span><span class="go">see Atlas →</span></div>
+      </a>
+      <a class="prod p-scholar reveal" href="scholar.html">
+        <div class="pn">Scholar <span class="pi">◈ the Research tab</span></div>
+        <div class="pp">"understanding this repo takes months."</div>
+        <div class="pd">a swarm studies your code and publishes <b>defended papers</b> — then notebooks, quizzes, video classes, even a voice that teaches your repo while you walk. NotebookLM, for software.</div>
+        <div class="pf"><span class="own">own it · one license</span><span class="go">see Scholar →</span></div>
+      </a>
+      <a class="prod p-cockpit reveal" href="cockpit.html">
+        <div class="pn">Cockpit <span class="pi">❯ the Vibe tab</span></div>
+        <div class="pp">"one agent is slow. ten agents are chaos."</div>
+        <div class="pd">fly a crew of AI agents in parallel — real terminals, <b>one isolated worktree each</b>, a concierge that plans the session from one sentence, and every dollar live on screen.</div>
+        <div class="pf"><span class="own">own it · one license</span><span class="go">see Cockpit →</span></div>
+      </a>
+      <a class="prod p-auto reveal" href="autopilot.html">
+        <div class="pn">Autopilot <span class="pi">⛭ the Harness tab</span></div>
+        <div class="pp">"AI you can't leave alone."</div>
+        <div class="pd">the pipeline that works while you're away — your rules <b>machine-enforced</b>, gates that block broken work, and a tamper-evident record of everything it did. receipts, not trust.</div>
+        <div class="pf"><span class="own">own it · one license</span><span class="go">see Autopilot →</span></div>
+      </a>
+    </div>
+    <p class="matrix-note" style="margin-top:26px">// 30-day trial = every tab unlocked. then keep what you bought forever (with a year of updates), and the chat stays free. bundles discount; renewing updates is optional.</p>
+  </div>
+</section>
+
 <!-- COMPARE + JOIN -->
 <section id="ownership">
   <div class="wrap">
@@ -802,6 +860,7 @@ expect(res.status).toBe(200)</pre></div>
           <tr><th>Replayable, tamper-evident history</th><td class="no">✕ editable logs</td><td class="no">✕ transcripts</td><td class="no">✕ logs</td><td class="mid">session logs</td><td class="us"><span class="yes">✓ Merkle chain, verifiable offline</span></td></tr>
           <tr><th>Learns from your corrections</th><td class="no">✕</td><td class="mid">△ memory files</td><td class="no">✕</td><td class="no">✕</td><td class="us"><span class="yes">✓ evidence-based routing, ledgered</span></td></tr>
           <tr><th>Runs fully local, your key</th><td class="no">✕ cloud</td><td class="mid">△ cloud · API/Bedrock/Vertex</td><td class="no">✕ cloud</td><td class="no">✕ cloud</td><td class="us"><span class="yes">✓ local-first · BYO, per tier</span></td></tr>
+          <tr><th>Pay once, own it</th><td class="no">✕ subscription</td><td class="no">✕ subscription</td><td class="no">✕ subscription</td><td class="no">✕ subscription</td><td class="us"><span class="yes">✓ free chat · buy tabs once</span></td></tr>
         </tbody>
       </table>
     </div>
@@ -831,7 +890,7 @@ expect(res.status).toBe(200)</pre></div>
   <div class="wrap foot-in">
     <div class="brand">antiloki<span class="dot">.</span></div>
     <div class="foot-links">
-      <a href="#idea">The idea</a><a href="#machine">The machine</a><a href="#ownership">Yours</a><a href="antiloki-paper.html">Paper</a><a href="antiloki-manual.html">Manual</a><a href="antiloki-deck.html">Deck</a><a href="#waitlist">Early access</a>
+      <a href="atlas.html">Atlas</a><a href="scholar.html">Scholar</a><a href="cockpit.html">Cockpit</a><a href="autopilot.html">Autopilot</a><a href="#machine">The machine</a><a href="antiloki-paper.html">Paper</a><a href="antiloki-manual.html">Manual</a><a href="antiloki-deck.html">Deck</a><a href="#waitlist">Early access</a>
     </div>
     <div style="font-family:var(--mono);font-size:12px;color:var(--muted-2)">© 2026 antiloki</div>
   </div>

@@ -6,6 +6,12 @@
 /antiloki.html             /   301
 /antiloki-landing.html     /   301
 
+# The product landings (tabs shell, 2026-07-20): pretty paths.
+/atlas      /atlas.html      200
+/scholar    /scholar.html    200
+/cockpit    /cockpit.html    200
+/autopilot  /autopilot.html  200
+
 # Short referral links: /r/<code> → the r edge function (logs the visit into the
 # events audit chain, then 302s back to /?ref=<code>). configure-site.mjs bakes
 # the real Supabase project ref.
