@@ -24,7 +24,7 @@ window.MUNINN = {
 </script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&family=Geist:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
   /* the antiloki design system, product cut — forked from index.html (tabs shell, 2026-07-20) */
   :root{
@@ -260,6 +260,78 @@ window.MUNINN = {
   </div>
 </header>
 
+
+<!-- THE DEMO — the real screen, boxed (operator 2026-07-20: pixel-faithful, clickable) -->
+<section id="demo" style="padding:64px 0">
+  <style>
+  .dm{--dbg:oklch(0.15 0.006 55);--dpanel:oklch(0.18 0.007 55);--dpanel2:oklch(0.21 0.008 55);--dborder:oklch(0.26 0.006 55);--dfg:oklch(0.93 0.006 60);--ddim:oklch(0.66 0.012 58);--dmuted:oklch(0.5 0.01 58);--dok:oklch(0.74 0.13 150);--dwarn:oklch(0.8 0.14 80);--dbad:oklch(0.64 0.19 25);--dbrand:oklch(0.64 0.11 38);
+    margin-top:44px;border:1px solid var(--line);border-radius:16px;overflow:hidden;background:var(--dbg);box-shadow:0 24px 70px -20px rgba(0,0,0,.6)}
+  .dm-bar{display:flex;align-items:center;gap:7px;padding:11px 15px;border-bottom:1px solid var(--line);background:var(--panel-2);font-family:var(--mono);font-size:11px;color:var(--muted-2)}
+  .dm-bar i{width:10px;height:10px;border-radius:50%;background:var(--line);flex-shrink:0}
+  .dm-bar i:first-child{background:var(--red)}.dm-bar i:nth-child(2){background:var(--amber)}.dm-bar i:nth-child(3){background:var(--green)}
+  .dm-bar .t{margin-left:8px}.dm-bar .live{margin-left:auto;color:var(--accent)}
+  .dm-app{position:relative;height:540px;background:var(--dbg);color:var(--dfg);font-family:'Geist',-apple-system,system-ui,sans-serif;display:flex;flex-direction:column;overflow:hidden;text-align:left;cursor:default}
+  .dm-mono{font-family:var(--mono)}
+  /* the corner circle (settings/workspace) — top right, like the app */
+  .dm-corner{position:absolute;top:10px;right:12px;width:26px;height:26px;border-radius:50%;background:color-mix(in oklch,var(--dpanel) 72%,transparent);border:1px solid var(--dborder);color:var(--dmuted);font-size:11px;font-weight:600;display:grid;place-items:center;z-index:9}
+  /* THE DOCK — the product-tabs text field, floating bottom center, ghost at rest */
+  .dm-dock{position:absolute;left:50%;transform:translateX(-50%);bottom:12px;z-index:8;width:min(540px,92%);background:color-mix(in oklch,var(--dpanel) 62%,transparent);backdrop-filter:blur(10px);border:1px solid var(--dborder);border-radius:14px;padding:7px 11px 6px;opacity:.92}
+  .dm-dock .in{font-size:12.5px;color:var(--dmuted);padding:1px 2px 6px}
+  .dm-tabs{display:flex;align-items:center;gap:2px;background:var(--dbg);border-radius:8px;padding:2px;width:max-content;margin-left:auto}
+  .dm-tab{display:inline-flex;align-items:center;gap:4px;border-radius:6px;padding:2px 8px;font-size:10.5px;color:var(--dmuted);white-space:nowrap}
+  .dm-tab i{font-style:normal;font-size:9px;opacity:.85}
+  .dm-tab.on{background:var(--dpanel2);color:var(--dbrand);font-weight:500}
+  /* shared bits */
+  .dm-btn{font-family:var(--mono);font-size:11px;color:var(--dbg);background:var(--dbrand);border:none;border-radius:7px;padding:6px 13px;cursor:pointer;font-weight:600}
+  .dm-ghostbtn{font-family:var(--mono);font-size:10.5px;color:var(--dmuted);background:transparent;border:1px solid var(--dborder);border-radius:6px;padding:4px 10px;cursor:pointer}
+  .dm-hint{position:absolute;top:10px;left:14px;z-index:9;font-family:var(--mono);font-size:9.5px;color:var(--ddim);background:color-mix(in oklch,var(--dpanel) 75%,transparent);border:1px solid var(--dborder);border-radius:6px;padding:3px 9px}
+  .dm-note{font-family:var(--mono);font-size:11px;color:var(--muted-2);margin-top:14px}
+
+  .dm-ex{flex:1;display:flex;min-height:0}
+  .dm-mosaic{flex:1;overflow:auto;padding:44px 14px 70px;display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));grid-auto-rows:82px;grid-auto-flow:dense;gap:8px;align-content:start}
+  .dm-tile{border-radius:8px;padding:8px 10px;display:flex;flex-direction:column;gap:3px;cursor:pointer;overflow:hidden;transition:outline-color .15s;outline:2px solid transparent}
+  .dm-tile code{font-family:var(--mono);font-size:11px;color:var(--dfg);font-weight:600;line-height:1.2}
+  .dm-tile .m{display:flex;gap:6px;font-family:var(--mono);font-size:8.5px;color:var(--dmuted)}
+  .dm-tile .intent{font-size:10px;color:var(--ddim);line-height:1.3}
+  .dm-tile.lg{grid-column:span 2;grid-row:span 2}.dm-tile.wide{grid-column:span 2}
+  .dm-tile.hit{outline-color:var(--dbad)}
+  .dm-tile.src{outline-color:var(--dbrand)}
+  .dm-blast{width:250px;flex-shrink:0;border-left:1px solid var(--dborder);background:var(--dpanel);padding:46px 14px 70px;display:none;flex-direction:column;gap:8px;overflow:auto}
+  .dm-blast.on{display:flex}
+  .dm-blast h5{font-family:var(--mono);font-size:9.5px;letter-spacing:1px;text-transform:uppercase;color:var(--dbrand)}
+  .dm-blast .warn{font-family:var(--mono);font-size:11px;color:var(--dbad)}
+  .dm-blast .dep{font-family:var(--mono);font-size:10.5px;color:var(--ddim);padding:4px 8px;border:1px solid var(--dborder);border-radius:6px}
+  .dm-blast .dep b{color:var(--dfg);font-weight:500}
+</style>
+  <div class="wrap">
+    <div class="sec-eyebrow" style="color:var(--accent)">Try it — right here</div>
+    <h2>This is the real screen. Boxed.</h2>
+    <p class="sec-lede">Pixel-faithful to the app — same layout, same design tokens, same tabs. The data is scripted; the feel is real. <b>Click around.</b></p>
+<div class="dm"><div class="dm-bar"><i></i><i></i><i></i><span class="t">antiloki — AntiIDE — the Explorer tab</span><span class="live">● interactive demo · scripted data</span></div><div class="dm-app"><div class="dm-corner">a</div><div class="dm-hint">click a file — its blast radius appears</div><div class="dm-ex"><div class="dm-mosaic"><div class="dm-tile" data-i="0" id="dmt0" style="background:color-mix(in oklch,oklch(0.72 0.09 260) 11%,var(--dpanel));border:1px solid color-mix(in oklch,oklch(0.72 0.09 260) 26%,var(--dborder));border-top:2px solid oklch(0.72 0.09 260)"><code>engine/dispatch.ts</code><div class="m"><span style="color:oklch(0.72 0.09 260)">.ts</span><span>14 defs</span><span style="color:var(--ddim)">→ 9</span></div><div class="intent">routes every action through permission checks, audit and the law hooks</div></div><div class="dm-tile" data-i="1" id="dmt1" style="background:color-mix(in oklch,oklch(0.72 0.09 260) 11%,var(--dpanel));border:1px solid color-mix(in oklch,oklch(0.72 0.09 260) 26%,var(--dborder));border-top:2px solid oklch(0.72 0.09 260)"><code>auth/guard.ts</code><div class="m"><span style="color:oklch(0.72 0.09 260)">.ts</span><span>6 defs</span><span style="color:var(--ddim)">→ 3</span></div></div><div class="dm-tile" data-i="2" id="dmt2" style="background:color-mix(in oklch,oklch(0.7 0.1 300) 11%,var(--dpanel));border:1px solid color-mix(in oklch,oklch(0.7 0.1 300) 26%,var(--dborder));border-top:2px solid oklch(0.7 0.1 300)"><code>checkout.tsx</code><div class="m"><span style="color:oklch(0.7 0.1 300)">.tsx</span><span>9 defs</span><span style="color:var(--ddim)">→ 7</span></div><div class="intent">the checkout flow — cart, payment intent, confirmation</div></div><div class="dm-tile" data-i="3" id="dmt3" style="background:color-mix(in oklch,oklch(0.72 0.09 260) 11%,var(--dpanel));border:1px solid color-mix(in oklch,oklch(0.72 0.09 260) 26%,var(--dborder));border-top:2px solid oklch(0.72 0.09 260)"><code>api/client.ts</code><div class="m"><span style="color:oklch(0.72 0.09 260)">.ts</span><span>4 defs</span><span style="color:var(--ddim)">→ 2</span></div></div><div class="dm-tile" data-i="4" id="dmt4" style="background:color-mix(in oklch,oklch(0.8 0.14 80) 11%,var(--dpanel));border:1px solid color-mix(in oklch,oklch(0.8 0.14 80) 26%,var(--dborder));border-top:2px solid oklch(0.8 0.14 80)"><code>db/schema.sql</code><div class="m"><span style="color:oklch(0.8 0.14 80)">.sql</span><span>12 defs</span></div></div><div class="dm-tile" data-i="5" id="dmt5" style="background:color-mix(in oklch,oklch(0.74 0.13 150) 11%,var(--dpanel));border:1px solid color-mix(in oklch,oklch(0.74 0.13 150) 26%,var(--dborder));border-top:2px solid oklch(0.74 0.13 150)"><code>theme.css</code><div class="m"><span style="color:oklch(0.74 0.13 150)">.css</span><span>41 defs</span></div></div><div class="dm-tile" data-i="6" id="dmt6" style="background:color-mix(in oklch,oklch(0.72 0.09 260) 11%,var(--dpanel));border:1px solid color-mix(in oklch,oklch(0.72 0.09 260) 26%,var(--dborder));border-top:2px solid oklch(0.72 0.09 260)"><code>api/routes.ts</code><div class="m"><span style="color:oklch(0.72 0.09 260)">.ts</span><span>8 defs</span><span style="color:var(--ddim)">→ 5</span></div></div><div class="dm-tile" data-i="7" id="dmt7" style="background:color-mix(in oklch,oklch(0.8 0.14 80) 11%,var(--dpanel));border:1px solid color-mix(in oklch,oklch(0.8 0.14 80) 26%,var(--dborder));border-top:2px solid oklch(0.8 0.14 80)"><code>db/orders.sql</code><div class="m"><span style="color:oklch(0.8 0.14 80)">.sql</span><span>6 defs</span></div></div><div class="dm-tile" data-i="8" id="dmt8" style="background:color-mix(in oklch,oklch(0.64 0.11 38) 11%,var(--dpanel));border:1px solid color-mix(in oklch,oklch(0.64 0.11 38) 26%,var(--dborder));border-top:2px solid oklch(0.64 0.11 38)"><code>utils/money.ts</code><div class="m"><span style="color:oklch(0.64 0.11 38)">.ts</span><span>3 defs</span><span style="color:var(--ddim)">→ 1</span></div></div><div class="dm-tile" data-i="9" id="dmt9" style="background:color-mix(in oklch,oklch(0.72 0.09 260) 11%,var(--dpanel));border:1px solid color-mix(in oklch,oklch(0.72 0.09 260) 26%,var(--dborder));border-top:2px solid oklch(0.72 0.09 260)"><code>session/store.ts</code><div class="m"><span style="color:oklch(0.72 0.09 260)">.ts</span><span>5 defs</span><span style="color:var(--ddim)">→ 4</span></div></div></div><aside class="dm-blast" id="dmblast"><h5 id="dmbt">blast radius</h5><div class="warn" id="dmbw"></div><div id="dmbd"></div></aside></div><div class="dm-dock"><div class="in">Message antiloki — from anywhere…</div><div style="display:flex;align-items:center;gap:6px"><span class="dm-mono" style="font-size:8.5px;color:var(--ddim)">⏎ sends · ⠿ docks the chat</span><div class="dm-tabs"><span class="dm-tab"><i>✦</i>Chat</span><span class="dm-tab"><i>❯</i>Canvas</span><span class="dm-tab"><i>◈</i>Hub</span><span class="dm-tab on"><i>⟨⟩</i>Explorer</span><span class="dm-tab"><i>⚙</i>Harness</span></div></div></div></div></div>
+    <p class="dm-note">// scripted demo — the real one runs on your machine, on your repo. <a href="#waitlist" style="color:var(--accent)">get in line →</a></p>
+  </div>
+</section>
+<script>
+(function(){
+  var deps={0:['auth/guard.ts','api/routes.ts','api/client.ts','session/store.ts','checkout.tsx','db/orders.sql'],
+            2:['api/client.ts','utils/money.ts','db/orders.sql'],
+            1:['engine/dispatch.ts','session/store.ts']};
+  var names=['engine/dispatch.ts','auth/guard.ts','checkout.tsx','api/client.ts','db/schema.sql','theme.css','api/routes.ts','db/orders.sql','utils/money.ts','session/store.ts'];
+  var blast=document.getElementById('dmblast'),bt=document.getElementById('dmbt'),bw=document.getElementById('dmbw'),bd=document.getElementById('dmbd');
+  document.querySelectorAll('.dm-tile').forEach(function(t){
+    t.addEventListener('click',function(){
+      var i=+t.getAttribute('data-i');var d=deps[i]||deps[0];
+      document.querySelectorAll('.dm-tile').forEach(function(x){x.classList.remove('hit','src');});
+      t.classList.add('src');
+      d.forEach(function(n){var k=names.indexOf(n);if(k>=0){var el=document.getElementById('dmt'+k);if(el)el.classList.add('hit');}});
+      blast.classList.add('on');
+      bt.textContent='blast radius · '+names[i];
+      bw.textContent='⚠ '+d.length+' file'+(d.length===1?'':'s')+' depend on this one';
+      bd.innerHTML=d.map(function(n,x){return '<div class="dep" style="margin-top:'+(x?6:0)+'px"><b>'+n+'</b> — breaks if the contract changes</div>';}).join('');
+    });
+  });
+})();
+</script>
 <div class="proofstrip">
   <div class="wrap" style="padding:0"><div class="ps-in">
     <div class="ps"><div class="v">every file</div><div class="k">mapped from the AST — symbols, imports, connections. not generated docs: recomputed from the code, it can't drift</div></div>

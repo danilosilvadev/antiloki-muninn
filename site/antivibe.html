@@ -24,7 +24,7 @@ window.MUNINN = {
 </script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&family=Geist:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
   /* the antiloki design system, product cut — forked from index.html (tabs shell, 2026-07-20) */
   :root{
@@ -261,6 +261,79 @@ window.MUNINN = {
   </div>
 </header>
 
+
+<!-- THE DEMO — the real screen, boxed (operator 2026-07-20: pixel-faithful, clickable) -->
+<section id="demo" style="padding:64px 0">
+  <style>
+  .dm{--dbg:oklch(0.15 0.006 55);--dpanel:oklch(0.18 0.007 55);--dpanel2:oklch(0.21 0.008 55);--dborder:oklch(0.26 0.006 55);--dfg:oklch(0.93 0.006 60);--ddim:oklch(0.66 0.012 58);--dmuted:oklch(0.5 0.01 58);--dok:oklch(0.74 0.13 150);--dwarn:oklch(0.8 0.14 80);--dbad:oklch(0.64 0.19 25);--dbrand:oklch(0.64 0.11 38);
+    margin-top:44px;border:1px solid var(--line);border-radius:16px;overflow:hidden;background:var(--dbg);box-shadow:0 24px 70px -20px rgba(0,0,0,.6)}
+  .dm-bar{display:flex;align-items:center;gap:7px;padding:11px 15px;border-bottom:1px solid var(--line);background:var(--panel-2);font-family:var(--mono);font-size:11px;color:var(--muted-2)}
+  .dm-bar i{width:10px;height:10px;border-radius:50%;background:var(--line);flex-shrink:0}
+  .dm-bar i:first-child{background:var(--red)}.dm-bar i:nth-child(2){background:var(--amber)}.dm-bar i:nth-child(3){background:var(--green)}
+  .dm-bar .t{margin-left:8px}.dm-bar .live{margin-left:auto;color:var(--accent)}
+  .dm-app{position:relative;height:540px;background:var(--dbg);color:var(--dfg);font-family:'Geist',-apple-system,system-ui,sans-serif;display:flex;flex-direction:column;overflow:hidden;text-align:left;cursor:default}
+  .dm-mono{font-family:var(--mono)}
+  /* the corner circle (settings/workspace) — top right, like the app */
+  .dm-corner{position:absolute;top:10px;right:12px;width:26px;height:26px;border-radius:50%;background:color-mix(in oklch,var(--dpanel) 72%,transparent);border:1px solid var(--dborder);color:var(--dmuted);font-size:11px;font-weight:600;display:grid;place-items:center;z-index:9}
+  /* THE DOCK — the product-tabs text field, floating bottom center, ghost at rest */
+  .dm-dock{position:absolute;left:50%;transform:translateX(-50%);bottom:12px;z-index:8;width:min(540px,92%);background:color-mix(in oklch,var(--dpanel) 62%,transparent);backdrop-filter:blur(10px);border:1px solid var(--dborder);border-radius:14px;padding:7px 11px 6px;opacity:.92}
+  .dm-dock .in{font-size:12.5px;color:var(--dmuted);padding:1px 2px 6px}
+  .dm-tabs{display:flex;align-items:center;gap:2px;background:var(--dbg);border-radius:8px;padding:2px;width:max-content;margin-left:auto}
+  .dm-tab{display:inline-flex;align-items:center;gap:4px;border-radius:6px;padding:2px 8px;font-size:10.5px;color:var(--dmuted);white-space:nowrap}
+  .dm-tab i{font-style:normal;font-size:9px;opacity:.85}
+  .dm-tab.on{background:var(--dpanel2);color:var(--dbrand);font-weight:500}
+  /* shared bits */
+  .dm-btn{font-family:var(--mono);font-size:11px;color:var(--dbg);background:var(--dbrand);border:none;border-radius:7px;padding:6px 13px;cursor:pointer;font-weight:600}
+  .dm-ghostbtn{font-family:var(--mono);font-size:10.5px;color:var(--dmuted);background:transparent;border:1px solid var(--dborder);border-radius:6px;padding:4px 10px;cursor:pointer}
+  .dm-hint{position:absolute;top:10px;left:14px;z-index:9;font-family:var(--mono);font-size:9.5px;color:var(--ddim);background:color-mix(in oklch,var(--dpanel) 75%,transparent);border:1px solid var(--dborder);border-radius:6px;padding:3px 9px}
+  .dm-note{font-family:var(--mono);font-size:11px;color:var(--muted-2);margin-top:14px}
+
+  .dm-cv{flex:1;display:flex;flex-direction:column;min-height:0;padding:40px 12px 76px;gap:8px}
+  .dm-cvh{display:flex;align-items:center;gap:10px;font-family:var(--mono);font-size:10.5px;color:var(--ddim)}
+  .dm-cvh .sess{color:var(--dfg);font-weight:600;font-size:12px;font-family:'Geist',sans-serif}
+  .dm-meter{margin-left:auto;color:var(--dwarn)}
+  .dm-grid{flex:1;display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;min-height:0}
+  @media(max-width:760px){.dm-grid{grid-template-columns:1fr}}
+  .dm-pane{border:1px solid var(--dborder);border-radius:10px;background:var(--dpanel);display:flex;flex-direction:column;min-height:0;overflow:hidden}
+  .dm-pane .ph{display:flex;align-items:center;gap:6px;padding:5px 9px;border-bottom:1px solid var(--dborder);font-family:var(--mono);font-size:9px;color:var(--ddim)}
+  .dm-pane .ph b{color:var(--dfg);font-weight:600;font-size:10px;font-family:'Geist',sans-serif}
+  .dm-pane .ph .wt{color:var(--dok)}
+  .dm-pane .ph .pm{margin-left:auto;color:var(--dwarn)}
+  .dm-pane .tb{flex:1;min-height:0;overflow:auto;background:var(--dbg);padding:8px 10px;font-family:var(--mono);font-size:10px;line-height:1.7;color:var(--ddim)}
+  .dm-pane .tb .ok{color:var(--dok)}.dm-pane .tb .er{color:var(--dbad)}.dm-pane .tb .hi{color:var(--dfg)}
+  .dm-pane.gated{border-color:color-mix(in oklch,var(--dbad) 55%,var(--dborder))}
+</style>
+  <div class="wrap">
+    <div class="sec-eyebrow" style="color:var(--accent)">Try it — right here</div>
+    <h2>This is the real screen. Boxed.</h2>
+    <p class="sec-lede">Pixel-faithful to the app — same layout, same design tokens, same tabs. The data is scripted; the feel is real. <b>Click around.</b></p>
+<div class="dm"><div class="dm-bar"><i></i><i></i><i></i><span class="t">antiloki — AntiVibe — the Canvas tab</span><span class="live">● interactive demo · scripted data</span></div><div class="dm-app"><div class="dm-corner">a</div><div class="dm-hint">press ▶ — three agents fly in parallel, each in its own worktree</div><div class="dm-cv"><div class="dm-cvh"><span class="sess">⚡ ship the login screen</span><span>3 panes · isolated worktrees</span><button class="dm-btn" id="dmrun" style="margin-left:6px">▶ run the crew</button><span class="dm-meter" id="dmtot">session $0.00</span></div><div class="dm-grid"><div class="dm-pane" id="dmp0"><div class="ph"><b>auth form</b><span class="wt">⎇ wt/login-a</span><span class="pm" id="dmm0">$0.00</span></div><div class="tb" id="dmb0"></div></div><div class="dm-pane" id="dmp1"><div class="ph"><b>api wiring</b><span class="wt">⎇ wt/login-b</span><span class="pm" id="dmm1">$0.00</span></div><div class="tb" id="dmb1"></div></div><div class="dm-pane" id="dmp2"><div class="ph"><b>e2e tests</b><span class="wt">⎇ wt/login-c</span><span class="pm" id="dmm2">$0.00</span></div><div class="tb" id="dmb2"></div></div></div></div><div class="dm-dock"><div class="in">Message antiloki — from anywhere…</div><div style="display:flex;align-items:center;gap:6px"><span class="dm-mono" style="font-size:8.5px;color:var(--ddim)">⏎ sends · ⠿ docks the chat</span><div class="dm-tabs"><span class="dm-tab"><i>✦</i>Chat</span><span class="dm-tab on"><i>❯</i>Canvas</span><span class="dm-tab"><i>◈</i>Hub</span><span class="dm-tab"><i>⟨⟩</i>Explorer</span><span class="dm-tab"><i>⚙</i>Harness</span></div></div></div></div></div>
+    <p class="dm-note">// scripted demo — the real one runs on your machine, on your repo. <a href="#waitlist" style="color:var(--accent)">get in line →</a></p>
+  </div>
+</section>
+<script>
+(function(){
+  var run=document.getElementById('dmrun'),tot=document.getElementById('dmtot'),done=false,total=0;
+  var scripts=[
+    [[300,'$ read the shared mission brief'],[900,'✎ writing LoginForm.tsx'],[1700,'<span class=ok>✓ build passed · 14 tests green</span>'],[2400,'<span class=ok>✓ diff ready — one coherent change</span>']],
+    [[500,'$ read the shared mission brief'],[1300,'✎ wiring POST /api/login'],[2200,'<span class=ok>✓ build passed · contract matches guard.ts</span>'],[3000,'<span class=ok>✓ diff ready</span>']],
+    [[400,'$ read the shared mission brief'],[1200,'✎ writing login.e2e.ts'],[2000,'<span class=er>✗ build broke — held at the gate</span>'],[3200,'↺ fixing the import…'],[4200,'<span class=ok>✓ build passed — resumed · gate green</span>']]];
+  function money(i,el,amt){var v=0;var t=setInterval(function(){v+=0.01;if(v>=amt){v=amt;clearInterval(t);}el.textContent='$'+v.toFixed(2);total+=0.01;if(total>0.36)total=0.36;tot.textContent='session $'+total.toFixed(2);},260);}
+  run.addEventListener('click',function(){
+    if(done)return;done=true;run.textContent='▶ flying…';
+    scripts.forEach(function(sc,i){
+      var tb=document.getElementById('dmb'+i);
+      money(i,document.getElementById('dmm'+i),[0.14,0.13,0.09][i]);
+      sc.forEach(function(step){setTimeout(function(){
+        var l=document.createElement('div');l.innerHTML=step[1];tb.appendChild(l);tb.scrollTop=tb.scrollHeight;
+        if(String(step[1]).indexOf('held at the gate')>=0)document.getElementById('dmp2').classList.add('gated');
+        if(String(step[1]).indexOf('resumed')>=0)document.getElementById('dmp2').classList.remove('gated');
+      },step[0]);});
+    });
+    setTimeout(function(){run.textContent='✓ crew landed';run.style.background='var(--dok)';},4600);
+  });
+})();
+</script>
 <div class="proofstrip">
   <div class="wrap" style="padding:0"><div class="ps-in">
     <div class="ps"><div class="v">1 worktree</div><div class="k">per agent — physically isolated checkouts, so agents can't clobber each other's files</div></div>

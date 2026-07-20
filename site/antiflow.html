@@ -24,7 +24,7 @@ window.MUNINN = {
 </script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&family=Geist:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
   /* the antiloki design system, product cut — forked from index.html (tabs shell, 2026-07-20) */
   :root{
@@ -260,6 +260,77 @@ window.MUNINN = {
   </div>
 </header>
 
+
+<!-- THE DEMO — the real screen, boxed (operator 2026-07-20: pixel-faithful, clickable) -->
+<section id="demo" style="padding:64px 0">
+  <style>
+  .dm{--dbg:oklch(0.15 0.006 55);--dpanel:oklch(0.18 0.007 55);--dpanel2:oklch(0.21 0.008 55);--dborder:oklch(0.26 0.006 55);--dfg:oklch(0.93 0.006 60);--ddim:oklch(0.66 0.012 58);--dmuted:oklch(0.5 0.01 58);--dok:oklch(0.74 0.13 150);--dwarn:oklch(0.8 0.14 80);--dbad:oklch(0.64 0.19 25);--dbrand:oklch(0.64 0.11 38);
+    margin-top:44px;border:1px solid var(--line);border-radius:16px;overflow:hidden;background:var(--dbg);box-shadow:0 24px 70px -20px rgba(0,0,0,.6)}
+  .dm-bar{display:flex;align-items:center;gap:7px;padding:11px 15px;border-bottom:1px solid var(--line);background:var(--panel-2);font-family:var(--mono);font-size:11px;color:var(--muted-2)}
+  .dm-bar i{width:10px;height:10px;border-radius:50%;background:var(--line);flex-shrink:0}
+  .dm-bar i:first-child{background:var(--red)}.dm-bar i:nth-child(2){background:var(--amber)}.dm-bar i:nth-child(3){background:var(--green)}
+  .dm-bar .t{margin-left:8px}.dm-bar .live{margin-left:auto;color:var(--accent)}
+  .dm-app{position:relative;height:540px;background:var(--dbg);color:var(--dfg);font-family:'Geist',-apple-system,system-ui,sans-serif;display:flex;flex-direction:column;overflow:hidden;text-align:left;cursor:default}
+  .dm-mono{font-family:var(--mono)}
+  /* the corner circle (settings/workspace) — top right, like the app */
+  .dm-corner{position:absolute;top:10px;right:12px;width:26px;height:26px;border-radius:50%;background:color-mix(in oklch,var(--dpanel) 72%,transparent);border:1px solid var(--dborder);color:var(--dmuted);font-size:11px;font-weight:600;display:grid;place-items:center;z-index:9}
+  /* THE DOCK — the product-tabs text field, floating bottom center, ghost at rest */
+  .dm-dock{position:absolute;left:50%;transform:translateX(-50%);bottom:12px;z-index:8;width:min(540px,92%);background:color-mix(in oklch,var(--dpanel) 62%,transparent);backdrop-filter:blur(10px);border:1px solid var(--dborder);border-radius:14px;padding:7px 11px 6px;opacity:.92}
+  .dm-dock .in{font-size:12.5px;color:var(--dmuted);padding:1px 2px 6px}
+  .dm-tabs{display:flex;align-items:center;gap:2px;background:var(--dbg);border-radius:8px;padding:2px;width:max-content;margin-left:auto}
+  .dm-tab{display:inline-flex;align-items:center;gap:4px;border-radius:6px;padding:2px 8px;font-size:10.5px;color:var(--dmuted);white-space:nowrap}
+  .dm-tab i{font-style:normal;font-size:9px;opacity:.85}
+  .dm-tab.on{background:var(--dpanel2);color:var(--dbrand);font-weight:500}
+  /* shared bits */
+  .dm-btn{font-family:var(--mono);font-size:11px;color:var(--dbg);background:var(--dbrand);border:none;border-radius:7px;padding:6px 13px;cursor:pointer;font-weight:600}
+  .dm-ghostbtn{font-family:var(--mono);font-size:10.5px;color:var(--dmuted);background:transparent;border:1px solid var(--dborder);border-radius:6px;padding:4px 10px;cursor:pointer}
+  .dm-hint{position:absolute;top:10px;left:14px;z-index:9;font-family:var(--mono);font-size:9.5px;color:var(--ddim);background:color-mix(in oklch,var(--dpanel) 75%,transparent);border:1px solid var(--dborder);border-radius:6px;padding:3px 9px}
+  .dm-note{font-family:var(--mono);font-size:11px;color:var(--muted-2);margin-top:14px}
+
+  .dm-fl{flex:1;display:flex;min-height:0;padding:40px 12px 76px;gap:10px}
+  .dm-stages{width:190px;flex-shrink:0;display:flex;flex-direction:column;gap:6px}
+  .dm-stage{border:1px solid var(--dborder);border-radius:9px;background:var(--dpanel);padding:8px 11px;font-family:var(--mono);font-size:10.5px;color:var(--dmuted);position:relative}
+  .dm-stage b{display:block;color:var(--dfg);font-family:'Geist',sans-serif;font-size:12px;font-weight:600}
+  .dm-stage.lit{border-color:var(--dbrand);color:var(--ddim)}
+  .dm-stage.pass{border-color:color-mix(in oklch,var(--dok) 50%,var(--dborder))}
+  .dm-stage.fail{border-color:color-mix(in oklch,var(--dbad) 60%,var(--dborder))}
+  .dm-stage .st{position:absolute;top:8px;right:10px;font-size:10px}
+  .dm-right{flex:1;min-width:0;display:flex;flex-direction:column;gap:8px}
+  .dm-laws{border:1px solid var(--dborder);border-radius:9px;background:var(--dpanel);padding:8px 11px}
+  .dm-laws h5{font-family:var(--mono);font-size:8.5px;letter-spacing:1.2px;text-transform:uppercase;color:var(--ddim);margin-bottom:5px}
+  .dm-law{font-family:var(--mono);font-size:9.5px;color:var(--dmuted);padding:2px 0}
+  .dm-law.fire{color:var(--dbad)}
+  .dm-log{flex:1;min-height:0;overflow:auto;border:1px solid var(--dborder);border-radius:9px;background:var(--dbg);padding:9px 11px;font-family:var(--mono);font-size:10px;line-height:1.75;color:var(--ddim)}
+  .dm-log .ok{color:var(--dok)}.dm-log .er{color:var(--dbad)}.dm-log .hi{color:var(--dfg)}
+</style>
+  <div class="wrap">
+    <div class="sec-eyebrow" style="color:var(--accent)">Try it — right here</div>
+    <h2>This is the real screen. Boxed.</h2>
+    <p class="sec-lede">Pixel-faithful to the app — same layout, same design tokens, same tabs. The data is scripted; the feel is real. <b>Click around.</b></p>
+<div class="dm"><div class="dm-bar"><i></i><i></i><i></i><span class="t">antiloki — AntiFlow — the Harness tab</span><span class="live">● interactive demo · scripted data</span></div><div class="dm-app"><div class="dm-corner">a</div><div class="dm-hint">dispatch the card — watch the harness refuse, retry and leave receipts</div><div class="dm-fl"><div class="dm-stages"><div class="dm-stage" id="dms0"><b>plan</b>architecture first<span class="st" id="dmst0"></span></div><div class="dm-stage" id="dms1"><b>build</b>one file at a time<span class="st" id="dmst1"></span></div><div class="dm-stage" id="dms2"><b>gate</b>real build · real tests<span class="st" id="dmst2"></span></div><div class="dm-stage" id="dms3"><b>court</b>attack · defend · judge<span class="st" id="dmst3"></span></div><div class="dm-stage" id="dms4"><b>ship</b>with the verdict attached<span class="st" id="dmst4"></span></div><button class="dm-btn" id="dmgo" style="margin-top:4px">⚙ dispatch FEAT-LOGIN</button><button class="dm-ghostbtn" id="dmvf">⧈ verify the whole history</button></div><div class="dm-right"><div class="dm-laws"><h5>laws · machine-enforced</h5><div class="dm-law" id="dml0">▪ NEVER_COMMIT_SECRETS</div><div class="dm-law">▪ HISTORY_IS_SACRED_NO_REVERT</div><div class="dm-law">▪ EVERY_MUTATION_THROUGH_AUDIT</div></div><div class="dm-log" id="dmlog"><div style="color:var(--dmuted)">the harness is idle — dispatch a card.</div></div></div></div><div class="dm-dock"><div class="in">Message antiloki — from anywhere…</div><div style="display:flex;align-items:center;gap:6px"><span class="dm-mono" style="font-size:8.5px;color:var(--ddim)">⏎ sends · ⠿ docks the chat</span><div class="dm-tabs"><span class="dm-tab"><i>✦</i>Chat</span><span class="dm-tab"><i>❯</i>Canvas</span><span class="dm-tab"><i>◈</i>Hub</span><span class="dm-tab"><i>⟨⟩</i>Explorer</span><span class="dm-tab on"><i>⚙</i>Harness</span></div></div></div></div></div>
+    <p class="dm-note">// scripted demo — the real one runs on your machine, on your repo. <a href="#waitlist" style="color:var(--accent)">get in line →</a></p>
+  </div>
+</section>
+<script>
+(function(){
+  var log=document.getElementById('dmlog'),go=document.getElementById('dmgo'),vf=document.getElementById('dmvf'),busy=false;
+  function line(h){var d=document.createElement('div');d.innerHTML=h;log.appendChild(d);log.scrollTop=log.scrollHeight;}
+  function stage(i,cls,mark){var s=document.getElementById('dms'+i);s.className='dm-stage '+cls;document.getElementById('dmst'+i).textContent=mark;}
+  go.addEventListener('click',function(){
+    if(busy)return;busy=true;log.innerHTML='';go.textContent='⚙ running…';
+    var steps=[
+      [200,function(){stage(0,'lit','●');line('<span class=hi>plan · blueprint drawn — 0 lines of code exist yet</span>');}],
+      [1100,function(){stage(0,'pass','✓');stage(1,'lit','●');line('✎ file 1/3 — LoginForm.tsx written');}],
+      [2000,function(){line('<span class=er>✗ law fired: NEVER_COMMIT_SECRETS — key detected in the diff. commit refused.</span>');document.getElementById('dml0').classList.add('fire');stage(1,'fail','✗');}],
+      [3100,function(){line('↺ the agent rewrites — the key moves to env. it cannot override the law.');document.getElementById('dml0').classList.remove('fire');stage(1,'lit','●');}],
+      [4000,function(){stage(1,'pass','✓');stage(2,'lit','●');line('<span class=ok>✓ gate — real build passed · 42 tests green, in a sealed sandbox</span>');}],
+      [5000,function(){stage(2,'pass','✓');stage(3,'lit','●');line('⚖ court — one AI attacks, one defends, one judges');}],
+      [6100,function(){stage(3,'pass','✓');stage(4,'pass','✓');line('<span class=ok>✓ verdict: 0 defects upheld — shipped with the receipt attached</span>');go.textContent='✓ shipped';go.style.background='var(--dok)';}]];
+    steps.forEach(function(s){setTimeout(s[1],s[0]);});
+  });
+  vf.addEventListener('click',function(){line('<span class=ok>✓ verify-chain — 48,112 rows recomputed offline · 0.4s · nothing was edited</span>');});
+})();
+</script>
 <div class="proofstrip">
   <div class="wrap" style="padding:0"><div class="ps-in">
     <div class="ps"><div class="v">37 laws</div><div class="k">machine-enforced in a database — the AI doesn't have to remember your rules, because it can't break them</div></div>
