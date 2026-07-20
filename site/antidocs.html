@@ -262,7 +262,7 @@ window.MUNINN = {
 </header>
 
 
-<!-- THE DEMO — the real screen, boxed (rebuilt pixel-faithful from app screenshots, 2026-07-20) -->
+<!-- THE DEMO — the hub, boxed: notebooks · artifacts · a real paper · a video class (2026-07-20) -->
 <section id="demo" style="padding:64px 0">
   <style>
   .dm{--dbg:oklch(0.15 0.006 55);--dpanel:oklch(0.18 0.007 55);--dpanel2:oklch(0.21 0.008 55);--dborder:oklch(0.26 0.006 55);--dfg:oklch(0.93 0.006 60);--ddim:oklch(0.66 0.012 58);--dmuted:oklch(0.5 0.01 58);--dok:oklch(0.74 0.13 150);--dwarn:oklch(0.8 0.14 80);--dbad:oklch(0.64 0.19 25);--dbrand:oklch(0.64 0.11 38);--dactive:oklch(0.24 0.01 55);--dviolet:oklch(0.72 0.11 300);--dblue:oklch(0.72 0.09 260);
@@ -280,91 +280,131 @@ window.MUNINN = {
   .dm-tab{display:inline-flex;align-items:center;gap:4px;border-radius:6px;padding:2px 8px;font-size:10.5px;color:var(--dmuted);white-space:nowrap}
   .dm-tab i{font-style:normal;font-size:9px;opacity:.85}
   .dm-tab.on{background:var(--dpanel2);color:var(--dbrand);font-weight:500}
-  .dm-hint{position:absolute;top:10px;left:14px;z-index:9;font-family:var(--mono);font-size:9.5px;color:var(--ddim);background:color-mix(in oklch,var(--dpanel) 80%,transparent);border:1px solid var(--dborder);border-radius:6px;padding:3px 9px}
+  .dm-hint{position:absolute;top:auto;bottom:64px;left:14px;z-index:9;font-family:var(--mono);font-size:9.5px;color:var(--ddim);background:color-mix(in oklch,var(--dpanel) 80%,transparent);border:1px solid var(--dborder);border-radius:6px;padding:3px 9px}
   .dm-note{font-family:var(--mono);font-size:11px;color:var(--muted-2);margin-top:14px}
 
-  .dh{flex:1;display:flex;min-height:0}
-  .dh-rail{width:200px;flex-shrink:0;border-right:1px solid var(--dborder);padding:40px 10px 70px;overflow:auto;display:flex;flex-direction:column;gap:7px}
-  .dh-h{font-family:var(--mono);font-size:8px;letter-spacing:1.3px;text-transform:uppercase;color:var(--dmuted)}
-  .dh-h b{color:var(--dbrand);font-weight:500;float:right}
-  .dh-chip{font-family:var(--mono);font-size:9px;padding:2px 8px;border-radius:11px;border:1px solid var(--dborder);color:var(--dmuted);width:max-content;margin:1px 0}
-  .dh-chip.on{border-color:var(--dbrand);color:var(--dbrand)}
-  .dh-add{display:flex;flex-wrap:wrap;gap:4px}
-  .dh-add span{font-family:var(--mono);font-size:9px;padding:2px 7px;border-radius:5px;border:1px solid var(--dborder);color:var(--dbrand)}
-  .dh-paper{display:flex;align-items:center;gap:5px;font-family:var(--mono);font-size:9px;color:var(--dfg);border:1px solid var(--dborder);border-radius:5px;padding:3px 7px}
-  .dh-paper .tk{margin-left:auto;color:var(--dmuted);font-size:8px}
-  .dh-thread{flex:1;min-width:0;padding:40px 16px 96px;overflow:auto;display:flex;flex-direction:column;gap:11px}
-  .dh-item{border:1px solid var(--dborder);border-radius:10px;background:var(--dpanel);overflow:hidden;flex-shrink:0}
-  .dh-item .hd{display:flex;align-items:center;gap:8px;padding:6px 12px;border-bottom:1px solid var(--dborder)}
-  .dh-k{font-family:var(--mono);font-size:8px;border:1px solid var(--dok);color:var(--dok);border-radius:3px;padding:0 4px;letter-spacing:.5px}
-  .dh-k.art{border-color:var(--dbrand);color:var(--dbrand)}
-  .dh-item .tt{font-size:12px;color:var(--dfg);font-weight:500;flex:1;min-width:0}
-  .dh-act{display:flex;align-items:center;gap:6px;font-family:var(--mono);font-size:9px;color:var(--dmuted)}
-  .dh-act .cardb{border:1px solid var(--dborder);border-radius:4px;padding:1px 6px}
-  .dh-act .star{color:var(--dbrand)}
-  .dh-item .bd{padding:9px 13px;font-size:12.5px;color:var(--ddim);line-height:1.6}
-  .dh-item .bd b{color:var(--dfg)}
-  .dh-item .bd h4{font-size:13.5px;color:var(--dfg);margin-bottom:6px}
-  .dh-cites{display:flex;gap:4px;flex-wrap:wrap;padding:0 13px 9px}
-  .dh-cite{font-family:var(--mono);font-size:8.5px;color:var(--dbrand);background:var(--dbg);border:1px solid var(--dborder);border-radius:4px;padding:1px 6px}
-  .dh-foot{display:flex;align-items:center;gap:8px;padding:5px 13px;border-top:1px solid var(--dborder);font-family:var(--mono);font-size:9px;color:var(--dmuted)}
-  .dh-ai{border:1px solid color-mix(in oklch,var(--dviolet) 50%,var(--dborder));color:var(--dviolet);border-radius:5px;padding:1px 7px}
-  .dh-qs{display:flex;gap:6px;flex-wrap:wrap}
-  .dh-q{font-family:var(--mono);font-size:9.5px;color:var(--dfg);border:1px solid var(--dborder);border-radius:8px;padding:4px 10px;cursor:pointer;background:var(--dpanel)}
-  .dh-q:hover{border-color:var(--dbrand)}
-  .dh-studio{width:196px;flex-shrink:0;border-left:1px solid var(--dborder);padding:40px 10px 70px;overflow:auto}
-  .dh-sgrid{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin:6px 0 12px}
-  .dh-gen{border:1px solid var(--dborder);border-radius:8px;background:var(--dpanel);padding:6px;cursor:pointer}
-  .dh-gen:hover{border-color:var(--dbrand)}
-  .dh-gen .th{height:34px;border-radius:5px;background:var(--dpanel2);margin-bottom:5px;padding:6px 7px;display:flex;flex-direction:column;gap:3px}
-  .dh-gen .th i{display:block;height:3px;border-radius:2px;background:var(--dborder)}
-  .dh-gen .th i:nth-child(1){width:85%}.dh-gen .th i:nth-child(2){width:65%}.dh-gen .th i:nth-child(3){width:75%}
-  .dh-gen .lb{display:flex;align-items:center;font-family:var(--mono);font-size:9px;color:var(--dfg)}
-  .dh-gen .lb s{margin-left:auto;text-decoration:none;color:var(--dmuted);border:1px solid var(--dborder);border-radius:50%;width:11px;height:11px;display:grid;place-items:center;font-size:7px}
-  .dh-audio{display:flex;align-items:center;gap:8px;padding:7px 13px 4px}
-  .dh-audio .pl{width:22px;height:22px;border-radius:50%;background:var(--dbrand);color:var(--dbg);display:grid;place-items:center;font-size:10px;cursor:pointer}
-  .dh-audio .bar{flex:1;height:3px;border-radius:2px;background:var(--dborder);position:relative}
-  .dh-audio .bar b{position:absolute;left:0;top:0;bottom:0;width:0%;background:var(--dbrand);border-radius:2px;transition:width 6s linear}
-  .dh-chap{font-family:var(--mono);font-size:8.5px;color:var(--dmuted);border:1px solid var(--dborder);border-radius:9px;padding:1px 7px}
+  .dh{flex:1;min-height:0;overflow:auto;padding:16px 20px 76px}
+  .dh-view{display:none}.dh-view.on{display:block}
+  .dh-head{display:flex;align-items:baseline;gap:10px;margin-bottom:14px}
+  .dh-head h3{font-size:17px;font-weight:600}
+  .dh-head .k{font-family:var(--mono);font-size:9.5px;color:var(--dmuted)}
+  .dh-head .pill{margin-left:auto;font-family:var(--mono);font-size:9.5px;color:var(--dbrand);border:1px solid color-mix(in oklch,var(--dbrand) 45%,var(--dborder));border-radius:9px;padding:2px 10px}
+  .dh-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(215px,1fr));gap:11px}
+  .dh-nb{border:1px solid var(--dborder);border-radius:11px;background:var(--dpanel);padding:12px 14px;cursor:pointer;transition:border-color .15s}
+  .dh-nb:hover{border-color:var(--dbrand)}
+  .dh-nb .em{font-size:19px;margin-bottom:6px}
+  .dh-nb b{display:block;font-size:13px;font-weight:600;margin-bottom:3px}
+  .dh-nb s{display:block;text-decoration:none;font-size:11px;color:var(--dmuted);line-height:1.45}
+  .dh-nb .mm{display:flex;gap:9px;margin-top:9px;font-family:var(--mono);font-size:9px;color:var(--ddim)}
+  /* notebook view */
+  .dh-cols{display:flex;gap:14px;align-items:flex-start}
+  .dh-src{width:210px;flex-shrink:0}
+  .dh-sec{font-family:var(--mono);font-size:8.5px;letter-spacing:1.4px;text-transform:uppercase;color:var(--dmuted);margin:2px 0 8px}
+  .dh-s{display:flex;align-items:center;gap:8px;border:1px solid var(--dborder);border-radius:8px;background:var(--dpanel);padding:7px 10px;margin-bottom:7px;font-size:11px;color:var(--ddim)}
+  .dh-s i{font-style:normal;font-size:12px}
+  .dh-s b{color:var(--dfg);font-weight:500;display:block;font-size:11px}
+  .dh-s s{text-decoration:none;font-family:var(--mono);font-size:8.5px;color:var(--dmuted)}
+  .dh-body{flex:1;min-width:0}
+  .dh-arts{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:9px;margin-bottom:14px}
+  .dh-a{border:1px solid var(--dborder);border-radius:9px;background:var(--dpanel);padding:9px 11px;font-size:11px;cursor:pointer}
+  .dh-a:hover{border-color:var(--dbrand)}
+  .dh-a .ic{font-size:14px}
+  .dh-a b{display:block;font-weight:500;margin:4px 0 2px;color:var(--dfg)}
+  .dh-a s{text-decoration:none;font-family:var(--mono);font-size:8.5px;color:var(--dmuted)}
+  .dh-a.hot{border-color:color-mix(in oklch,var(--dviolet) 50%,var(--dborder))}
+  .dh-back{font-family:var(--mono);font-size:10px;color:var(--dmuted);cursor:pointer;margin-bottom:10px;display:inline-block}
+  .dh-back:hover{color:var(--dfg)}
+  /* paper overlay */
+  .dh-ov{position:absolute;inset:5% 7%;z-index:12;background:var(--dpanel);border:1px solid color-mix(in oklch,var(--dbrand) 30%,var(--dborder));border-radius:13px;box-shadow:0 20px 60px rgba(0,0,0,.6);display:none;flex-direction:column;overflow:hidden}
+  .dh-ov.on{display:flex}
+  .dh-ov .oh{display:flex;align-items:center;gap:9px;padding:9px 14px;border-bottom:1px solid var(--dborder);font-family:var(--mono);font-size:10.5px;color:var(--ddim)}
+  .dh-ov .oh b{color:var(--dfg)}
+  .dh-ov .oh .x{margin-left:auto;cursor:pointer;color:var(--dmuted);border:1px solid var(--dborder);border-radius:5px;padding:0 7px}
+  .dh-ov .ob{flex:1;min-height:0;overflow:auto;padding:16px 22px}
+  .dh-pt{font-size:19px;font-weight:650;line-height:1.3;margin-bottom:6px}
+  .dh-auth{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:13px}
+  .dh-auth span{font-family:var(--mono);font-size:8.5px;border:1px solid var(--dborder);border-radius:9px;padding:2px 9px;color:var(--ddim)}
+  .dh-auth span b{color:var(--dviolet);font-weight:500}
+  .dh-disc{border:1px solid color-mix(in oklch,var(--dwarn) 40%,var(--dborder));border-radius:9px;padding:9px 13px;font-size:11.5px;color:var(--ddim);line-height:1.6;margin-bottom:13px}
+  .dh-disc .dt{font-family:var(--mono);font-size:8.5px;letter-spacing:1px;text-transform:uppercase;color:var(--dwarn);margin-bottom:3px}
+  .dh-disc b{color:var(--dfg)}
+  .dh-ps{margin-bottom:13px}
+  .dh-ps h5{font-size:13px;font-weight:600;margin-bottom:4px;color:var(--dfg)}
+  .dh-ps h5 s{text-decoration:none;font-family:var(--mono);font-size:8.5px;color:var(--dmuted);font-weight:400;margin-left:7px}
+  .dh-ps p{font-size:11.5px;color:var(--ddim);line-height:1.65}
+  .dh-ps p b{color:var(--dfg)}
+  .dh-wid{border:1px solid color-mix(in oklch,var(--dblue) 40%,var(--dborder));border-radius:9px;padding:10px 13px;margin:9px 0}
+  .dh-wid .wt{font-family:var(--mono);font-size:8.5px;letter-spacing:1px;text-transform:uppercase;color:var(--dblue);margin-bottom:7px}
+  .dh-cmp{display:flex;align-items:center;gap:8px;font-family:var(--mono);font-size:9.5px;color:var(--dmuted);margin:4px 0}
+  .dh-cmp .n2{width:120px;color:var(--ddim)}
+  .dh-cmp .tr{flex:1;height:5px;border-radius:3px;background:var(--dbg);overflow:hidden}
+  .dh-cmp .tr b{display:block;height:100%;border-radius:3px}
+  .dh-cmp .v2{width:44px;text-align:right;color:var(--dfg)}
+  .dh-cite{font-family:var(--mono);font-size:9px;color:var(--dmuted)}
+  /* video overlay */
+  .dh-vid .stage{flex:1;min-height:0;display:flex;flex-direction:column;background:var(--dbg)}
+  .dh-slide{flex:1;min-height:0;display:none;flex-direction:column;justify-content:center;padding:22px 38px}
+  .dh-slide.on{display:flex}
+  .dh-slide .sk{font-family:var(--mono);font-size:9px;letter-spacing:1.6px;text-transform:uppercase;color:var(--dbrand);margin-bottom:8px}
+  .dh-slide h4{font-size:21px;font-weight:650;margin-bottom:12px}
+  .dh-slide li{font-size:13px;color:var(--ddim);line-height:1.7;margin-left:18px}
+  .dh-slide li b{color:var(--dfg)}
+  .dh-cap{border-top:1px solid var(--dborder);padding:9px 16px 8px;font-size:11.5px;color:var(--ddim);font-style:italic;min-height:40px}
+  .dh-cap b{color:var(--dfg);font-style:normal}
+  .dh-ctrl{display:flex;align-items:center;gap:10px;padding:7px 14px;border-top:1px solid var(--dborder);font-family:var(--mono);font-size:9.5px;color:var(--dmuted)}
+  .dh-ctrl .pl{color:var(--dfg);cursor:pointer}
+  .dh-ctrl .bar{flex:1;height:4px;border-radius:2px;background:var(--dbg);overflow:hidden}
+  .dh-ctrl .bar b{display:block;height:100%;width:0;background:var(--dbrand);transition:width .5s linear}
 </style>
   <div class="wrap">
     <div class="sec-eyebrow" style="color:var(--accent)">Try it — right here</div>
     <h2>This is the real screen. Boxed.</h2>
-    <p class="sec-lede">Rebuilt from screenshots of the actual app in demo mode — same layout, same tokens, same tabs. The data is scripted; the pixels are real. <b>Click around.</b></p>
-<div class="dm"><div class="dm-bar"><i></i><i></i><i></i><span class="t">antiloki — AntiDocs — the Hub tab</span><span class="live">● interactive demo · scripted data</span></div><div class="dm-app"><div class="dm-corner">a</div><div class="dm-hint" style="top:auto;bottom:64px">ask a suggested question · or press an artifact in the Studio →</div><div class="dh"><aside class="dh-rail"><div class="dh-h">Context total <b>Σ ~41k tok</b></div><div class="dh-h" style="margin-top:5px">Code scope <span style="float:right;color:var(--ddim);text-transform:none;letter-spacing:0">2 sel</span></div><div class="dh-h" style="margin-top:5px">Code signals</div><span class="dh-chip on">✓ AST · signatures</span><span class="dh-chip">File descriptions</span><span class="dh-chip">Entry points</span><span class="dh-chip on">✓ Git history</span><div class="dh-h" style="margin-top:5px">Work signals</div><span class="dh-chip">Cards</span><span class="dh-chip">Court verdicts</span><div class="dh-h" style="margin-top:5px">Imported</div><div class="dh-add"><span>+ Text</span><span>+ Sources</span><span>+ Paper</span><span>+ File</span><span>+ URL</span></div><div class="dh-paper">📜 Auth audit<span class="tk">~5.2k</span></div><div style="margin-top:auto;font-family:var(--mono);font-size:9px;color:var(--dmuted);border:1px solid var(--dborder);border-radius:6px;text-align:center;padding:5px">↻ Index code for search</div></aside><div class="dh-thread" id="dhth"><div class="dh-item"><div class="hd"><span class="dh-k">ASK</span><span class="tt">How does a request get authorized?</span><span class="dh-act">high<span class="cardb">→ card</span><span class="cardb">⬇</span><span class="star">★</span></span></div><div class="bd">Every request passes <b>auth/guard.ts</b> — the token is verified, then the dispatcher checks the agent’s grants before any skill runs. Nothing reaches a mutation without both.</div><div class="dh-cites"><span class="dh-cite">▢ auth/guard.ts</span><span class="dh-cite">▢ engine/dispatch.ts</span></div><div class="dh-foot"><span class="dh-ai">● broad-AI</span><span style="margin-left:auto">prompt · i/o ▸</span></div></div><div class="dh-item"><div class="hd"><span class="dh-k art">ARTIFACT</span><span class="tt">Overview</span><span class="dh-act">high<span class="cardb">→ card</span><span class="cardb">⬇</span>☆</span></div><div class="bd"><h4>The auth scope</h4><b>guard.ts</b> — token verify + grant check, the one door<br><b>dispatch.ts</b> — routes every action through it<br><b>store.ts</b> — session persistence, httpOnly</div></div><div class="dh-qs" id="dhqs"><span class="dh-q" data-q="0">Where does the checkout write to the DB?</span><span class="dh-q" data-q="1">What breaks if I rename guard.ts?</span></div></div><aside class="dh-studio"><div class="dh-h">Documents</div><div class="dh-sgrid"><div class="dh-gen"><div class="th"><i></i><i></i><i></i></div><div class="lb">Overview<s>i</s></div></div><div class="dh-gen"><div class="th"><i></i><i></i><i></i></div><div class="lb">Briefing<s>i</s></div></div><div class="dh-gen"><div class="th"><i></i><i></i><i></i></div><div class="lb">Walkthrough<s>i</s></div></div><div class="dh-gen"><div class="th"><i></i><i></i><i></i></div><div class="lb">Onboarding<s>i</s></div></div><div class="dh-gen"><div class="th"><i></i><i></i><i></i></div><div class="lb">FAQ<s>i</s></div></div><div class="dh-gen"><div class="th"><i></i><i></i><i></i></div><div class="lb">Glossary<s>i</s></div></div><div class="dh-gen"><div class="th"><i></i><i></i><i></i></div><div class="lb">Runbook<s>i</s></div></div><div class="dh-gen"><div class="th"><i></i><i></i><i></i></div><div class="lb">ADR<s>i</s></div></div></div><div class="dh-h">Study</div><div class="dh-sgrid"><div class="dh-gen" data-g="quiz"><div class="th"><i></i><i></i><i></i></div><div class="lb">Quiz<s>i</s></div></div><div class="dh-gen"><div class="th"><i></i><i></i><i></i></div><div class="lb">ELI5<s>i</s></div></div></div><div class="dh-h">Build</div><div class="dh-sgrid"><div class="dh-gen" data-g="class"><div class="th"><i></i><i></i><i></i></div><div class="lb">▶ Video class<s>i</s></div></div><div class="dh-gen" data-g="sol"><div class="th"><i></i><i></i><i></i></div><div class="lb">🎙 Soliloquy<s>i</s></div></div><div class="dh-gen" data-g="map"><div class="th"><i></i><i></i><i></i></div><div class="lb">◇ Mind map<s>i</s></div></div><div class="dh-gen"><div class="th"><i></i><i></i><i></i></div><div class="lb">Slides<s>i</s></div></div></div></aside></div><div class="dm-dock"><div class="in">Ask this notebook — grounded in its sources…</div><div style="display:flex;align-items:center;gap:6px"><span class="dm-mono" style="font-size:8.5px;color:var(--ddim)">⏎ sends · ⠀⣿ docks the chat</span><div class="dm-tabs"><span class="dm-tab"><i>✦</i>Chat</span><span class="dm-tab"><i>❯</i>Canvas</span><span class="dm-tab on"><i>◈</i>Hub</span><span class="dm-tab"><i>⟨⟩</i>Explorer</span><span class="dm-tab"><i>⚙</i>Harness</span></div></div></div></div></div>
-    <p class="dm-note">// scripted demo — the real one runs on your machine, on your repo. <a href="#waitlist" style="color:var(--accent)">get in line →</a></p>
+    <p class="sec-lede">Rebuilt from screenshots of the actual app. Open the notebook, then open <b>the paper</b> — written by a swarm of specialist authors — and press play on <b>the video class</b>. All of it generated from the sources you feed it.</p>
+<div class="dm"><div class="dm-bar"><i></i><i></i><i></i><span class="t">antiloki — AntiDocs — the Hub tab</span><span class="live">● interactive demo · scripted data</span></div><div class="dm-app"><div class="dm-corner">a</div><div class="dm-hint">click the 🔐 notebook · then 📜 the paper · then ▶ the video class</div><div class="dh"><div class="dh-view on" id="dhv-dash"><div class="dh-head"><h3>The Hub</h3><span class="k">notebooks · 4</span><span class="pill">🎓 tutor on</span></div><div class="dh-grid"><div class="dh-nb" data-nb="1"><div class="em">🔐</div><b>The auth subsystem, end to end</b><s>a living notebook — rebuilt when the code moves</s><div class="mm"><span>5 sources · 7 artifacts · 1 paper · 1 video</span></div></div><div class="dh-nb"><div class="em">🧾</div><b>How money moves through checkout</b><s>a living notebook — rebuilt when the code moves</s><div class="mm"><span>4 sources · 5 artifacts · 1 paper</span></div></div><div class="dh-nb"><div class="em">📦</div><b>New-engineer onboarding pack</b><s>a living notebook — rebuilt when the code moves</s><div class="mm"><span>8 sources · 9 artifacts · 2 papers</span></div></div><div class="dh-nb"><div class="em">🗃️</div><b>The schema and its migrations</b><s>a living notebook — rebuilt when the code moves</s><div class="mm"><span>3 sources · 4 artifacts</span></div></div></div></div><div class="dh-view" id="dhv-nb"><span class="dh-back" id="dhback">← the hub</span><div class="dh-head"><h3>🔐 The auth subsystem, end to end</h3><span class="k">5 sources · updated 2 min ago</span><span class="pill">🎓 tutor on</span></div><div class="dh-cols"><div class="dh-src"><div class="dh-sec">sources</div><div class="dh-s"><i>⌁</i><span><b>the auth subsystem</b><s>10 files · live from the atlas</s></span></div><div class="dh-s"><i>📄</i><span><b>RFC: session rotation</b><s>pdf · 12 pages</s></span></div><div class="dh-s"><i>🌐</i><span><b>OWASP session cheatsheet</b><s>web · cached</s></span></div><div class="dh-s"><i>📄</i><span><b>incident post-mortem #7</b><s>md</s></span></div><div class="dh-s"><i>⌁</i><span><b>the audit chain</b><s>6 files · live</s></span></div></div><div class="dh-body"><div class="dh-sec">artifacts — click the paper or the video</div><div class="dh-arts"><div class="dh-a hot" data-ov="dhop"><span class="ic">📜</span><b>The paper</b><s>4 authors · 6 sections</s></div><div class="dh-a hot" data-ov="dhov"><span class="ic">▶</span><b>Video class</b><s>4:07 · slides + voice</s></div><div class="dh-a "><span class="ic">🕸</span><b>Mind map</b><s>interactive · html</s></div><div class="dh-a "><span class="ic">▦</span><b>Comparison table</b><s>csv · md</s></div><div class="dh-a "><span class="ic">❓</span><b>Quiz</b><s>12 questions · graded</s></div><div class="dh-a "><span class="ic">🎙</span><b>Soliloquy</b><s>audio essay · 6:40</s></div></div><div class="dh-sec">what the swarm found</div><div class="dh-s" style="align-items:flex-start"><i>◆</i><span style="font-size:11.5px;line-height:1.55">Every request converges on <b style="display:inline">guard.ts</b> — 0 side doors, 9 dependents, and exactly one uncovered branch. The paper argues it; the video teaches it; the quiz checks you got it.</span></div></div></div></div></div><div class="dh-ov" id="dhop"><div class="oh">📜 paper — <b>The One Door: how auth actually holds</b><span class="x" data-x="dhop">✕ esc</span></div><div class="ob"><div class="dh-pt">The One Door: how the auth subsystem actually holds the line</div><div class="dh-auth"><span><b>The Architect</b> · structure lens</span><span><b>The Skeptic</b> · failure lens</span><span><b>The Historian</b> · git-churn lens</span><span><b>The Editor</b> · merged the drafts</span></div><div class="dh-disc"><div class="dt">◆ the discovery</div><b>Every request converges on guard.ts — and nothing bypasses it.</b> Three authors read the same 10 files through different lenses; the graph settled the argument: 0 side doors, 9 dependents, 1 uncovered branch.</div><div class="dh-ps"><h5>1 · The shape of the door<s>The Architect</s></h5><p>Token verification and grant checking are <b>two separate refusals</b> on purpose: an invalid token dies before the grants table is ever touched. The dispatcher composes them in order and wraps the survivor in an audit row — the request that reaches a skill has already been refused twice.</p></div><div class="dh-ps"><h5>2 · Where it would break<s>The Skeptic</s></h5><p>The uncovered branch is the audit-failure path: if the row write throws, <b>the catch block swallows it</b> and the mutation lands unrecorded. That is the one seam a bug can slip through — and it is exactly what the quality window flags on dispatch.ts.</p><div class="dh-wid"><div class="wt">▤ widget — coverage across the door, counted from the test map</div><div class="dh-cmp"><span class="n2">verifyToken</span><span class="tr"><b style="width:92%;background:var(--dok)"></b></span><span class="v2">92%</span></div><div class="dh-cmp"><span class="n2">requireGrant</span><span class="tr"><b style="width:88%;background:var(--dok)"></b></span><span class="v2">88%</span></div><div class="dh-cmp"><span class="n2">withAudit (fail path)</span><span class="tr"><b style="width:12%;background:var(--dbad)"></b></span><span class="v2">12%</span></div></div></div><div class="dh-ps"><h5>3 · How it got this way<s>The Historian</s></h5><p>guard.ts changed 31 times in 6 months — every change a <b>tightening</b>, never a bypass. The audit wrapper arrived after a real incident, which is why it wraps everything and trusts nothing.</p></div><div class="dh-cite">sources: 10 files · 41 symbols · 214 commits — every claim links back to a line. export: md · pdf · html</div></div></div><div class="dh-ov dh-vid" id="dhov"><div class="oh">▶ video class — <b>The One Door, in 4 minutes</b><span class="x" data-x="dhov">✕ esc</span></div><div class="stage"><div class="dh-slide on"><div class="sk">slide 1 / 3 · the map</div><h4>Every request passes one door</h4><ul><li><b>guard.ts</b> — verify the token, check the grant</li><li><b>dispatch.ts</b> — compose the refusals, audit the survivor</li><li>0 side doors — the import graph proves it</li></ul></div><div class="dh-slide"><div class="sk">slide 2 / 3 · the two refusals</div><h4>Refused twice before any skill runs</h4><ul><li>invalid token → dies <b>before</b> grants are touched</li><li>no grant → PermissionError, logged</li><li>survivor → wrapped in a <b>hash-chained audit row</b></li></ul></div><div class="dh-slide"><div class="sk">slide 3 / 3 · the seam</div><h4>The one place it can leak</h4><ul><li>the audit-fail path is <b>12% covered</b></li><li>a swallowed catch = an unrecorded mutation</li><li>the fix is one test — the paper shows where</li></ul></div><div class="dh-cap" id="dhcap"><b>tutor:</b> here is the whole subsystem on one slide — ten files, but only one door matters…</div><div class="dh-ctrl"><span class="pl" id="dhpl">⏸</span><span id="dhtime">0:00 / 4:07</span><div class="bar"><b id="dhbar"></b></div><span>slides + voice · generated from the paper</span></div></div></div><div class="dm-dock"><div class="in">Ask this notebook anything — the tutor answers from the sources…</div><div style="display:flex;align-items:center;gap:6px"><span class="dm-mono" style="font-size:8.5px;color:var(--ddim)">⏎ sends · ⣿ docks the chat</span><div class="dm-tabs"><span class="dm-tab"><i>✦</i>Chat</span><span class="dm-tab"><i>❯</i>Canvas</span><span class="dm-tab on"><i>◈</i>Hub</span><span class="dm-tab"><i>⟨⟩</i>Explorer</span><span class="dm-tab"><i>⚙</i>Harness</span></div></div></div></div></div>
+    <p class="dm-note">// scripted demo — the real one runs on your machine, on your sources. <a href="#waitlist" style="color:var(--accent)">get in line →</a></p>
   </div>
 </section>
 <script>
 (function(){
-  var th=document.getElementById('dhth'),qs=document.getElementById('dhqs');
-  var A={0:['Where does the checkout write to the DB?','Through <b>db/orders.sql</b> — checkout.tsx never touches the DB directly: it calls api/routes.ts, which validates against the schema first.',['▢ checkout.tsx','▢ db/orders.sql']],
-         1:['What breaks if I rename guard.ts?','<b>14 files</b> import it — the dispatcher, every API route and the session store. The atlas marks it load-bearing: rename via the contract, not by hand.',['▢ auth/guard.ts','◆ paper#auth-audit']]};
-  function item(kind,title,body,cites,extra){
-    var d=document.createElement('div');d.className='dh-item';
-    d.innerHTML='<div class="hd"><span class="dh-k '+(kind==='ARTIFACT'?'art':'')+'">'+kind+'</span><span class="tt">'+title+'</span><span class="dh-act">high<span class="cardb">→ card</span><span class="cardb">⬇</span>☆</span></div><div class="bd">'+body+'</div>'
-      +(cites?'<div class="dh-cites">'+cites.map(function(c){return '<span class="dh-cite">'+c+'</span>';}).join('')+'</div>':'')+(extra||'');
-    th.insertBefore(d,qs);d.scrollIntoView({block:'nearest'});return d;
-  }
-  qs.addEventListener('click',function(e){
-    var q=e.target.closest('.dh-q');if(!q)return;var a=A[+q.getAttribute('data-q')];if(!a)return;
-    q.remove();item('ASK',a[0],a[1],a[2]);
-  });
-  var made={};
-  document.querySelectorAll('.dh-gen[data-g]').forEach(function(g){
-    g.addEventListener('click',function(){
-      var k=g.getAttribute('data-g');if(made[k])return;made[k]=1;
-      if(k==='sol'){
-        var d=item('ARTIFACT','🎙 Auth, spoken — 4m20s','',null,
-          '<div class="dh-audio"><span class="pl">▶</span><span class="bar"><b></b></span></div>'
-          +'<div style="display:flex;gap:4px;flex-wrap:wrap;padding:0 13px 9px"><span class="dh-chap">1 · what this is</span><span class="dh-chap">2 · the guard</span><span class="dh-chap">3 · the takeaway</span></div>');
-        d.querySelector('.pl').addEventListener('click',function(){d.querySelector('.bar b').style.width='100%';});
-      }
-      else if(k==='quiz')item('ARTIFACT','Quiz — 10 grounded questions','<b>Q1.</b> Which file must every request pass before a skill runs?<br><span style="color:var(--dok)">✓ auth/guard.ts</span> · api/client.ts · theme.css',['▢ auth/guard.ts']);
-      else if(k==='class')item('ARTIFACT','▶ Video class — 6 slides','slide 1 · <b>the problem</b>: one guard, every door — narrated, with the house widgets.',null);
-      else item('ARTIFACT','◇ Mind map','auth ─┬─ guard ── dispatcher<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;└─ sessions ── store',null);
+  function show(id){document.querySelectorAll('.dh-view').forEach(function(v){v.classList.remove('on');});document.getElementById(id).classList.add('on');}
+  document.querySelectorAll('.dh-nb[data-nb]').forEach(function(n){n.addEventListener('click',function(){show('dhv-nb');});});
+  var back=document.getElementById('dhback'); if(back)back.addEventListener('click',function(){show('dhv-dash');});
+  document.querySelectorAll('.dh-a[data-ov]').forEach(function(a){
+    a.addEventListener('click',function(){
+      var id=a.getAttribute('data-ov');
+      document.getElementById(id).classList.add('on');
+      if(id==='dhov')startVideo();
     });
   });
+  document.querySelectorAll('.dh-ov .x').forEach(function(x){
+    x.addEventListener('click',function(){document.getElementById(x.getAttribute('data-x')).classList.remove('on');if(x.getAttribute('data-x')==='dhov')stopVideo();});
+  });
+  var caps=[
+    'tutor: here is the whole subsystem on one slide — ten files, but only one door matters…',
+    'tutor: watch the order — the token dies before the grants table is ever touched. two refusals, on purpose.',
+    'tutor: and this is the seam. one swallowed catch, twelve percent covered — one test closes it.'
+  ];
+  var vt=null,tick=0,slide=0;
+  function startVideo(){
+    stopVideo();tick=0;slide=0;render();
+    vt=setInterval(function(){
+      tick++;
+      var pct=Math.min(100,tick*2.2);
+      document.getElementById('dhbar').style.width=pct+'%';
+      var s=Math.floor(tick*247/46);
+      document.getElementById('dhtime').textContent=Math.floor(s/60)+':'+('0'+(s%60)).slice(-2)+' / 4:07';
+      if(tick===14||tick===30){slide++;render();}
+      if(pct>=100)stopVideo();
+    },500);
+  }
+  function render(){
+    var sl=document.querySelectorAll('.dh-slide');
+    sl.forEach(function(x,i){x.classList.toggle('on',i===slide);});
+    document.getElementById('dhcap').innerHTML='<b>tutor:</b> '+caps[slide].slice(7);
+  }
+  function stopVideo(){if(vt){clearInterval(vt);vt=null;}}
+  var pl=document.getElementById('dhpl');
+  if(pl)pl.addEventListener('click',function(){ if(vt){stopVideo();pl.textContent='▶';} else {pl.textContent='⏸';startVideo();} });
 })();
 </script>
 

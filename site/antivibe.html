@@ -262,7 +262,7 @@ window.MUNINN = {
 </header>
 
 
-<!-- THE DEMO — the real screen, boxed (rebuilt pixel-faithful from app screenshots, 2026-07-20) -->
+<!-- THE DEMO — the real screens, boxed: fleet → the canvas board, panes working (2026-07-20) -->
 <section id="demo" style="padding:64px 0">
   <style>
   .dm{--dbg:oklch(0.15 0.006 55);--dpanel:oklch(0.18 0.007 55);--dpanel2:oklch(0.21 0.008 55);--dborder:oklch(0.26 0.006 55);--dfg:oklch(0.93 0.006 60);--ddim:oklch(0.66 0.012 58);--dmuted:oklch(0.5 0.01 58);--dok:oklch(0.74 0.13 150);--dwarn:oklch(0.8 0.14 80);--dbad:oklch(0.64 0.19 25);--dbrand:oklch(0.64 0.11 38);--dactive:oklch(0.24 0.01 55);--dviolet:oklch(0.72 0.11 300);--dblue:oklch(0.72 0.09 260);
@@ -280,10 +280,12 @@ window.MUNINN = {
   .dm-tab{display:inline-flex;align-items:center;gap:4px;border-radius:6px;padding:2px 8px;font-size:10.5px;color:var(--dmuted);white-space:nowrap}
   .dm-tab i{font-style:normal;font-size:9px;opacity:.85}
   .dm-tab.on{background:var(--dpanel2);color:var(--dbrand);font-weight:500}
-  .dm-hint{position:absolute;top:10px;left:14px;z-index:9;font-family:var(--mono);font-size:9.5px;color:var(--ddim);background:color-mix(in oklch,var(--dpanel) 80%,transparent);border:1px solid var(--dborder);border-radius:6px;padding:3px 9px}
+  .dm-hint{position:absolute;top:auto;bottom:64px;left:14px;z-index:9;font-family:var(--mono);font-size:9.5px;color:var(--ddim);background:color-mix(in oklch,var(--dpanel) 80%,transparent);border:1px solid var(--dborder);border-radius:6px;padding:3px 9px}
   .dm-note{font-family:var(--mono);font-size:11px;color:var(--muted-2);margin-top:14px}
 
-  .dv{flex:1;min-height:0;overflow:auto;padding:40px 14px 80px;display:flex;flex-direction:column;gap:10px}
+  .dv-view{display:none;flex-direction:column;flex:1;min-height:0}
+  .dv-view.on{display:flex}
+  .dv{flex:1;min-height:0;overflow:auto;padding:14px 14px 80px;display:flex;flex-direction:column;gap:10px}
   .dv-head{display:flex;align-items:baseline;gap:10px}
   .dv-head b{font-family:var(--mono);font-size:13px;color:var(--dfg)}
   .dv-head span{font-family:var(--mono);font-size:10px;color:var(--dmuted)}
@@ -310,7 +312,8 @@ window.MUNINN = {
   .dv-days{display:flex;align-items:flex-end;gap:3px;height:56px}
   .dv-days i{flex:1;background:var(--dbrand);opacity:.75;border-radius:2px 2px 0 0;font-style:normal}
   .dv-sess{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:9px}
-  .dv-card{border:1px solid var(--dborder);border-radius:11px;background:var(--dpanel);padding:10px 12px}
+  .dv-card{border:1px solid var(--dborder);border-radius:11px;background:var(--dpanel);padding:10px 12px;cursor:pointer;transition:border-color .2s}
+  .dv-card:hover{border-color:var(--dbrand)}
   .dv-card .nm{display:flex;align-items:center;gap:7px;font-family:var(--mono);font-size:11.5px;color:var(--dfg);font-weight:700}
   .dv-card .nm i{width:7px;height:7px;border-radius:50%;font-style:normal;flex-shrink:0}
   .dv-card .pill{margin-left:auto;font-size:8px;border:1px solid var(--dborder);border-radius:4px;padding:0 5px;color:var(--dmuted)}
@@ -319,33 +322,62 @@ window.MUNINN = {
   .dv-card .mt{font-family:var(--mono);font-size:9px;color:var(--dmuted);margin:6px 0}
   .dv-card .pg{height:4px;border-radius:2px;background:var(--dbg);overflow:hidden}
   .dv-card .pg b{display:block;height:100%;border-radius:2px}
+  /* ── the session BOARD: panes working ── */
+  .db2{flex:1;min-height:0;display:flex;flex-direction:column;padding:12px 14px 80px;gap:8px}
+  .db2-hd{display:flex;align-items:center;gap:9px;font-family:var(--mono);font-size:10.5px;color:var(--ddim)}
+  .db2-hd .back{border:1px solid var(--dborder);border-radius:6px;padding:2px 9px;cursor:pointer;color:var(--dmuted)}
+  .db2-hd b{color:var(--dfg);font-size:12px}
+  .db2-hd .meter{margin-left:auto;color:var(--dwarn);padding-right:30px}
+  .db2-grid{flex:1;min-height:0;display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px}
+  @media(max-width:760px){.db2-grid{grid-template-columns:1fr}}
+  .db2-pane{border:1px solid var(--dborder);border-radius:10px;background:var(--dpanel);display:flex;flex-direction:column;min-height:0;overflow:hidden;transition:border-color .3s}
+  .db2-pane.gated{border-color:color-mix(in oklch,var(--dbad) 60%,var(--dborder))}
+  .db2-pane .ph{display:flex;align-items:center;gap:6px;padding:5px 9px;border-bottom:1px solid var(--dborder);font-family:var(--mono);font-size:9px;color:var(--ddim)}
+  .db2-pane .ph b{color:var(--dfg);font-weight:600;font-size:10px;font-family:'Geist',sans-serif}
+  .db2-pane .ph .wt{color:var(--dok)}
+  .db2-pane .ph .pm{margin-left:auto;color:var(--dwarn)}
+  .db2-pane .tb{flex:1;min-height:0;overflow:auto;background:var(--dbg);padding:8px 10px;font-family:var(--mono);font-size:10px;line-height:1.7;color:var(--ddim)}
+  .db2-pane .tb .ok{color:var(--dok)} .db2-pane .tb .er{color:var(--dbad)} .db2-pane .tb .hi{color:var(--dfg)} .db2-pane .tb .dim{color:var(--dmuted)}
 </style>
   <div class="wrap">
     <div class="sec-eyebrow" style="color:var(--accent)">Try it — right here</div>
     <h2>This is the real screen. Boxed.</h2>
-    <p class="sec-lede">Rebuilt from screenshots of the actual app in demo mode — same layout, same tokens, same tabs. The data is scripted; the pixels are real. <b>Click around.</b></p>
-<div class="dm"><div class="dm-bar"><i></i><i></i><i></i><span class="t">antiloki — AntiVibe — the Canvas tab</span><span class="live">● interactive demo · scripted data</span></div><div class="dm-app"><div class="dm-corner">a</div><div class="dm-hint" style="top:auto;bottom:64px">press ⚡ GO — the concierge preps a session and the fleet grows</div><div class="dv"><div class="dv-head"><b>Canvas</b><span>scoped agents · worktree-isolated · gated merge</span><button id="dvgo" style="margin-left:auto;font-family:var(--mono);font-size:10.5px;color:var(--dbg);background:var(--dbrand);border:none;border-radius:7px;padding:5px 12px;cursor:pointer;font-weight:600">⚡ GO — ship the signup flow</button></div><div class="dv-kpis"><div class="dv-kpi" style="--tint:var(--dbrand)"><span class="ic">❖</span><span><span class="v" id="dvk0">4</span><span class="l">super-sessions</span></span></div><div class="dv-kpi" style="--tint:var(--dok)"><span class="ic">●</span><span><span class="v" id="dvk1">2</span><span class="l">active now</span></span></div><div class="dv-kpi" style="--tint:var(--dwarn)"><span class="ic">⚉</span><span><span class="v" id="dvk2">9</span><span class="l">agents</span></span></div><div class="dv-kpi" style="--tint:var(--dbrand)"><span class="ic">⚡</span><span><span class="v" id="dvk3">128</span><span class="l">AI turns</span></span></div><div class="dv-kpi" style="--tint:var(--dok)"><span class="ic">⛽</span><span><span class="v" id="dvk4">$3.1742</span><span class="l">total spend</span></span></div></div><div class="dv-charts"><div class="dv-box"><div class="t">Spend by session</div><div class="dv-bar"><span class="n">ship the login screen</span><span class="tr"><b style="width:100%"></b></span><span class="v">$1.210</span></div><div class="dv-bar"><span class="n">checkout revamp</span><span class="tr"><b style="width:78%"></b></span><span class="v">$0.940</span></div><div class="dv-bar"><span class="n">migrate the mailer</span><span class="tr"><b style="width:59%"></b></span><span class="v">$0.710</span></div><div class="dv-bar"><span class="n">dark mode pass</span><span class="tr"><b style="width:26%"></b></span><span class="v">$0.310</span></div></div><div class="dv-box"><div class="t">Fleet status</div><div class="dv-donut"><span class="ring"><i id="dvring">4</i></span><span class="dv-leg"><span><i style="background:var(--dok)"></i>2 active</span><span><i style="background:var(--dbrand)"></i>2 merged</span><span><i style="background:var(--dmuted)"></i>0 other</span></span></div></div><div class="dv-box"><div class="t">Sessions started · last 14 days</div><div class="dv-days"><i style="height:4%"></i><i style="height:4%"></i><i style="height:4%"></i><i style="height:4%"></i><i style="height:4%"></i><i style="height:4%"></i><i style="height:4%"></i><i style="height:26%"></i><i style="height:4%"></i><i style="height:4%"></i><i style="height:32%"></i><i style="height:4%"></i><i style="height:28%"></i><i style="height:30%"></i></div></div></div><div class="dm-mono" style="font-size:8px;color:var(--ddim);letter-spacing:1.2px;text-transform:uppercase">Super-sessions</div><div class="dv-sess" id="dvss"><div class="dv-card"><div class="nm"><i style="background:var(--dok)"></i>ship the login screen<span class="pill act">active</span></div><div class="mt">● 3 · ⚡ 46 · ⛽ $1.210 · 07-20</div><div class="pg"><b style="width:86%;background:var(--dok)"></b></div></div><div class="dv-card"><div class="nm"><i style="background:var(--dok)"></i>checkout revamp<span class="pill act">active</span></div><div class="mt">● 3 · ⚡ 38 · ⛽ $0.940 · 07-19</div><div class="pg"><b style="width:62%;background:var(--dok)"></b></div></div><div class="dv-card"><div class="nm"><i style="background:var(--dbrand)"></i>migrate the mailer<span class="pill mrg">merged</span></div><div class="mt">● 2 · ⚡ 29 · ⛽ $0.710 · 07-17</div><div class="pg"><b style="width:100%;background:var(--dbrand)"></b></div></div><div class="dv-card"><div class="nm"><i style="background:var(--dbrand)"></i>dark mode pass<span class="pill mrg">merged</span></div><div class="mt">● 1 · ⚡ 15 · ⛽ $0.310 · 07-14</div><div class="pg"><b style="width:100%;background:var(--dbrand)"></b></div></div></div></div><div class="dm-dock"><div class="in">what do you want to ship?</div><div style="display:flex;align-items:center;gap:6px"><span class="dm-mono" style="font-size:8.5px;color:var(--ddim)">⏎ sends · ⠀⣿ docks the chat</span><div class="dm-tabs"><span class="dm-tab"><i>✦</i>Chat</span><span class="dm-tab on"><i>❯</i>Canvas</span><span class="dm-tab"><i>◈</i>Hub</span><span class="dm-tab"><i>⟨⟩</i>Explorer</span><span class="dm-tab"><i>⚙</i>Harness</span></div></div></div></div></div>
+    <p class="sec-lede">Rebuilt from screenshots of the actual app — the fleet dashboard, and inside a session, <b>the canvas with the panes working</b>. The data is scripted; the pixels are real. <b>Click a session.</b></p>
+<div class="dm"><div class="dm-bar"><i></i><i></i><i></i><span class="t">antiloki — AntiVibe — the Canvas tab</span><span class="live">● interactive demo · scripted data</span></div><div class="dm-app"><div class="dm-corner">a</div><div class="dm-hint">click a session — the canvas opens with the panes working</div><div class="dv-view on" id="dvvf"><div class="dv"><div class="dv-head"><b>Canvas</b><span>scoped agents · worktree-isolated · gated merge</span></div><div class="dv-kpis"><div class="dv-kpi" style="--tint:var(--dbrand)"><span class="ic">❖</span><span><span class="v">4</span><span class="l">super-sessions</span></span></div><div class="dv-kpi" style="--tint:var(--dok)"><span class="ic">●</span><span><span class="v">2</span><span class="l">active now</span></span></div><div class="dv-kpi" style="--tint:var(--dwarn)"><span class="ic">⚉</span><span><span class="v">9</span><span class="l">agents</span></span></div><div class="dv-kpi" style="--tint:var(--dbrand)"><span class="ic">⚡</span><span><span class="v">128</span><span class="l">AI turns</span></span></div><div class="dv-kpi" style="--tint:var(--dok)"><span class="ic">⛽</span><span><span class="v">$3.1742</span><span class="l">total spend</span></span></div></div><div class="dv-charts"><div class="dv-box"><div class="t">Spend by session</div><div class="dv-bar"><span class="n">ship the login screen</span><span class="tr"><b style="width:100%"></b></span><span class="v">$1.210</span></div><div class="dv-bar"><span class="n">checkout revamp</span><span class="tr"><b style="width:78%"></b></span><span class="v">$0.940</span></div><div class="dv-bar"><span class="n">migrate the mailer</span><span class="tr"><b style="width:59%"></b></span><span class="v">$0.710</span></div><div class="dv-bar"><span class="n">dark mode pass</span><span class="tr"><b style="width:26%"></b></span><span class="v">$0.310</span></div></div><div class="dv-box"><div class="t">Fleet status</div><div class="dv-donut"><span class="ring"><i>4</i></span><span class="dv-leg"><span><i style="background:var(--dok)"></i>2 active</span><span><i style="background:var(--dbrand)"></i>2 merged</span><span><i style="background:var(--dmuted)"></i>0 other</span></span></div></div><div class="dv-box"><div class="t">Sessions started · last 14 days</div><div class="dv-days"><i style="height:4%"></i><i style="height:4%"></i><i style="height:4%"></i><i style="height:4%"></i><i style="height:4%"></i><i style="height:4%"></i><i style="height:4%"></i><i style="height:26%"></i><i style="height:4%"></i><i style="height:4%"></i><i style="height:32%"></i><i style="height:4%"></i><i style="height:28%"></i><i style="height:30%"></i></div></div></div><div class="dm-mono" style="font-size:8px;color:var(--ddim);letter-spacing:1.2px;text-transform:uppercase">Super-sessions — click one</div><div class="dv-sess"><div class="dv-card" data-s="ship the login screen"><div class="nm"><i style="background:var(--dok)"></i>ship the login screen<span class="pill act">active</span></div><div class="mt">● 3 · ⚡ 46 · ⛽ $1.210 · 07-20</div><div class="pg"><b style="width:86%;background:var(--dok)"></b></div></div><div class="dv-card" data-s="checkout revamp"><div class="nm"><i style="background:var(--dok)"></i>checkout revamp<span class="pill act">active</span></div><div class="mt">● 3 · ⚡ 38 · ⛽ $0.940 · 07-19</div><div class="pg"><b style="width:62%;background:var(--dok)"></b></div></div><div class="dv-card" data-s="migrate the mailer"><div class="nm"><i style="background:var(--dbrand)"></i>migrate the mailer<span class="pill mrg">merged</span></div><div class="mt">● 2 · ⚡ 29 · ⛽ $0.710 · 07-17</div><div class="pg"><b style="width:100%;background:var(--dbrand)"></b></div></div><div class="dv-card" data-s="dark mode pass"><div class="nm"><i style="background:var(--dbrand)"></i>dark mode pass<span class="pill mrg">merged</span></div><div class="mt">● 1 · ⚡ 15 · ⛽ $0.310 · 07-14</div><div class="pg"><b style="width:100%;background:var(--dbrand)"></b></div></div></div></div></div><div class="dv-view" id="dvvb"><div class="db2"><div class="db2-hd"><span class="back" id="dbback">← fleet</span><b id="dbname">ship the login screen</b><span>3 panes · isolated worktrees · gated merge</span><span class="meter" id="dbtot">session $0.00</span></div><div class="db2-grid"><div class="db2-pane" id="dbp0"><div class="ph"><b>auth form</b><span class="wt">⎇ wt/login-a</span><span class="pm" id="dbm0">$0.00</span></div><div class="tb" id="dbb0"></div></div><div class="db2-pane" id="dbp1"><div class="ph"><b>api wiring</b><span class="wt">⎇ wt/login-b</span><span class="pm" id="dbm1">$0.00</span></div><div class="tb" id="dbb1"></div></div><div class="db2-pane" id="dbp2"><div class="ph"><b>e2e tests</b><span class="wt">⎇ wt/login-c</span><span class="pm" id="dbm2">$0.00</span></div><div class="tb" id="dbb2"></div></div></div></div></div><div class="dm-dock"><div class="in">what do you want to ship?</div><div style="display:flex;align-items:center;gap:6px"><span class="dm-mono" style="font-size:8.5px;color:var(--ddim)">⏎ sends · ⣿ docks the chat</span><div class="dm-tabs"><span class="dm-tab"><i>✦</i>Chat</span><span class="dm-tab on"><i>❯</i>Canvas</span><span class="dm-tab"><i>◈</i>Hub</span><span class="dm-tab"><i>⟨⟩</i>Explorer</span><span class="dm-tab"><i>⚙</i>Harness</span></div></div></div></div></div>
     <p class="dm-note">// scripted demo — the real one runs on your machine, on your repo. <a href="#waitlist" style="color:var(--accent)">get in line →</a></p>
   </div>
 </section>
 <script>
 (function(){
-  var go=document.getElementById('dvgo'),done=false;
-  go.addEventListener('click',function(){
-    if(done)return;done=true;go.textContent='✓ session prepared — 3 panes spawned';go.style.background='var(--dok)';
-    var ss=document.getElementById('dvss');
-    var d=document.createElement('div');d.className='dv-card';d.style.borderColor='color-mix(in oklch,var(--dok) 45%,var(--dborder))';
-    d.innerHTML='<div class="nm"><i style="background:var(--dok)"></i>ship the signup flow<span class="pill act">active</span></div><div class="mt">● 3 · ⚡ 0 · ⛽ $0.000 · today</div><div class="pg"><b style="width:4%;background:var(--dok);transition:width 6s linear"></b></div>';
-    ss.insertBefore(d,ss.firstChild);
-    requestAnimationFrame(function(){setTimeout(function(){d.querySelector('.pg b').style.width='38%';},80);});
-    document.getElementById('dvk0').textContent='5';
-    document.getElementById('dvk1').textContent='3';
-    document.getElementById('dvk2').textContent='12';
-    document.getElementById('dvring').textContent='5';
-    var turns=128,spend=3.1742,k3=document.getElementById('dvk3'),k4=document.getElementById('dvk4'),n=0;
-    var t=setInterval(function(){n++;turns+=1;spend+=0.007;k3.textContent=String(turns);k4.textContent='$'+spend.toFixed(4);
-      var mt=d.querySelector('.mt');mt.textContent='● 3 · ⚡ '+n+' · ⛽ $'+(n*0.007).toFixed(3)+' · today';
-      if(n>=14)clearInterval(t);},420);
+  var vf=document.getElementById('dvvf'),vb=document.getElementById('dvvb');
+  function show(v){[vf,vb].forEach(function(x){x.classList.remove('on');});v.classList.add('on');}
+  document.getElementById('dbback').addEventListener('click',function(){show(vf);});
+  var ran=false;
+  var scripts=[
+    [[250,'$ read the shared mission brief'],[900,'✎ writing LoginForm.tsx'],[1900,'<span class=dim>· validation + a11y attrs, per the contract</span>'],[2700,'<span class=ok>✓ build passed · 14 tests green</span>'],[3500,'<span class=ok>✓ diff ready — one coherent change</span>']],
+    [[450,'$ read the shared mission brief'],[1400,'✎ wiring POST /api/login'],[2300,'<span class=dim>· mounts BEHIND auth/guard.ts — the one door</span>'],[3200,'<span class=ok>✓ build passed · contract matches guard.ts</span>'],[4100,'<span class=ok>✓ diff ready</span>']],
+    [[350,'$ read the shared mission brief'],[1200,'✎ writing login.e2e.ts'],[2100,'<span class=er>✗ build broke — held at the gate</span>'],[3300,'↺ fixing the import…'],[4400,'<span class=ok>✓ build passed — resumed · gate green</span>']]];
+  function money(el,amt,tot){var v=0;var t=setInterval(function(){v+=0.01;if(v>=amt){v=amt;clearInterval(t);}el.textContent='$'+v.toFixed(2);
+    var s=0;[0,1,2].forEach(function(i){s+=parseFloat(document.getElementById('dbm'+i).textContent.slice(1))||0;});
+    tot.textContent='session $'+s.toFixed(2);},300);}
+  function run(){
+    if(ran)return;ran=true;
+    var tot=document.getElementById('dbtot');
+    scripts.forEach(function(sc,i){
+      var tb=document.getElementById('dbb'+i);tb.innerHTML='';
+      money(document.getElementById('dbm'+i),[0.14,0.13,0.09][i],tot);
+      sc.forEach(function(step){setTimeout(function(){
+        var l=document.createElement('div');l.innerHTML=step[1];tb.appendChild(l);tb.scrollTop=tb.scrollHeight;
+        if(String(step[1]).indexOf('held at the gate')>=0)document.getElementById('dbp2').classList.add('gated');
+        if(String(step[1]).indexOf('resumed')>=0)document.getElementById('dbp2').classList.remove('gated');
+      },step[0]);});
+    });
+  }
+  document.querySelectorAll('.dv-card[data-s]').forEach(function(c){
+    c.addEventListener('click',function(){
+      document.getElementById('dbname').textContent=c.getAttribute('data-s');
+      show(vb);run();
+    });
   });
 })();
 </script>

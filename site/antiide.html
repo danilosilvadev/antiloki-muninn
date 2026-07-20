@@ -261,7 +261,7 @@ window.MUNINN = {
 </header>
 
 
-<!-- THE DEMO — the real screen, boxed (rebuilt pixel-faithful from app screenshots, 2026-07-20) -->
+<!-- THE DEMO — the real screen, boxed: tree · code · graph · diagram · docs · the quality window (2026-07-20) -->
 <section id="demo" style="padding:64px 0">
   <style>
   .dm{--dbg:oklch(0.15 0.006 55);--dpanel:oklch(0.18 0.007 55);--dpanel2:oklch(0.21 0.008 55);--dborder:oklch(0.26 0.006 55);--dfg:oklch(0.93 0.006 60);--ddim:oklch(0.66 0.012 58);--dmuted:oklch(0.5 0.01 58);--dok:oklch(0.74 0.13 150);--dwarn:oklch(0.8 0.14 80);--dbad:oklch(0.64 0.19 25);--dbrand:oklch(0.64 0.11 38);--dactive:oklch(0.24 0.01 55);--dviolet:oklch(0.72 0.11 300);--dblue:oklch(0.72 0.09 260);
@@ -279,11 +279,11 @@ window.MUNINN = {
   .dm-tab{display:inline-flex;align-items:center;gap:4px;border-radius:6px;padding:2px 8px;font-size:10.5px;color:var(--dmuted);white-space:nowrap}
   .dm-tab i{font-style:normal;font-size:9px;opacity:.85}
   .dm-tab.on{background:var(--dpanel2);color:var(--dbrand);font-weight:500}
-  .dm-hint{position:absolute;top:10px;left:14px;z-index:9;font-family:var(--mono);font-size:9.5px;color:var(--ddim);background:color-mix(in oklch,var(--dpanel) 80%,transparent);border:1px solid var(--dborder);border-radius:6px;padding:3px 9px}
+  .dm-hint{position:absolute;top:auto;bottom:64px;left:14px;z-index:9;font-family:var(--mono);font-size:9.5px;color:var(--ddim);background:color-mix(in oklch,var(--dpanel) 80%,transparent);border:1px solid var(--dborder);border-radius:6px;padding:3px 9px}
   .dm-note{font-family:var(--mono);font-size:11px;color:var(--muted-2);margin-top:14px}
 
   .dx{flex:1;display:flex;min-height:0}
-  .dx-tree{width:206px;flex-shrink:0;background:var(--dbg);border-right:1px solid var(--dborder);display:flex;flex-direction:column;min-height:0}
+  .dx-tree{width:196px;flex-shrink:0;background:var(--dbg);border-right:1px solid var(--dborder);display:flex;flex-direction:column;min-height:0}
   .dx-tt{display:flex;align-items:center;gap:10px;padding:9px 12px;font-size:12px;color:var(--dmuted)}
   .dx-tt .rb{margin-left:auto;color:var(--dbrand);font-family:var(--mono);font-size:11px}
   .dx-rows{flex:1;overflow:auto;padding-bottom:70px}
@@ -294,24 +294,80 @@ window.MUNINN = {
   .dx-row.f i{width:7px;height:7px;border-radius:50%;flex-shrink:0;font-style:normal}
   .dx-row.f:hover{background:var(--dpanel)}
   .dx-row.f.sel{background:var(--dactive);color:var(--dfg)}
-  .dx-main{flex:1;min-width:0;display:flex;flex-direction:column;min-height:0}
+  .dx-main{flex:1;min-width:0;display:flex;flex-direction:column;min-height:0;position:relative}
   .dx-tabbar{display:flex;align-items:center;padding:8px 14px;border-bottom:1px solid var(--dborder);font-family:var(--mono);font-size:11px;color:var(--ddim)}
   .dx-tabbar .z{margin-left:auto;color:var(--dmuted);display:flex;gap:10px;padding-right:36px}
   .dx-fh{display:flex;align-items:center;gap:8px;padding:9px 16px;border-bottom:1px solid var(--dborder)}
   .dx-fh b{font-family:var(--mono);font-size:12px;color:var(--dfg);font-weight:600}
-  .dx-fh .docs{margin-left:auto;font-family:var(--mono);font-size:10px;color:var(--dbg);background:var(--dbrand);border-radius:5px;padding:2px 9px}
-  .dx-code{flex:1;overflow:auto;padding:14px 18px 76px;font-family:var(--mono);font-size:11.5px;line-height:1.75;color:var(--ddim);white-space:pre}
+  .dx-fh .score{font-family:var(--mono);font-size:10px;color:var(--dwarn);border:1px solid color-mix(in oklch,var(--dwarn) 50%,var(--dborder));border-radius:5px;padding:1px 8px;cursor:pointer}
+  .dx-fh .docs{margin-left:auto;font-family:var(--mono);font-size:10px;color:var(--dbg);background:var(--dbrand);border-radius:5px;padding:2px 9px;cursor:pointer}
+  .dx-view{display:none;flex:1;min-height:0;overflow:auto}
+  .dx-view.on{display:block}
+  .dx-code{padding:14px 18px 76px;font-family:var(--mono);font-size:11.5px;line-height:1.75;color:var(--ddim);white-space:pre}
   .dx-code .c{color:var(--dmuted)} .dx-code .k{color:var(--dbrand)} .dx-code .s{color:var(--dok)} .dx-code .fg{color:var(--dfg)}
-  .dx-rail{width:30px;flex-shrink:0;border-left:1px solid var(--dborder);display:flex;flex-direction:column;align-items:center;gap:14px;padding-top:40px;color:var(--dmuted);font-size:11px}
+  .dx-rail{width:30px;flex-shrink:0;border-left:1px solid var(--dborder);display:flex;flex-direction:column;align-items:center;gap:10px;padding-top:40px;color:var(--dmuted);font-size:11px}
+  .dx-rail span{cursor:pointer;width:22px;height:22px;display:grid;place-items:center;border-radius:6px}
+  .dx-rail span:hover{color:var(--dfg);background:var(--dpanel)}
+  .dx-rail span.on{color:var(--dbrand);background:var(--dpanel2)}
   .dx-scripts{position:absolute;left:0;right:0;bottom:0;z-index:7;display:flex;align-items:center;gap:14px;padding:8px 14px;background:color-mix(in oklch,var(--dbg) 88%,transparent);border-top:1px solid var(--dborder);font-family:var(--mono);font-size:9px;color:var(--dmuted)}
   .dx-scripts .lbl{color:var(--dbad);letter-spacing:1px}
   .dx-scripts b{color:var(--dfg);font-weight:500}
+  /* graph view */
+  .dx-graph{padding:20px 18px 80px}
+  .dx-graph svg{width:100%;max-width:640px}
+  .dx-graph text{font-family:var(--mono);font-size:9px;fill:var(--ddim)}
+  .dx-graph .nd{fill:var(--dpanel);stroke:var(--dborder)}
+  .dx-graph .nd.hub{stroke:var(--dbrand)}
+  .dx-graph .ed{stroke:var(--dmuted);stroke-width:1;opacity:.55}
+  .dx-graph .lg{font-size:8.5px;fill:var(--dmuted)}
+  /* diagram view */
+  .dx-diag{padding:20px 18px 80px;display:flex;gap:26px;align-items:flex-start;flex-wrap:wrap}
+  .dx-diag .colm{display:flex;flex-direction:column;gap:9px}
+  .dx-diag .bx{border:1px solid var(--dborder);border-top:2px solid var(--dblue);border-radius:7px;background:var(--dpanel);padding:6px 11px;font-family:var(--mono);font-size:10px;color:var(--dfg);min-width:150px}
+  .dx-diag .bx s{display:block;text-decoration:none;color:var(--dmuted);font-size:8.5px}
+  .dx-diag .arr{font-family:var(--mono);color:var(--dmuted);align-self:center}
+  /* docs site view */
+  .dx-docs{padding:20px 26px 80px;max-width:620px}
+  .dx-docs h4{font-size:16px;color:var(--dfg);margin-bottom:4px}
+  .dx-docs .by{font-family:var(--mono);font-size:9px;color:var(--dmuted);margin-bottom:12px}
+  .dx-docs p{font-size:12px;color:var(--ddim);line-height:1.65;margin-bottom:9px}
+  .dx-docs p b{color:var(--dfg)}
+  .dx-docs .toc{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px}
+  .dx-docs .toc span{font-family:var(--mono);font-size:9px;border:1px solid var(--dborder);border-radius:9px;padding:2px 9px;color:var(--dbrand)}
+  .dx-docs pre{font-family:var(--mono);font-size:10px;color:var(--ddim);background:var(--dpanel);border:1px solid var(--dborder);border-radius:8px;padding:10px 12px;line-height:1.7}
+  /* overlays: quality window + per-file docs */
+  .dx-ov{position:absolute;inset:8% 6%;z-index:12;background:var(--dpanel);border:1px solid color-mix(in oklch,var(--dbrand) 30%,var(--dborder));border-radius:13px;box-shadow:0 20px 60px rgba(0,0,0,.6);display:none;flex-direction:column;overflow:hidden}
+  .dx-ov.on{display:flex}
+  .dx-ov .oh{display:flex;align-items:center;gap:9px;padding:9px 14px;border-bottom:1px solid var(--dborder);font-family:var(--mono);font-size:10.5px;color:var(--ddim)}
+  .dx-ov .oh b{color:var(--dfg)}
+  .dx-ov .oh .x{margin-left:auto;cursor:pointer;color:var(--dmuted);border:1px solid var(--dborder);border-radius:5px;padding:0 7px}
+  .dx-ov .ob{flex:1;min-height:0;overflow:auto;padding:12px 15px}
+  .dx-q .big{display:flex;align-items:center;gap:14px;margin-bottom:12px}
+  .dx-q .ring{width:64px;height:64px;border-radius:50%;background:conic-gradient(var(--dwarn) 0 266deg,var(--dbg) 266deg 360deg);display:grid;place-items:center;flex-shrink:0}
+  .dx-q .ring i{width:46px;height:46px;border-radius:50%;background:var(--dpanel);display:grid;place-items:center;font-family:var(--mono);font-size:15px;font-weight:700;color:var(--dwarn);font-style:normal}
+  .dx-q .verd{font-size:12px;color:var(--ddim);line-height:1.55}
+  .dx-q .verd b{color:var(--dfg)}
+  .dx-ax{display:flex;align-items:center;gap:8px;font-family:var(--mono);font-size:9.5px;color:var(--dmuted);margin:4px 0}
+  .dx-ax .n2{width:66px}
+  .dx-ax .tr{flex:1;height:5px;border-radius:3px;background:var(--dbg);overflow:hidden}
+  .dx-ax .tr b{display:block;height:100%;border-radius:3px}
+  .dx-ax .v2{width:24px;text-align:right;color:var(--dfg)}
+  .dx-law{display:flex;align-items:center;gap:8px;font-family:var(--mono);font-size:9.5px;border:1px solid var(--dborder);border-radius:7px;padding:5px 9px;margin-top:6px;color:var(--ddim)}
+  .dx-law .sev{color:var(--dbad)}
+  .dx-law .w8{margin-left:auto;color:var(--dmuted)}
+  .dx-ins{border:1px solid color-mix(in oklch,var(--dviolet) 40%,var(--dborder));border-radius:9px;padding:9px 12px;margin-top:11px;font-size:11px;color:var(--ddim);line-height:1.6}
+  .dx-ins .it{font-family:var(--mono);font-size:8.5px;letter-spacing:1px;text-transform:uppercase;color:var(--dviolet);margin-bottom:4px}
+  .dx-ins b{color:var(--dfg)}
+  .dx-fd table{width:100%;border-collapse:collapse;font-family:var(--mono);font-size:10px}
+  .dx-fd th{text-align:left;color:var(--dbrand);font-size:8.5px;text-transform:uppercase;letter-spacing:1px;padding:4px 8px;border-bottom:1px solid var(--dborder)}
+  .dx-fd td{padding:5px 8px;border-bottom:1px solid color-mix(in oklch,var(--dborder) 60%,transparent);color:var(--ddim)}
+  .dx-fd td b{color:var(--dfg);font-weight:500}
 </style>
   <div class="wrap">
     <div class="sec-eyebrow" style="color:var(--accent)">Try it — right here</div>
     <h2>This is the real screen. Boxed.</h2>
-    <p class="sec-lede">Rebuilt from screenshots of the actual app in demo mode — same layout, same tokens, same tabs. The data is scripted; the pixels are real. <b>Click around.</b></p>
-<div class="dm"><div class="dm-bar"><i></i><i></i><i></i><span class="t">antiloki — AntiIDE — the Explorer tab</span><span class="live">● interactive demo · scripted data</span></div><div class="dm-app"><div class="dm-corner">a</div><div class="dm-hint" style="top:auto;bottom:64px">click guard.ts or checkout.tsx — the reading pane follows</div><div class="dx"><div class="dx-tree"><div class="dx-tt">⌕ ⚙<span class="rb">↻ rebuild</span></div><div class="dx-rows"><div class="dx-row dir">▾ api<span class="w">~3.0k</span></div><div class="dx-row f"><i style="background:var(--dblue)"></i>client.ts<span class="w">~900</span></div><div class="dx-row f"><i style="background:var(--dblue)"></i>routes.ts<span class="w">~2.1k</span></div><div class="dx-row dir">▾ auth<span class="w">~1.8k</span></div><div class="dx-row f" data-f="guard.ts"><i style="background:var(--dblue)"></i>guard.ts<span class="w">~1.8k</span></div><div class="dx-row dir">▾ db<span class="w">~2.3k</span></div><div class="dx-row f"><i style="background:var(--dwarn)"></i>orders.sql<span class="w">~700</span></div><div class="dx-row f"><i style="background:var(--dwarn)"></i>schema.sql<span class="w">~1.6k</span></div><div class="dx-row dir">▾ engine<span class="w">~4.2k</span></div><div class="dx-row f sel" data-f="dispatch.ts"><i style="background:var(--dblue)"></i>dispatch.ts<span class="w">~4.2k</span></div><div class="dx-row dir">▾ session<span class="w">~1.1k</span></div><div class="dx-row f"><i style="background:var(--dblue)"></i>store.ts<span class="w">~1.1k</span></div><div class="dx-row dir">▾ utils<span class="w">~300</span></div><div class="dx-row f"><i style="background:var(--dblue)"></i>money.ts<span class="w">~300</span></div><div class="dx-row f" data-f="checkout.tsx"><i style="background:var(--dviolet)"></i>checkout.tsx<span class="w">~3.1k</span></div><div class="dx-row f"><i style="background:var(--dok)"></i>theme.css<span class="w">~2.6k</span></div></div></div><div class="dx-main"><div class="dx-tabbar"><span id="dxp">engine/dispatch.ts</span><span class="z">A- 100% A+ ⛶</span></div><div class="dx-fh"><i style="width:8px;height:8px;border-radius:50%;background:var(--dblue)"></i><b id="dxh">engine/dispatch.ts</b><span class="docs">◆ docs</span></div><div class="dx-code" id="dxc"><span class="c">// engine/dispatch.ts — every action passes through here.</span>
+    <p class="sec-lede">Rebuilt from screenshots of the actual app. Every rail button works: <b>the graph, the diagram, the docs, the per-file docs — and the code-quality window</b> with the score, the axes and the laws. Click around.</p>
+<div class="dm"><div class="dm-bar"><i></i><i></i><i></i><span class="t">antiloki — AntiIDE — the Explorer tab</span><span class="live">● interactive demo · scripted data</span></div><div class="dm-app"><div class="dm-corner">a</div><div class="dm-hint">tree: click a file · header: health 74 + ◆ docs · rail: ◉ graph · ▤ diagram · § docs</div><div class="dx"><div class="dx-tree"><div class="dx-tt">⌕ ⚙<span class="rb">↻ rebuild</span></div><div class="dx-rows"><div class="dx-row dir">▾ api<span class="w">~3.0k</span></div><div class="dx-row f"><i style="background:var(--dblue)"></i>client.ts<span class="w">~900</span></div><div class="dx-row f"><i style="background:var(--dblue)"></i>routes.ts<span class="w">~2.1k</span></div><div class="dx-row dir">▾ auth<span class="w">~1.8k</span></div><div class="dx-row f" data-f="guard.ts"><i style="background:var(--dblue)"></i>guard.ts<span class="w">~1.8k</span></div><div class="dx-row dir">▾ db<span class="w">~2.3k</span></div><div class="dx-row f"><i style="background:var(--dwarn)"></i>orders.sql<span class="w">~700</span></div><div class="dx-row f"><i style="background:var(--dwarn)"></i>schema.sql<span class="w">~1.6k</span></div><div class="dx-row dir">▾ engine<span class="w">~4.2k</span></div><div class="dx-row f sel" data-f="dispatch.ts"><i style="background:var(--dblue)"></i>dispatch.ts<span class="w">~4.2k</span></div><div class="dx-row dir">▾ session<span class="w">~1.1k</span></div><div class="dx-row f"><i style="background:var(--dblue)"></i>store.ts<span class="w">~1.1k</span></div><div class="dx-row dir">▾ utils<span class="w">~300</span></div><div class="dx-row f"><i style="background:var(--dblue)"></i>money.ts<span class="w">~300</span></div><div class="dx-row f" data-f="checkout.tsx"><i style="background:var(--dviolet)"></i>checkout.tsx<span class="w">~3.1k</span></div><div class="dx-row f"><i style="background:var(--dok)"></i>theme.css<span class="w">~2.6k</span></div></div></div><div class="dx-main"><div class="dx-tabbar"><span id="dxp">engine/dispatch.ts</span><span class="z">A- 100% A+ ⛶</span></div><div class="dx-fh"><i style="width:8px;height:8px;border-radius:50%;background:var(--dblue)"></i><b id="dxh">engine/dispatch.ts</b><span class="score" id="dxsc">health 74</span><span class="docs" id="dxdc">◆ docs</span></div><div class="dx-view on" id="dxv-code"><div class="dx-code" id="dxc"><span class="c">// engine/dispatch.ts — every action passes through here.</span>
 <span class="c">// Permission first, audit always, laws enforced at the gate.</span>
 <span class="k">import</span> { verifyToken, requireGrant } <span class="k">from</span> <span class="s">"../auth/guard"</span>;
 <span class="k">import</span> { withAudit } <span class="k">from</span> <span class="s">"./audit"</span>;
@@ -323,22 +379,47 @@ window.MUNINN = {
     <span class="k">const</span> skill = resolveSkill(call.action);
     <span class="k">return</span> skill(call.input, ctx);
   });
-}</div></div><div class="dx-rail">A̴<span>≡</span><span>▤</span><span>◉</span><span>§</span><span>▷</span></div></div><div class="dx-scripts"><span class="lbl">SCRIPTS REGISTRY</span><span>build · <b>none</b></span><span>dev / run · <b>detected (npm run dev)</b></span><span>test · <b>detected (npm test)</b></span><span style="margin-left:auto">install · <b>detected (npm ci)</b></span></div><div class="dm-dock"><div class="in">Message antiloki — from anywhere…</div><div style="display:flex;align-items:center;gap:6px"><span class="dm-mono" style="font-size:8.5px;color:var(--ddim)">⏎ sends · ⠀⣿ docks the chat</span><div class="dm-tabs"><span class="dm-tab"><i>✦</i>Chat</span><span class="dm-tab"><i>❯</i>Canvas</span><span class="dm-tab"><i>◈</i>Hub</span><span class="dm-tab on"><i>⟨⟩</i>Explorer</span><span class="dm-tab"><i>⚙</i>Harness</span></div></div></div></div></div>
+}</div></div><div class="dx-view" id="dxv-graph"><div class="dx-graph"><svg viewBox="0 0 640 300" aria-hidden="true"><line class="ed" x1="320" y1="150" x2="170" y2="70"/><line class="ed" x1="320" y1="150" x2="470" y2="70"/><line class="ed" x1="320" y1="150" x2="170" y2="230"/><line class="ed" x1="320" y1="150" x2="470" y2="230"/><line class="ed" x1="170" y1="70" x2="470" y2="70"/><line class="ed" x1="470" y1="70" x2="470" y2="230"/><line class="ed" x1="170" y1="230" x2="60" y2="150"/><line class="ed" x1="470" y1="230" x2="580" y2="150"/><rect class="nd hub" x="255" y="132" width="130" height="34" rx="8"/><text x="320" y="152" text-anchor="middle" fill="var(--dfg)">auth/guard.ts</text><rect class="nd" x="105" y="52" width="130" height="34" rx="8"/><text x="170" y="72" text-anchor="middle">engine/dispatch.ts</text><rect class="nd" x="405" y="52" width="130" height="34" rx="8"/><text x="470" y="72" text-anchor="middle">api/routes.ts</text><rect class="nd" x="105" y="212" width="130" height="34" rx="8"/><text x="170" y="232" text-anchor="middle">session/store.ts</text><rect class="nd" x="405" y="212" width="130" height="34" rx="8"/><text x="470" y="232" text-anchor="middle">api/client.ts</text><rect class="nd" x="0" y="132" width="120" height="34" rx="8"/><text x="60" y="152" text-anchor="middle">checkout.tsx</text><rect class="nd" x="520" y="132" width="120" height="34" rx="8"/><text x="580" y="152" text-anchor="middle">db/orders.sql</text><text class="lg" x="320" y="292" text-anchor="middle">the import graph · guard.ts is load-bearing — blast radius: 5 files + 2 test files</text></svg></div></div><div class="dx-view" id="dxv-diagram"><div class="dx-diag"><div class="colm"><div class="bx">verifyToken()<s>token → agent · throws AuthError</s></div><div class="bx">requireGrant()<s>agent × action → pass | PermissionError</s></div></div><span class="arr">──▶</span><div class="colm"><div class="bx" style="border-top-color:var(--dbrand)">dispatchAction()<s>the only public entry</s></div></div><span class="arr">──▶</span><div class="colm"><div class="bx" style="border-top-color:var(--dok)">withAudit()<s>wraps every mutation · sacred row</s></div><div class="bx">resolveSkill()<s>action name → skill fn</s></div></div><div style="width:100%;font-family:var(--mono);font-size:8.5px;color:var(--dmuted)">file-internal diagram · engine/dispatch.ts — drawn from the AST, no AI involved</div></div></div><div class="dx-view" id="dxv-docs"><div class="dx-docs"><h4>The auth subsystem</h4><div class="by">self-generated docs · rebuilt from the code on every change — it cannot drift</div><div class="toc"><span>overview</span><span>the one door</span><span>grants</span><span>audit</span><span>blast</span></div><p><b>Every request passes one door.</b> guard.ts verifies the token and checks the agent’s grants; dispatch.ts refuses to run any skill without both. There is no second path — the graph proves it.</p><p>The limiter (planned) mounts <b>in front of</b> the guard, never inside it.</p><pre>POST /api/*  ─▶  guard.verifyToken
+             ─▶  guard.requireGrant
+             ─▶  dispatch.withAudit( skill )</pre><p style="font-family:var(--mono);font-size:9px;color:var(--dmuted)">// generated from 10 files · 41 symbols · updated 2 minutes ago</p></div></div><div class="dx-ov dx-q" id="dxoq"><div class="oh">code quality — <b>engine/dispatch.ts</b><span class="x" data-x="dxoq">✕ esc</span></div><div class="ob"><div class="big"><span class="ring"><i>74</i></span><div class="verd"><b>Health 74 — sturdy core, thin tests.</b> The formula is counted, not vibed: every axis below is measured from the AST, the test map and git churn. The one real gap: the 3 entry functions run uncovered.</div></div><div class="dx-ax"><span class="n2">tests</span><span class="tr"><b style="width:24%;background:var(--dbad)"></b></span><span class="v2">24</span></div><div class="dx-ax"><span class="n2">coupling</span><span class="tr"><b style="width:61%;background:var(--dwarn)"></b></span><span class="v2">61</span></div><div class="dx-ax"><span class="n2">cohesion</span><span class="tr"><b style="width:82%;background:var(--dok)"></b></span><span class="v2">82</span></div><div class="dx-ax"><span class="n2">size</span><span class="tr"><b style="width:70%;background:var(--dok)"></b></span><span class="v2">70</span></div><div class="dx-ax"><span class="n2">churn</span><span class="tr"><b style="width:55%;background:var(--dwarn)"></b></span><span class="v2">55</span></div><div class="dx-ax"><span class="n2">defects</span><span class="tr"><b style="width:88%;background:var(--dok)"></b></span><span class="v2">88</span></div><div class="dx-law"><span class="sev">▪</span>SWALLOWED_ERROR — catch {} hides the audit failure<span class="w8">×1 · w8</span></div><div class="dx-law"><span class="sev" style="color:var(--dwarn)">▪</span>CONSOLE_LOG — stray debug output<span class="w8">×2 · w2</span></div><div class="dx-ins"><div class="it">the dossier — grounded claim by a named model</div><b>Why it scored low:</b> the file routes every mutation but its own tests only cover the happy path — tests 24 while 9 files depend on it. <b>The first move:</b> cover dispatchAction’s three branches (no-token · no-grant · audit-fail); estimated gain: tests 24→~70, health 74→~86.</div><div style="font-family:var(--mono);font-size:9px;color:var(--dmuted);margin-top:10px">↻ regenerate metrics — counted in 0.3s, no AI needed for the numbers</div></div></div><div class="dx-ov dx-fd" id="dxof"><div class="oh">◆ docs — <b id="dxofh">engine/dispatch.ts</b><span class="x" data-x="dxof">✕ esc</span></div><div class="ob"><p id="dxofl" style="font-size:11.5px;color:var(--ddim);line-height:1.6;margin-bottom:10px">Routes every action through permission checks, audit and the law hooks. <b style="color:var(--dfg)">Imported by 9 files</b> — a load-bearing contract: change the signature via a card, not by hand.</p><table><thead><tr><th>symbol</th><th>signature</th><th>what it does</th></tr></thead><tbody id="dxoft"><tr><td><b>dispatchAction</b></td><td>(call, ctx) → result</td><td>the only public entry — verify, grant-check, audit, run</td></tr><tr><td><b>resolveGrant</b></td><td>(agent, action) → bool</td><td>grant lookup, pure</td></tr><tr><td><b>withAudit</b></td><td>(ctx, call, fn) → result</td><td>wraps every mutation in a hash-chained row</td></tr><tr><td><b>resolveSkill</b></td><td>(action) → fn</td><td>action name → the skill that implements it</td></tr></tbody></table></div></div></div><div class="dx-rail"><span data-v="dxv-code" class="on" title="the code">≡</span><span data-v="dxv-graph" title="the import graph">◉</span><span data-v="dxv-diagram" title="file-internal diagram">▤</span><span data-v="dxv-docs" title="the self-generated docs">§</span><span title="run">▷</span></div></div><div class="dx-scripts"><span class="lbl">SCRIPTS REGISTRY</span><span>build · <b>none</b></span><span>dev / run · <b>detected (npm run dev)</b></span><span>test · <b>detected (npm test)</b></span><span style="margin-left:auto">install · <b>detected (npm ci)</b></span></div><div class="dm-dock"><div class="in">Message antiloki — from anywhere…</div><div style="display:flex;align-items:center;gap:6px"><span class="dm-mono" style="font-size:8.5px;color:var(--ddim)">⏎ sends · ⣿ docks the chat</span><div class="dm-tabs"><span class="dm-tab"><i>✦</i>Chat</span><span class="dm-tab"><i>❯</i>Canvas</span><span class="dm-tab"><i>◈</i>Hub</span><span class="dm-tab on"><i>⟨⟩</i>Explorer</span><span class="dm-tab"><i>⚙</i>Harness</span></div></div></div></div></div>
     <p class="dm-note">// scripted demo — the real one runs on your machine, on your repo. <a href="#waitlist" style="color:var(--accent)">get in line →</a></p>
   </div>
 </section>
 <script>
 (function(){
   var code={"dispatch.ts": "<span class=\"c\">// engine/dispatch.ts \u2014 every action passes through here.</span>\n<span class=\"c\">// Permission first, audit always, laws enforced at the gate.</span>\n<span class=\"k\">import</span> { verifyToken, requireGrant } <span class=\"k\">from</span> <span class=\"s\">\"../auth/guard\"</span>;\n<span class=\"k\">import</span> { withAudit } <span class=\"k\">from</span> <span class=\"s\">\"./audit\"</span>;\n\n<span class=\"k\">export async function</span> <span class=\"fg\">dispatchAction</span>(call, ctx) {\n  <span class=\"k\">const</span> agent = <span class=\"k\">await</span> verifyToken(ctx.token);\n  requireGrant(agent, call.action);           <span class=\"c\">// no grant, no run</span>\n  <span class=\"k\">return</span> withAudit(ctx, call, <span class=\"k\">async</span> () =&gt; {  <span class=\"c\">// every mutation leaves a row</span>\n    <span class=\"k\">const</span> skill = resolveSkill(call.action);\n    <span class=\"k\">return</span> skill(call.input, ctx);\n  });\n}", "guard.ts": "<span class=\"c\">// auth/guard.ts \u2014 the one door.</span>\n<span class=\"k\">export async function</span> <span class=\"fg\">verifyToken</span>(token) {\n  <span class=\"k\">const</span> claims = <span class=\"k\">await</span> jwt.verify(token, KEY);\n  <span class=\"k\">if</span> (!claims) <span class=\"k\">throw new</span> AuthError(<span class=\"s\">\"invalid token\"</span>);\n  <span class=\"k\">return</span> agentFrom(claims);\n}\n\n<span class=\"k\">export function</span> <span class=\"fg\">requireGrant</span>(agent, action) {\n  <span class=\"k\">if</span> (!agent.grants.includes(action))\n    <span class=\"k\">throw new</span> PermissionError(action);  <span class=\"c\">// 14 files depend on this contract</span>\n}", "checkout.tsx": "<span class=\"c\">// checkout.tsx \u2014 cart, payment intent, confirmation.</span>\n<span class=\"k\">export function</span> <span class=\"fg\">CheckoutPage</span>() {\n  <span class=\"k\">const</span> intent = useIntent();\n  <span class=\"k\">return</span> (\n    &lt;<span class=\"fg\">CartSummary</span> total={formatCents(intent.total)}&gt;\n      &lt;<span class=\"fg\">PayButton</span> onPay={() =&gt; api.post(<span class=\"s\">\"/api/login\"</span>)} /&gt;\n    &lt;/<span class=\"fg\">CartSummary</span>&gt;\n  );\n}"};
+  var docs={"dispatch.ts": {"path": "engine/dispatch.ts", "lede": "Routes every action through permission checks, audit and the law hooks. <b style=\"color:var(--dfg)\">Imported by 9 files</b> \u2014 a load-bearing contract: change the signature via a card, not by hand.", "rows": "<tr><td><b>dispatchAction</b></td><td>(call, ctx) \u2192 result</td><td>the only public entry \u2014 verify, grant-check, audit, run</td></tr><tr><td><b>resolveGrant</b></td><td>(agent, action) \u2192 bool</td><td>grant lookup, pure</td></tr><tr><td><b>withAudit</b></td><td>(ctx, call, fn) \u2192 result</td><td>wraps every mutation in a hash-chained row</td></tr><tr><td><b>resolveSkill</b></td><td>(action) \u2192 fn</td><td>action name \u2192 the skill that implements it</td></tr>"}, "guard.ts": {"path": "auth/guard.ts", "lede": "The one door: token verification and grant checking as <b style=\"color:var(--dfg)\">two separate refusals</b>. Every request converges here \u2014 the import graph proves there is no side door.", "rows": "<tr><td><b>verifyToken</b></td><td>(token) \u2192 agent</td><td>JWT verify \u00b7 throws AuthError before grants are touched</td></tr><tr><td><b>requireGrant</b></td><td>(agent, action) \u2192 void</td><td>pass or PermissionError \u2014 14 call-sites depend on this</td></tr><tr><td><b>agentFrom</b></td><td>(claims) \u2192 agent</td><td>claims \u2192 agent record, pure</td></tr>"}, "checkout.tsx": {"path": "checkout.tsx", "lede": "The cart, the payment intent and the confirmation in one page component. Money renders through <b style=\"color:var(--dfg)\">formatCents</b> \u2014 never raw floats.", "rows": "<tr><td><b>CheckoutPage</b></td><td>() \u2192 JSX</td><td>cart summary + pay button \u00b7 posts /api/login</td></tr><tr><td><b>useIntent</b></td><td>() \u2192 intent</td><td>payment-intent hook, cached per cart</td></tr>"}};
+  var cur='dispatch.ts';
   var c=document.getElementById('dxc'),h=document.getElementById('dxh'),p=document.getElementById('dxp');
+  function view(id){
+    document.querySelectorAll('.dx-view').forEach(function(v){v.classList.remove('on');});
+    document.getElementById(id).classList.add('on');
+    document.querySelectorAll('.dx-rail span[data-v]').forEach(function(b){b.classList.toggle('on',b.getAttribute('data-v')===id);});
+  }
+  document.querySelectorAll('.dx-rail span[data-v]').forEach(function(b){
+    b.addEventListener('click',function(){view(b.getAttribute('data-v'));});
+  });
   document.querySelectorAll('.dx-row.f[data-f]').forEach(function(r){
     r.addEventListener('click',function(){
       document.querySelectorAll('.dx-row.f').forEach(function(x){x.classList.remove('sel');});
       r.classList.add('sel');
       var f=r.getAttribute('data-f');
+      cur=f;
       var full=(f==='guard.ts'?'auth/':f==='checkout.tsx'?'':'engine/')+f;
       c.innerHTML=code[f]||'';h.textContent=full;p.textContent=full;
+      view('dxv-code');
     });
+  });
+  document.getElementById('dxsc').addEventListener('click',function(){document.getElementById('dxoq').classList.add('on');});
+  document.getElementById('dxdc').addEventListener('click',function(){
+    var d=docs[cur]||docs['dispatch.ts'];
+    document.getElementById('dxofh').textContent=d.path;
+    document.getElementById('dxofl').innerHTML=d.lede;
+    document.getElementById('dxoft').innerHTML=d.rows;
+    document.getElementById('dxof').classList.add('on');
+  });
+  document.querySelectorAll('.dx-ov .x').forEach(function(x){
+    x.addEventListener('click',function(){document.getElementById(x.getAttribute('data-x')).classList.remove('on');});
   });
 })();
 </script>
