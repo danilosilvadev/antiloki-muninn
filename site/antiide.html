@@ -1204,5 +1204,100 @@ L12  }</div><div class="mg"><div class="who" style="color:var(--dwarn)">📊 str
     });
   })();
 </script>
+<!-- THE MOBILE STAGE — launcher cards + the fullscreen landscape experience -->
+<style>
+  .mob-launch{display:none;flex-direction:column;align-items:center;gap:10px;margin-top:26px;border:1px solid var(--line);border-radius:16px;background:var(--panel);padding:26px 18px;text-align:center}
+  .mob-launch .mi{font-size:28px}
+  .mob-launch b{font-size:16px;color:var(--text)}
+  .mob-launch p{font-family:var(--mono);font-size:10.5px;color:var(--muted-2);line-height:1.6;max-width:34ch;margin:0}
+  .mob-launch button{font-family:var(--mono);font-size:13px;border:none;border-radius:10px;background:var(--accent);color:#14100c;font-weight:700;padding:12px 22px;margin-top:4px}
+  .mob-ov{position:fixed;inset:0;z-index:2000;background:#0b0908}
+  .mob-stage{position:absolute;top:0;left:0;overflow:auto;-webkit-overflow-scrolling:touch}
+  .mob-stage .dm{margin:0 !important;max-width:none !important;border-radius:0;box-shadow:none;border-left:none;border-right:none}
+  .mob-x{position:fixed;top:10px;left:10px;z-index:2001;width:38px;height:38px;border-radius:50%;border:1px solid var(--line);background:rgba(20,16,12,.85);color:var(--text);font-size:15px;display:grid;place-items:center}
+  @media(max-width:820px){
+    #demo .dm,#controlroom .dm,#freechat .dm{display:none}
+    #demo .anno-cm,#demo .anno-svg,#controlroom .anno-cm,#controlroom .anno-svg,#freechat .anno-cm,#freechat .anno-svg{display:none !important}
+    #demo .dm-note,#controlroom .dm-note,#freechat .dm-note{margin-top:14px !important}
+    .mob-launch{display:flex}
+  }
+</style>
+<script>
+(function(){
+  var CARDS={
+    '#demo':['🖥','This demo wants a bigger stage','the real screen, boxed — it opens fullscreen and turns sideways so you get the whole cockpit'],
+    '#controlroom':['⚙','The control room, full width','cost caps, the model center and one-click tagging — sideways, like it deserves'],
+    '#freechat':['✦','The free Chat, live','widgets, citations and the composer — open it big and try the suggestion']};
+  var ov=null,ph=null,curDm=null,relayout=null;
+  function layout(dm,stage,inner){
+    var W=window.innerWidth,H=window.innerHeight,portrait=H>W;
+    if(portrait){
+      stage.style.width=H+'px';stage.style.height=W+'px';
+      stage.style.transform='rotate(90deg) translateY(-100%)';
+      stage.style.transformOrigin='top left';
+    }else{
+      stage.style.width=W+'px';stage.style.height=H+'px';
+      stage.style.transform='none';
+    }
+    var availW=portrait?H:W;
+    var z=Math.min(1,availW/942);
+    inner.style.zoom=z;
+    if(!('zoom' in inner.style)||getComputedStyle(inner).zoom===undefined){
+      inner.style.transform='scale('+z+')';inner.style.transformOrigin='top left';
+    }
+    stage.scrollTop=0;stage.scrollLeft=0;
+  }
+  function open(dm){
+    curDm=dm;
+    ph=document.createComment('dm-home');
+    dm.parentNode.insertBefore(ph,dm);
+    ov=document.createElement('div');ov.className='mob-ov';
+    var stage=document.createElement('div');stage.className='mob-stage';
+    var inner=document.createElement('div');inner.style.width='940px';inner.style.position='relative';
+    var x=document.createElement('button');x.className='mob-x';x.textContent='✕';
+    stage.appendChild(inner);ov.appendChild(stage);ov.appendChild(x);
+    document.body.appendChild(ov);
+    inner.appendChild(dm);
+    dm.style.display='block';
+    document.body.style.overflow='hidden';
+    x.addEventListener('click',close);
+    if(ov.requestFullscreen){
+      ov.requestFullscreen().then(function(){
+        if(screen.orientation&&screen.orientation.lock)screen.orientation.lock('landscape').catch(function(){});
+      }).catch(function(){});
+    }
+    relayout=function(){if(ov)layout(dm,stage,inner);};
+    window.addEventListener('resize',relayout);
+    window.addEventListener('orientationchange',relayout);
+    layout(dm,stage,inner);
+  }
+  function close(){
+    if(!ov)return;
+    try{if(document.fullscreenElement)document.exitFullscreen();}catch(e){}
+    try{if(screen.orientation&&screen.orientation.unlock)screen.orientation.unlock();}catch(e){}
+    window.removeEventListener('resize',relayout);
+    window.removeEventListener('orientationchange',relayout);
+    curDm.style.display='';
+    ph.parentNode.insertBefore(curDm,ph);
+    ph.parentNode.removeChild(ph);
+    document.body.removeChild(ov);
+    document.body.style.overflow='';
+    ov=null;ph=null;curDm=null;
+  }
+  Object.keys(CARDS).forEach(function(sel){
+    var sec=document.querySelector(sel);if(!sec)return;
+    var dm=sec.querySelector('.dm');if(!dm)return;
+    var c=CARDS[sel];
+    var card=document.createElement('div');
+    card.className='mob-launch';
+    card.innerHTML='<span class="mi">'+c[0]+'</span><b>'+c[1]+'</b><p>'+c[2]+'</p>'
+      +'<button>▶ Open the experience</button>'
+      +'<p style="opacity:.7">turns sideways for a bigger screen · swipe to explore · ✕ to come back</p>';
+    dm.parentNode.insertBefore(card,dm);
+    card.querySelector('button').addEventListener('click',function(){open(dm);});
+  });
+})();
+</script>
+<!-- /MOBILE STAGE -->
 </body>
 </html>
