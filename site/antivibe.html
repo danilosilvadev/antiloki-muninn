@@ -357,6 +357,7 @@ window.MUNINN = {
     
     
     
+    
     <!-- THE ANNOTATIONS — the numbered tour around the browser, arrows live-anchored -->
 <style>
   #demo .wrap{position:relative}
@@ -365,6 +366,11 @@ window.MUNINN = {
   #demo .anno-svg{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:4;overflow:visible}
   #demo .anno-cm{position:absolute;z-index:5;font-family:'Segoe Print','Comic Sans MS',cursive;font-size:12.5px;line-height:1.45;width:158px;pointer-events:none;opacity:.92}
   #demo .anno-cm.tp,#demo .anno-cm.bt{width:260px}
+  #demo .dm{position:relative}
+  .anno-dots{position:absolute;inset:0;pointer-events:none;z-index:80;display:none}
+  .anno-dot{position:absolute;width:17px;height:17px;border-radius:50%;border:1.5px solid rgba(0,0,0,.45);color:#14100c;font-family:var(--mono);font-size:9.5px;font-weight:700;display:grid;place-items:center;pointer-events:auto;cursor:pointer;box-shadow:0 0 0 2px rgba(0,0,0,.25),0 2px 6px rgba(0,0,0,.4)}
+  .anno-pop{position:absolute;z-index:90;width:min(230px,64%);background:oklch(0.2 0.008 55);border:1.5px solid;border-radius:10px;padding:9px 11px 9px;pointer-events:auto;font-family:'Segoe Print','Comic Sans MS',cursive;font-size:11.5px;line-height:1.5;box-shadow:0 8px 26px rgba(0,0,0,.55)}
+  .anno-pop .px{position:absolute;top:4px;right:6px;background:transparent;border:none;color:inherit;font-size:12px;cursor:pointer;font-family:var(--mono);padding:2px 4px}
 </style>
 <svg class="anno-svg" aria-hidden="true"></svg><div class="anno-cm tp" data-side="top" data-dx="320" data-anchor=".dv-sess[data-open]" style="color:var(--red)" aria-hidden="true">① click this session — the board opens with the panes already working</div><div class="anno-cm " data-side="right" data-dy="230" data-anchor="#dbvp" style="color:var(--accent)" aria-hidden="true">② you're on a real canvas — drag the dots to pan · ctrl+wheel zooms</div><div class="anno-cm " data-side="left" data-dy="120" data-anchor="#bp1" style="color:var(--amber)" aria-hidden="true">③ each pane is a scoped agent in its own ⎇ worktree — the $ ticks per turn</div><div class="anno-cm " data-side="right" data-dy="430" data-anchor="#gatepane" style="color:var(--red)" aria-hidden="true">④ the ✓ gate holds the broken merge red — then lets it through green</div><div class="anno-cm " data-side="left" data-dy="380" data-anchor=".db-note" style="color:var(--amber)" aria-hidden="true">⑤ hand-written notes live ON the canvas — arrow and all, like this one</div><div class="anno-cm bt" data-side="bottom" data-dx="r" data-anchor=".dm-dock" style="color:var(--green)" aria-hidden="true">⑥ type the next goal — the concierge prepares the whole session</div><div class="anno-cm " data-side="left" data-dy="150" data-anchor=".dv-stat" style="color:var(--amber)" aria-hidden="true">the fleet meters — sessions, agents, AI turns, spend to the cent</div><div class="anno-cm " data-side="right" data-dy="150" data-anchor=".dv-sec" style="color:var(--accent)" aria-hidden="true">sessions save WHOLE — the board, the panes, the notes; reopen anytime</div><div class="anno-cm " data-side="right" data-dy="330" data-anchor=".dv-cards .dv-sess:nth-child(2)" style="color:var(--green)" aria-hidden="true">missions run in parallel — checkout revamp is live right now too</div>
 <script>
@@ -418,6 +424,62 @@ window.MUNINN = {
       g.appendChild(p1);g.appendChild(p2);svg.appendChild(g);
     });
   }
+  // ── the DOTS layer: on phones (the fullscreen stage) and slim layouts the
+  // comments become small colored circles pinned to their anchors; tap opens
+  // the note, ✕ closes. Lives inside .dm so it rides into the mobile stage.
+  var dots=document.createElement('div');dots.className='anno-dots';dm.appendChild(dots);
+  var pop=document.createElement('div');pop.className='anno-pop';pop.style.display='none';dm.appendChild(pop);
+  var pbtn=document.createElement('button');pbtn.className='px';pbtn.textContent='✕';
+  var ptxt=document.createElement('div');
+  pop.appendChild(pbtn);pop.appendChild(ptxt);
+  pbtn.addEventListener('click',function(e){e.stopPropagation();pop.style.display='none';});
+  var dotEls=cms.map(function(c,i){
+    var d=document.createElement('button');
+    d.className='anno-dot';
+    d.style.background=getComputedStyle(c).color;
+    d.textContent=(i+1);
+    d.addEventListener('click',function(e){
+      e.stopPropagation();
+      var col=getComputedStyle(c).color;
+      pop.style.borderColor=col;pop.style.color=col;
+      ptxt.innerHTML=c.innerHTML;
+      pop.style.display='block';
+      var dr=dm.getBoundingClientRect(),z=dr.width/dm.offsetWidth||1;
+      var x=parseFloat(d.style.left),y=parseFloat(d.style.top);
+      var pw=Math.min(230,dm.offsetWidth*0.64);
+      pop.style.left=Math.max(8,Math.min(dm.offsetWidth-pw-8,x-pw/2))+'px';
+      pop.style.top=(y>dm.offsetHeight/2?y-12-pop.offsetHeight:y+24)+'px';
+      pop.style.top=Math.max(8,Math.min(dm.offsetHeight-40,parseFloat(pop.style.top)))+'px';
+    });
+    dots.appendChild(d);
+    return d;
+  });
+  function dotTick(){
+    var inStage=!!dm.closest('.mob-stage');
+    var lane2=(wrap.clientWidth-dm.offsetWidth)/2+wrap.getBoundingClientRect().left;
+    var anyDots=false;
+    var dr=dm.getBoundingClientRect();
+    cms.forEach(function(c,i){
+      var side=c.getAttribute('data-side');
+      var hiddenInline=(side==='left'||side==='right')&&lane2<110;
+      var wantDot=inStage||(hiddenInline&&!inStage);
+      var a=null;
+      c.getAttribute('data-anchor').split(',').some(function(q){var el=dm.querySelector(q.trim())||document.querySelector(q.trim());if(el&&el.offsetParent&&dm.contains(el)){a=el;return true;}return false;});
+      var d=dotEls[i];
+      if(!wantDot||!a){d.style.display='none';return;}
+      anyDots=true;
+      var ar=a.getBoundingClientRect();
+      var z=dr.width/dm.offsetWidth||1;
+      var x=(ar.left+ar.width/2-dr.left)/z,y=(ar.top+Math.min(ar.height/2,14)-dr.top)/z;
+      x=Math.max(10,Math.min(dm.offsetWidth-14,x));
+      y=Math.max(10,Math.min(dm.offsetHeight-14,y));
+      d.style.display='grid';d.style.left=(x-8)+'px';d.style.top=(y-8)+'px';
+    });
+    dots.style.display=anyDots?'block':'none';
+    if(!anyDots)pop.style.display='none';
+  }
+  setInterval(dotTick,900);
+  dotTick();
   window.addEventListener('resize',layout);
   window.addEventListener('load',layout);
   setInterval(layout,900);
@@ -612,6 +674,7 @@ window.MUNINN = {
     
     
     
+    
     <!-- THE ANNOTATIONS — the control-room tour -->
 <style>
   #controlroom .wrap{position:relative}
@@ -620,6 +683,11 @@ window.MUNINN = {
   #controlroom .anno-svg{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:4;overflow:visible}
   #controlroom .anno-cm{position:absolute;z-index:5;font-family:'Segoe Print','Comic Sans MS',cursive;font-size:12.5px;line-height:1.45;width:158px;pointer-events:none;opacity:.92}
   #controlroom .anno-cm.tp,#controlroom .anno-cm.bt{width:260px}
+  #controlroom .dm{position:relative}
+  .anno-dots{position:absolute;inset:0;pointer-events:none;z-index:80;display:none}
+  .anno-dot{position:absolute;width:17px;height:17px;border-radius:50%;border:1.5px solid rgba(0,0,0,.45);color:#14100c;font-family:var(--mono);font-size:9.5px;font-weight:700;display:grid;place-items:center;pointer-events:auto;cursor:pointer;box-shadow:0 0 0 2px rgba(0,0,0,.25),0 2px 6px rgba(0,0,0,.4)}
+  .anno-pop{position:absolute;z-index:90;width:min(230px,64%);background:oklch(0.2 0.008 55);border:1.5px solid;border-radius:10px;padding:9px 11px 9px;pointer-events:auto;font-family:'Segoe Print','Comic Sans MS',cursive;font-size:11.5px;line-height:1.5;box-shadow:0 8px 26px rgba(0,0,0,.55)}
+  .anno-pop .px{position:absolute;top:4px;right:6px;background:transparent;border:none;color:inherit;font-size:12px;cursor:pointer;font-family:var(--mono);padding:2px 4px}
 </style>
 <svg class="anno-svg" aria-hidden="true"></svg><div class="anno-cm tp" data-side="top" data-dx="20" data-anchor=".cr-switch span[data-cv='crv-tag']" style="color:var(--red)" aria-hidden="true">① flip between the two rooms - COST holds the money, TAGGING teaches the router</div><div class="anno-cm " data-side="left" data-dy="150" data-anchor=".co-caps" style="color:var(--amber)" aria-hidden="true">② the caps ENFORCE - a tier at its daily line refuses new calls; cached hits stay free</div><div class="anno-cm " data-side="right" data-dy="150" data-anchor=".co-live" style="color:var(--red)" aria-hidden="true">③ OpenRouter's OWN numbers - live account truth, never reconstructed locally</div><div class="anno-cm " data-side="right" data-dy="330" data-anchor=".co-mc" style="color:var(--accent)" aria-hidden="true">④ the model center - every call draws from your slot bank; identical work trains the router</div><div class="anno-cm " data-side="left" data-dy="330" data-anchor=".co-big" style="color:var(--green)" aria-hidden="true">⑤ the day line - spend vs cap, rising or falling, to the cent</div><div class="anno-cm " data-side="left" data-dy="120" data-anchor=".cr-src.hu" style="color:var(--red)" aria-hidden="true">⑥ your verdict is trust 1.0 - it OUTRANKS the AI judge, always</div><div class="anno-cm " data-side="right" data-dy="120" data-anchor=".cr-flag" style="color:var(--amber)" aria-hidden="true">⑦ the case file shows what the gate demanded and what came back - flags included</div><div class="anno-cm " data-side="right" data-dy="330" data-anchor=".cr-v.ok2" style="color:var(--green)" aria-hidden="true">⑧ one click tags it - the casting ledger shifts, the router casts better next call</div><div class="anno-cm " data-side="left" data-dy="330" data-anchor=".cr-anchor-guard" style="color:var(--accent)" aria-hidden="true">⑨ the AI verdict stays hidden until you tag - the anchoring guard</div><div class="anno-cm bt" data-side="bottom" data-dx="r" data-anchor=".cr-reasons .in2" style="color:var(--green)" aria-hidden="true">⑩ a reason rides the tag - it becomes training signal, not a lost comment</div>
 <script>
@@ -673,6 +741,62 @@ window.MUNINN = {
       g.appendChild(p1);g.appendChild(p2);svg.appendChild(g);
     });
   }
+  // ── the DOTS layer: on phones (the fullscreen stage) and slim layouts the
+  // comments become small colored circles pinned to their anchors; tap opens
+  // the note, ✕ closes. Lives inside .dm so it rides into the mobile stage.
+  var dots=document.createElement('div');dots.className='anno-dots';dm.appendChild(dots);
+  var pop=document.createElement('div');pop.className='anno-pop';pop.style.display='none';dm.appendChild(pop);
+  var pbtn=document.createElement('button');pbtn.className='px';pbtn.textContent='✕';
+  var ptxt=document.createElement('div');
+  pop.appendChild(pbtn);pop.appendChild(ptxt);
+  pbtn.addEventListener('click',function(e){e.stopPropagation();pop.style.display='none';});
+  var dotEls=cms.map(function(c,i){
+    var d=document.createElement('button');
+    d.className='anno-dot';
+    d.style.background=getComputedStyle(c).color;
+    d.textContent=(i+1);
+    d.addEventListener('click',function(e){
+      e.stopPropagation();
+      var col=getComputedStyle(c).color;
+      pop.style.borderColor=col;pop.style.color=col;
+      ptxt.innerHTML=c.innerHTML;
+      pop.style.display='block';
+      var dr=dm.getBoundingClientRect(),z=dr.width/dm.offsetWidth||1;
+      var x=parseFloat(d.style.left),y=parseFloat(d.style.top);
+      var pw=Math.min(230,dm.offsetWidth*0.64);
+      pop.style.left=Math.max(8,Math.min(dm.offsetWidth-pw-8,x-pw/2))+'px';
+      pop.style.top=(y>dm.offsetHeight/2?y-12-pop.offsetHeight:y+24)+'px';
+      pop.style.top=Math.max(8,Math.min(dm.offsetHeight-40,parseFloat(pop.style.top)))+'px';
+    });
+    dots.appendChild(d);
+    return d;
+  });
+  function dotTick(){
+    var inStage=!!dm.closest('.mob-stage');
+    var lane2=(wrap.clientWidth-dm.offsetWidth)/2+wrap.getBoundingClientRect().left;
+    var anyDots=false;
+    var dr=dm.getBoundingClientRect();
+    cms.forEach(function(c,i){
+      var side=c.getAttribute('data-side');
+      var hiddenInline=(side==='left'||side==='right')&&lane2<110;
+      var wantDot=inStage||(hiddenInline&&!inStage);
+      var a=null;
+      c.getAttribute('data-anchor').split(',').some(function(q){var el=dm.querySelector(q.trim())||document.querySelector(q.trim());if(el&&el.offsetParent&&dm.contains(el)){a=el;return true;}return false;});
+      var d=dotEls[i];
+      if(!wantDot||!a){d.style.display='none';return;}
+      anyDots=true;
+      var ar=a.getBoundingClientRect();
+      var z=dr.width/dm.offsetWidth||1;
+      var x=(ar.left+ar.width/2-dr.left)/z,y=(ar.top+Math.min(ar.height/2,14)-dr.top)/z;
+      x=Math.max(10,Math.min(dm.offsetWidth-14,x));
+      y=Math.max(10,Math.min(dm.offsetHeight-14,y));
+      d.style.display='grid';d.style.left=(x-8)+'px';d.style.top=(y-8)+'px';
+    });
+    dots.style.display=anyDots?'block':'none';
+    if(!anyDots)pop.style.display='none';
+  }
+  setInterval(dotTick,900);
+  dotTick();
   window.addEventListener('resize',layout);
   window.addEventListener('load',layout);
   setInterval(layout,900);
@@ -796,6 +920,7 @@ window.MUNINN = {
       </div></div>
     </div></div>
     
+    
     <!-- THE ANNOTATIONS — the free-chat tour -->
 <style>
   #freechat .wrap{position:relative}
@@ -804,6 +929,11 @@ window.MUNINN = {
   #freechat .anno-svg{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:4;overflow:visible}
   #freechat .anno-cm{position:absolute;z-index:5;font-family:'Segoe Print','Comic Sans MS',cursive;font-size:12.5px;line-height:1.45;width:158px;pointer-events:none;opacity:.92}
   #freechat .anno-cm.tp,#freechat .anno-cm.bt{width:260px}
+  #freechat .dm{position:relative}
+  .anno-dots{position:absolute;inset:0;pointer-events:none;z-index:80;display:none}
+  .anno-dot{position:absolute;width:17px;height:17px;border-radius:50%;border:1.5px solid rgba(0,0,0,.45);color:#14100c;font-family:var(--mono);font-size:9.5px;font-weight:700;display:grid;place-items:center;pointer-events:auto;cursor:pointer;box-shadow:0 0 0 2px rgba(0,0,0,.25),0 2px 6px rgba(0,0,0,.4)}
+  .anno-pop{position:absolute;z-index:90;width:min(230px,64%);background:oklch(0.2 0.008 55);border:1.5px solid;border-radius:10px;padding:9px 11px 9px;pointer-events:auto;font-family:'Segoe Print','Comic Sans MS',cursive;font-size:11.5px;line-height:1.5;box-shadow:0 8px 26px rgba(0,0,0,.55)}
+  .anno-pop .px{position:absolute;top:4px;right:6px;background:transparent;border:none;color:inherit;font-size:12px;cursor:pointer;font-family:var(--mono);padding:2px 4px}
 </style>
 <svg class="anno-svg" aria-hidden="true"></svg><div class="anno-cm " data-side="right" data-dy="170" data-anchor=".fc-wid" style="color:var(--accent)" aria-hidden="true">widgets in the answers - measured from the atlas, $0, no model call</div><div class="anno-cm " data-side="left" data-dy="150" data-anchor=".fc-side" style="color:var(--amber)" aria-hidden="true">every chat is a session - the history stays yours, on disk</div><div class="anno-cm tp" data-side="top" data-dx="r" data-anchor=".fc-comp .mdl" style="color:var(--red)" aria-hidden="true">auto model - the router casts the cheapest model that can win; your tags trained it</div><div class="anno-cm " data-side="right" data-dy="360" data-anchor=".fc-acts" style="color:var(--green)" aria-hidden="true">Propose files a card - Add to notebook sends it to the hub; the chat feeds the Cures</div><div class="anno-cm bt" data-side="bottom" data-dx="r" data-anchor=".fc-sug" style="color:var(--green)" aria-hidden="true">try the suggestion - the blast-radius answer is deterministic, $0</div>
 <script>
@@ -857,6 +987,62 @@ window.MUNINN = {
       g.appendChild(p1);g.appendChild(p2);svg.appendChild(g);
     });
   }
+  // ── the DOTS layer: on phones (the fullscreen stage) and slim layouts the
+  // comments become small colored circles pinned to their anchors; tap opens
+  // the note, ✕ closes. Lives inside .dm so it rides into the mobile stage.
+  var dots=document.createElement('div');dots.className='anno-dots';dm.appendChild(dots);
+  var pop=document.createElement('div');pop.className='anno-pop';pop.style.display='none';dm.appendChild(pop);
+  var pbtn=document.createElement('button');pbtn.className='px';pbtn.textContent='✕';
+  var ptxt=document.createElement('div');
+  pop.appendChild(pbtn);pop.appendChild(ptxt);
+  pbtn.addEventListener('click',function(e){e.stopPropagation();pop.style.display='none';});
+  var dotEls=cms.map(function(c,i){
+    var d=document.createElement('button');
+    d.className='anno-dot';
+    d.style.background=getComputedStyle(c).color;
+    d.textContent=(i+1);
+    d.addEventListener('click',function(e){
+      e.stopPropagation();
+      var col=getComputedStyle(c).color;
+      pop.style.borderColor=col;pop.style.color=col;
+      ptxt.innerHTML=c.innerHTML;
+      pop.style.display='block';
+      var dr=dm.getBoundingClientRect(),z=dr.width/dm.offsetWidth||1;
+      var x=parseFloat(d.style.left),y=parseFloat(d.style.top);
+      var pw=Math.min(230,dm.offsetWidth*0.64);
+      pop.style.left=Math.max(8,Math.min(dm.offsetWidth-pw-8,x-pw/2))+'px';
+      pop.style.top=(y>dm.offsetHeight/2?y-12-pop.offsetHeight:y+24)+'px';
+      pop.style.top=Math.max(8,Math.min(dm.offsetHeight-40,parseFloat(pop.style.top)))+'px';
+    });
+    dots.appendChild(d);
+    return d;
+  });
+  function dotTick(){
+    var inStage=!!dm.closest('.mob-stage');
+    var lane2=(wrap.clientWidth-dm.offsetWidth)/2+wrap.getBoundingClientRect().left;
+    var anyDots=false;
+    var dr=dm.getBoundingClientRect();
+    cms.forEach(function(c,i){
+      var side=c.getAttribute('data-side');
+      var hiddenInline=(side==='left'||side==='right')&&lane2<110;
+      var wantDot=inStage||(hiddenInline&&!inStage);
+      var a=null;
+      c.getAttribute('data-anchor').split(',').some(function(q){var el=dm.querySelector(q.trim())||document.querySelector(q.trim());if(el&&el.offsetParent&&dm.contains(el)){a=el;return true;}return false;});
+      var d=dotEls[i];
+      if(!wantDot||!a){d.style.display='none';return;}
+      anyDots=true;
+      var ar=a.getBoundingClientRect();
+      var z=dr.width/dm.offsetWidth||1;
+      var x=(ar.left+ar.width/2-dr.left)/z,y=(ar.top+Math.min(ar.height/2,14)-dr.top)/z;
+      x=Math.max(10,Math.min(dm.offsetWidth-14,x));
+      y=Math.max(10,Math.min(dm.offsetHeight-14,y));
+      d.style.display='grid';d.style.left=(x-8)+'px';d.style.top=(y-8)+'px';
+    });
+    dots.style.display=anyDots?'block':'none';
+    if(!anyDots)pop.style.display='none';
+  }
+  setInterval(dotTick,900);
+  dotTick();
   window.addEventListener('resize',layout);
   window.addEventListener('load',layout);
   setInterval(layout,900);
@@ -1121,6 +1307,7 @@ window.MUNINN = {
     });
   })();
 </script>
+
 <!-- THE MOBILE STAGE — launcher cards + the fullscreen landscape experience -->
 <style>
   .mob-launch{display:none;flex-direction:column;align-items:center;gap:10px;margin-top:26px;border:1px solid var(--line);border-radius:16px;background:var(--panel);padding:26px 18px;text-align:center}
@@ -1132,6 +1319,9 @@ window.MUNINN = {
   .mob-stage{position:absolute;top:0;left:0;overflow:auto;-webkit-overflow-scrolling:touch}
   .mob-stage .dm{margin:0 !important;max-width:none !important;border-radius:0;box-shadow:none;border-left:none;border-right:none}
   .mob-x{position:fixed;top:10px;left:10px;z-index:2001;width:38px;height:38px;border-radius:50%;border:1px solid var(--line);background:rgba(20,16,12,.85);color:var(--text);font-size:15px;display:grid;place-items:center}
+  .mob-hint2{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);z-index:2002;display:flex;flex-direction:column;align-items:center;gap:10px;background:rgba(14,11,9,.72);border:1px solid rgba(255,255,255,.14);border-radius:18px;padding:22px 26px;pointer-events:none;backdrop-filter:blur(4px);animation:mobBlink 3.2s ease forwards}
+  .mob-hint2 span{font-family:var(--mono);font-size:13px;color:rgba(255,255,255,.92);text-align:center;line-height:1.5}
+  @keyframes mobBlink{0%{opacity:0}12%{opacity:1}32%{opacity:.15}48%{opacity:1}66%{opacity:.15}82%{opacity:1}100%{opacity:0}}
   @media(max-width:820px){
     #demo .dm,#controlroom .dm,#freechat .dm{display:none}
     #demo .anno-cm,#demo .anno-svg,#controlroom .anno-cm,#controlroom .anno-svg,#freechat .anno-cm,#freechat .anno-svg{display:none !important}
@@ -1182,6 +1372,18 @@ window.MUNINN = {
       ov.requestFullscreen().then(function(){
         if(screen.orientation&&screen.orientation.lock)screen.orientation.lock('landscape').catch(function(){});
       }).catch(function(){});
+    }
+    if(window.innerHeight>window.innerWidth){
+      var h=document.createElement('div');h.className='mob-hint2';
+      h.innerHTML='<svg width="86" height="64" viewBox="0 0 86 64" style="opacity:.8">'
+        +'<rect x="30" y="10" width="26" height="44" rx="5" fill="none" stroke="rgba(255,255,255,.85)" stroke-width="2"/>'
+        +'<path d="M 14 46 Q 6 26 22 14" fill="none" stroke="rgba(255,190,90,.85)" stroke-width="2.6" stroke-linecap="round"/>'
+        +'<path d="M 16 18 L 22 13 L 24 21" fill="none" stroke="rgba(255,190,90,.85)" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/>'
+        +'<path d="M 72 18 Q 80 38 64 50" fill="none" stroke="rgba(255,190,90,.85)" stroke-width="2.6" stroke-linecap="round"/>'
+        +'<path d="M 70 46 L 64 51 L 62 43" fill="none" stroke="rgba(255,190,90,.85)" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/>'
+        +'</svg><span>turn your phone sideways<br>for the full screen</span>';
+      ov.appendChild(h);
+      setTimeout(function(){if(h.parentNode)h.parentNode.removeChild(h);},3400);
     }
     relayout=function(){if(ov)layout(dm,stage,inner);};
     window.addEventListener('resize',relayout);
