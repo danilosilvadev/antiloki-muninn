@@ -1766,6 +1766,11 @@ window.MUNINN = {
   .coachbar .cnav button:hover{border-color:#fff;color:#fff}
   .coach-blink{animation:coachBlink 1.05s ease-in-out infinite}
   @keyframes coachBlink{50%{box-shadow:0 0 0 2px var(--accent),0 0 14px color-mix(in oklch,var(--accent) 55%,transparent)}}
+  .dm-reveal{position:absolute;inset:0;z-index:45;display:grid;place-items:center;background:rgba(10,8,6,.5);backdrop-filter:blur(2.5px);-webkit-backdrop-filter:blur(2.5px);border-radius:inherit;cursor:pointer;text-align:center}
+  .dm-reveal .rv{display:inline-flex;align-items:center;gap:9px;background:color-mix(in oklch,var(--accent) 20%,rgba(0,0,0,.45));border:1.6px solid var(--accent);color:var(--text);font-family:var(--mono);font-size:15px;font-weight:700;letter-spacing:.02em;padding:13px 22px;border-radius:12px;cursor:pointer;animation:revealPulse 1.5s ease-in-out infinite}
+  .dm-reveal .rvh{display:block;margin-top:11px;font-family:var(--mono);font-size:11px;color:rgba(255,255,255,.72)}
+  @keyframes revealPulse{0%,100%{box-shadow:0 0 0 0 color-mix(in oklch,var(--accent) 42%,transparent);transform:scale(1)}50%{box-shadow:0 0 0 12px color-mix(in oklch,var(--accent) 0%,transparent);transform:scale(1.045)}}
+  body.dm-locked .dm-reveal{display:none}
   body.dm-locked .coachbar{left:22px;right:auto;bottom:22px;max-width:min(560px,calc(100% - 44px))}
 </style>
 <script>
@@ -1779,7 +1784,7 @@ window.MUNINN = {
     var steps=raw.map(function(c){ return { html:c.innerHTML.replace(/^[①-⑳\s]+/,''), anchor:c.getAttribute('data-anchor')||'' }; });
     raw.forEach(function(c){ try{c.remove();}catch(e){} });
     if(getComputedStyle(dm).position==='static')dm.style.position='relative';
-    var bar=document.createElement('div'); bar.className='coachbar';
+    var bar=document.createElement('div'); bar.className='coachbar'; bar.style.display='none';
     bar.innerHTML='<span class="cn">1</span><span class="ct"></span><span class="cnav"><button class="cp" title="back">‹</button><span class="ci"></span><button class="cnx" title="next">›</button></span>';
     dm.appendChild(bar);
     var idx=0, cn=bar.querySelector('.cn'), ct=bar.querySelector('.ct'), ci=bar.querySelector('.ci');
@@ -1788,8 +1793,12 @@ window.MUNINN = {
     function show(i){ idx=((i%steps.length)+steps.length)%steps.length; clearBlink(); var s=steps[idx]; ct.innerHTML=s.html; cn.textContent=(idx+1); ci.textContent=(idx+1)+'/'+steps.length; var a=anchorOf(s); if(a)a.classList.add('coach-blink'); }
     bar.querySelector('.cnx').addEventListener('click',function(e){e.stopPropagation();show(idx+1);});
     bar.querySelector('.cp').addEventListener('click',function(e){e.stopPropagation();show(idx-1);});
-    dm.addEventListener('click',function(e){ if(e.target.closest('.coachbar'))return; var s=steps[idx]; var a=anchorOf(s); if(a&&(a===e.target||a.contains(e.target))){ setTimeout(function(){show(idx+1);},300); } });
-    show(0);
+    dm.addEventListener('click',function(e){ if(e.target.closest('.coachbar')||e.target.closest('.dm-reveal'))return; var s=steps[idx]; var a=anchorOf(s); if(a&&(a===e.target||a.contains(e.target))){ setTimeout(function(){show(idx+1);},300); } });
+    var ov=document.createElement('div'); ov.className='dm-reveal';
+    ov.innerHTML='<div><button class="rv" type="button">⛶ Reveal the Cure</button><span class="rvh">guided tour · opens fullscreen</span></div>';
+    dm.appendChild(ov);
+    ov.addEventListener('click',function(e){ e.stopPropagation(); var mx=dm.querySelector('.dm-max'); if(mx){mx.click();} else { dm.classList.add('dm-full'); document.body.classList.add('dm-locked'); dm.dispatchEvent(new CustomEvent('dmfs',{detail:{on:true}})); } });
+    dm.addEventListener('dmfs',function(e){ if(e.detail&&e.detail.on){ ov.style.display='none'; bar.style.display='flex'; show(0);} else { bar.style.display='none'; clearBlink(); ov.style.display='grid'; } });
   });
 })();
 </script>
@@ -1810,13 +1819,13 @@ window.MUNINN = {
     var b=document.createElement('button'); b.className='dm-max'; b.type='button'; b.title='fullscreen'; b.textContent='⛶';
     bar.appendChild(b);
     b.addEventListener('click',function(e){ e.stopPropagation();
-      var on=dm.classList.toggle('dm-full'); document.body.classList.toggle('dm-locked',on);
+      var on=dm.classList.toggle('dm-full'); document.body.classList.toggle('dm-locked',on); dm.dispatchEvent(new CustomEvent('dmfs',{detail:{on:on}}));
       b.textContent=on?'✕':'⛶'; b.title=on?'exit fullscreen':'fullscreen';
       try{window.dispatchEvent(new Event('resize'));}catch(_){}
     });
   });
   document.addEventListener('keydown',function(e){ if(e.key!=='Escape')return;
-    document.querySelectorAll('.dm.dm-full').forEach(function(dm){dm.classList.remove('dm-full');var b=dm.querySelector('.dm-max');if(b){b.textContent='⛶';b.title='fullscreen';}});
+    document.querySelectorAll('.dm.dm-full').forEach(function(dm){dm.classList.remove('dm-full');var b=dm.querySelector('.dm-max');if(b){b.textContent='⛶';b.title='fullscreen';}dm.dispatchEvent(new CustomEvent('dmfs',{detail:{on:false}}));});
     document.body.classList.remove('dm-locked');
   });
 })();
