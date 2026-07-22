@@ -1449,10 +1449,41 @@ window.MUNINN = {
     <div class="sec-eyebrow" style="color:var(--accent)">Founder's pricing</div>
     <h2>Buy it once. It's yours.</h2>
     <p class="sec-lede">No login, no credit card — <b>completely private</b>. We don't store your data.</p>
+    <style>
+  .own-math{display:grid;grid-template-columns:1fr 1fr;gap:16px;max-width:900px;margin:24px 0 10px}
+  .om-col{border:1px solid var(--line);border-radius:14px;padding:17px 20px;background:var(--panel)}
+  .om-col.rent{border-color:color-mix(in oklch,var(--red) 32%,var(--line))}
+  .om-col.own{border-color:color-mix(in oklch,var(--accent) 42%,var(--line))}
+  .om-h{font-family:var(--mono);font-size:10.5px;letter-spacing:1px;text-transform:uppercase;margin-bottom:11px}
+  .om-col.rent .om-h{color:var(--red)} .om-col.own .om-h{color:var(--accent)}
+  .om-row{display:flex;justify-content:space-between;align-items:baseline;gap:12px;font-size:13.5px;color:var(--muted);padding:6px 0;border-bottom:1px solid color-mix(in oklch,var(--line) 55%,transparent)}
+  .om-row b{color:var(--text);font-family:var(--mono);font-size:12.5px;white-space:nowrap}
+  .om-tot{display:flex;justify-content:space-between;align-items:baseline;gap:12px;margin-top:11px;font-size:13.5px}
+  .om-tot span{color:var(--muted-2)} .om-tot b{font-family:var(--mono)}
+  .om-col.rent .om-tot b{color:var(--red);font-size:18px} .om-col.own .om-tot b{color:var(--accent);font-size:15px}
+  .own-note{max-width:900px;font-size:14px;color:var(--muted);line-height:1.65;margin:6px 0 4px}
+  .own-note b{color:var(--text)}
+  @media(max-width:720px){.own-math{grid-template-columns:1fr}}
+</style>
+    <div class="own-math">
+      <div class="om-col rent">
+        <div class="om-h">&times; Rent — frontier subscriptions</div>
+        <div class="om-row"><span>Claude Max</span><b>$200/mo</b></div>
+        <div class="om-row"><span>ChatGPT Pro &middot; Codex</span><b>$200/mo</b></div>
+        <div class="om-tot"><span>every year — <b style="color:var(--red)">forever</b></span><b>~$4,800/yr</b></div>
+      </div>
+      <div class="om-col own">
+        <div class="om-h">&check; Own — antiloki, once</div>
+        <div class="om-row"><span>AntiFlow</span><b>$249 once</b></div>
+        <div class="om-row"><span>+ Qwen / local, your keys</span><b>at cost · ~$0</b></div>
+        <div class="om-tot"><span>pays for itself in ~3 weeks</span><b>then it's yours</b></div>
+      </div>
+    </div>
+    <p class="own-note">A subscription bills again every month. A license is <b>bought once</b> — pair it with cheap local or OpenRouter models (Qwen &amp; co., your keys at cost) and <b>the money you paid comes back in weeks, not years</b>. After that, every month is money you keep.</p>
     <div class="pricing">
       <div class="price hero-card reveal">
         <div class="tag">AntiFlow · this Cure</div>
-        <div class="amt">~$21<small>/mo · 12&times; on your card</small></div><div class="amt-once" style="font-family:var(--mono);font-size:12px;color:var(--muted-2);margin-top:4px;letter-spacing:.02em">or <b style="color:var(--muted)">$249 once</b> · founder &middot; then $299</div>
+        <div class="amt">$249<small>once · founder price</small></div><div class="amt-once" style="font-family:var(--mono);font-size:12px;color:var(--muted-2);margin-top:4px;letter-spacing:.02em">or ~$21/mo · 12&times; on your card &middot; then $299 after launch</div>
         <ul>
           <li><b>yours forever</b> — perpetual license, this machine is the cloud</li>
           <li>a year of updates &amp; support included</li>
@@ -1472,7 +1503,7 @@ window.MUNINN = {
       </div>
       <div class="price reveal">
         <div class="tag">All four Cures</div>
-        <div class="amt">~$42<small>/mo · 12&times; on your card</small></div><div class="amt-once" style="font-family:var(--mono);font-size:12px;color:var(--muted-2);margin-top:4px;letter-spacing:.02em">or <b style="color:var(--muted)">$499 once</b> · founder &middot; then $599</div>
+        <div class="amt">$499<small>once · founder price</small></div><div class="amt-once" style="font-family:var(--mono);font-size:12px;color:var(--muted-2);margin-top:4px;letter-spacing:.02em">or ~$42/mo · 12&times; on your card &middot; then $599 after launch</div>
         <ul>
           <li><b>all four Cures</b> — AntiIDE + AntiDocs + AntiVibe + AntiFlow</li>
           <li>the Explorer, the Knowledge Hub, the Canvas &amp; the Harness</li>
