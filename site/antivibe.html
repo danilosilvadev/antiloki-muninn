@@ -404,10 +404,11 @@ window.MUNINN = {
   .gc-lane .br{color:var(--dblue)} .gc-lane .tr{flex:1;height:5px;border-radius:3px;background:var(--dborder);overflow:hidden}.gc-lane .tr b{display:block;height:100%;background:var(--dok)}
   .gc-kan{display:grid;grid-template-columns:1fr 1fr 1fr;gap:5px} .gc-kan s{display:block;text-decoration:none;color:var(--dmuted);font-size:8px;margin-bottom:3px} .gc-kan .c{background:var(--dpanel2);border:1px solid var(--dborder);border-radius:4px;padding:3px 5px;margin-bottom:4px;font-size:8.5px;color:var(--dfg)}
   .gc-row{display:flex;align-items:center;gap:6px;margin:3px 0;font-size:9px} .gc-row .n{width:70px;color:var(--dmuted)} .gc-row .tr{flex:1;height:5px;border-radius:3px;background:var(--dborder);overflow:hidden} .gc-row .tr b{display:block;height:100%;background:var(--dwarn)} .gc-row .v{color:var(--dfg)}
-  .gc-coach{position:absolute;left:12px;bottom:12px;right:12px;z-index:8;display:flex;align-items:center;gap:9px;background:color-mix(in oklch,var(--dpanel) 94%,transparent);border:1px solid color-mix(in oklch,var(--dbrand) 45%,var(--dborder));border-radius:9px;padding:9px 12px;font-size:12px;color:var(--dfg);box-shadow:0 8px 24px rgba(0,0,0,.45)}
-  .gc-coach .n{width:20px;height:20px;border-radius:50%;background:var(--dbrand);color:var(--dbg);display:grid;place-items:center;font-size:11px;font-weight:700;flex-shrink:0}
-  .gc-coach b{color:var(--dbrand);font-weight:600}
-  .gc-coach.done{border-color:color-mix(in oklch,var(--dok) 50%,var(--dborder))} .gc-coach.done .n{background:var(--dok)} .gc-coach.done b{color:var(--dok)}
+  .gc-coach{position:absolute;left:14px;right:auto;bottom:14px;max-width:min(460px,calc(100% - 28px));z-index:8;display:flex;align-items:center;gap:11px;background:rgba(16,14,12,.46);backdrop-filter:blur(7px);-webkit-backdrop-filter:blur(7px);border:1.5px solid rgba(255,255,255,.5);border-radius:17px 12px 18px 13px;padding:10px 14px;font-family:'Segoe Print','Comic Sans MS','Comic Sans',cursive;font-size:13px;line-height:1.42;color:#fff;box-shadow:0 10px 30px rgba(0,0,0,.5)}
+  body.dm-locked .gc-coach{left:20px;bottom:20px}
+  .gc-coach .n{width:22px;height:22px;border-radius:50% 48% 52% 47%;background:rgba(255,255,255,.14);border:1.5px solid rgba(255,255,255,.72);color:#fff;display:grid;place-items:center;font-size:12px;font-weight:700;flex-shrink:0}
+  .gc-coach b{color:#fff;font-weight:700}
+  .gc-coach.done{border-color:rgba(150,240,175,.75)} .gc-coach.done .n{background:rgba(140,235,165,.28);border-color:rgba(160,255,185,.9)} .gc-coach.done b{color:#c6ffd6}
   .gc-wiz,.gc-acfg{position:absolute;inset:0;z-index:9;display:none;place-items:center;background:color-mix(in oklch,var(--dbg) 62%,transparent)}
   .gc-wiz.on,.gc-acfg.on{display:grid}
   .gc-wizbox,.gc-acbox{width:min(90%,560px);max-height:84%;overflow:auto;background:var(--dpanel);border:1px solid var(--dborder);border-radius:12px;box-shadow:0 24px 60px rgba(0,0,0,.6)}
@@ -1834,6 +1835,20 @@ window.MUNINN = {
 })();
 </script>
 
+<script>
+(function(){
+  var app=document.getElementById('gcApp'); if(!app)return;
+  var dm=app.closest('.dm'); if(!dm)return;
+  var coach=document.getElementById('gcCoach');
+  if(getComputedStyle(dm).position==='static')dm.style.position='relative';
+  if(coach)coach.style.display='none';
+  var ov=document.createElement('div'); ov.className='dm-reveal';
+  ov.innerHTML='<div><button class="rv" type="button">⛶ Reveal the Cure</button><span class="rvh">guided tour · opens fullscreen</span></div>';
+  dm.appendChild(ov);
+  ov.addEventListener('click',function(e){ e.stopPropagation(); var mx=dm.querySelector('.dm-max'); if(mx){mx.click();} else { dm.classList.add('dm-full'); document.body.classList.add('dm-locked'); dm.dispatchEvent(new CustomEvent('dmfs',{detail:{on:true}})); } });
+  dm.addEventListener('dmfs',function(e){ if(e.detail&&e.detail.on){ ov.style.display='none'; if(coach)coach.style.display=''; } else { if(coach)coach.style.display='none'; ov.style.display='grid'; } });
+})();
+</script>
 <footer>
   <div class="wrap foot-in">
     <a class="brand" href="index.html">antiloki<span class="dot">.</span></a>
