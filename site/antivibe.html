@@ -215,8 +215,21 @@ window.MUNINN = {
     .hero2-benefits li{padding-left:17px;position:relative}
     .hero2-benefits li::before{content:"\2192";position:absolute;left:0;color:var(--accent)}
     .hero2-benefits b{color:var(--text);font-weight:650}
-    .hero2-grid .hero2-word{margin:14px 0 12px}
-    .hero2-grid .hero2-risk{margin-top:0}
+    .hero2-grid .hero2-word{margin:12px 0 10px}
+    .hero2-grid .hero2-risk{margin-top:4px}
+    .hero2-steroids{font-size:clamp(24px,3.4vw,40px);font-weight:750;letter-spacing:-.01em;line-height:1.12;color:var(--text)}
+    .hero2-steroids em{font-style:normal;color:var(--accent)}
+    .hero2-benh{font-size:clamp(17px,2vw,22px);font-weight:650;letter-spacing:-.01em;line-height:1.32;color:var(--text);margin:0 0 16px}
+    .hero2-benh em{font-style:normal;color:var(--accent)}
+    .hero2-benefits li.benp{padding-left:0;display:flex;gap:13px;align-items:center}
+    .hero2-benefits li.benp::before{content:none}
+    .benp .mp{flex-shrink:0;width:98px;border:1px solid var(--line);border-radius:8px;background:var(--panel);overflow:hidden}
+    .benp .mp .h{display:flex;align-items:center;gap:4px;padding:3px 6px;border-bottom:1px solid var(--line);background:var(--panel-2)}
+    .benp .mp .h .g{width:14px;height:12px;display:grid;place-items:center;border-radius:3px;font-size:8px}
+    .benp .mp .h .l{font-size:6.5px;letter-spacing:.5px;text-transform:uppercase;color:var(--muted)}
+    .benp .mp .b{padding:5px 6px;font-size:7.5px;line-height:1.45;color:var(--muted-2);font-family:var(--mono)}
+    .benp .txt{flex:1;min-width:0}
+    @media(max-width:820px){.benp .mp{width:80px}}
     .hero2-spec{font-size:15.5px;line-height:1.65;color:var(--muted);max-width:440px}
     .hero2-spec p{margin:0 0 12px}
     .hero2-spec b{color:var(--text)}
@@ -225,16 +238,17 @@ window.MUNINN = {
   </style>
   <div class="wrap hero2-grid">
     <div class="hero2-head">
-      <div class="hero2-risk">Your AI agents run one at a time, in one chat, right on your working tree — <b>no board to see them, no budget, no gate before their code hits main.</b></div>
+      <div class="hero2-steroids">Give <em>steroids</em> to your vibe coding.</div>
       <h1 class="hero2-word">Anti<em>Vibe</em></h1>
-      <div class="hero2-tag">Not vibe coding. One canvas to <b>draw and run a whole swarm of agents — with a board, a live cost meter, and a gate that holds bad merges.</b></div>
+      <div class="hero2-risk">Your AI agents run one at a time, in one chat, right on your working tree — <b>no board to see them, no budget, no gate before their code hits main.</b></div>
       <a href="#waitlist" class="btn-primary" style="margin-top:24px;display:inline-block">Get early access →</a>
     </div>
     <div class="hero2-spec">
+      <h3 class="hero2-benh">Not vibe coding. <em>One canvas coding</em> — draw and run a swarm of agents and tools.</h3>
       <ul class="hero2-benefits">
-        <li><b>See and steer the whole swarm on one board.</b> Every agent is a pane on a pannable canvas — no more a single hidden agent buried in one terminal.</li>
-        <li><b>Live cost, to the cent.</b> A running dollar meter per agent and per session, pulled from your own keys — never an estimate.</li>
-        <li><b>A gate that holds bad work.</b> Real builds and tests run before merge; a red result is held back and never reaches your main branch.</li>
+        <li class="benp"><span class="mp"><span class="h"><span class="g" style="background:color-mix(in oklch,var(--accent) 16%,transparent);color:var(--accent)">🤖</span><span class="l">Agent</span></span><span class="b">✎ LoginForm.tsx<br>✓ 14 tests</span></span><span class="txt"><b>See and steer the whole swarm on one board.</b> Every agent is a pane on a pannable canvas — not one hidden agent in a terminal.</span></li>
+        <li class="benp"><span class="mp"><span class="h"><span class="g" style="background:color-mix(in oklch,var(--amber) 16%,transparent);color:var(--amber)">⛽</span><span class="l">Fuel</span></span><span class="b">$0.16 live<br>to the cent</span></span><span class="txt"><b>Live cost, to the cent.</b> A running dollar meter per agent and per session, from your own keys — never an estimate.</span></li>
+        <li class="benp"><span class="mp"><span class="h"><span class="g" style="background:color-mix(in oklch,var(--green) 16%,transparent);color:var(--green)">✓</span><span class="l">Gate</span></span><span class="b">build ✓<br>test ✗ HELD</span></span><span class="txt"><b>A gate that holds bad work.</b> Real builds &amp; tests run before merge; a red result is held back, never reaching main.</span></li>
       </ul>
       <p class="hero2-note">your keys · your machine · nothing merges red</p>
     </div>
@@ -370,8 +384,7 @@ window.MUNINN = {
     <div class="wai-grid">
       <div>
         <div class="sec-eyebrow" style="color:var(--accent)">Try it — right here</div>
-        <h2 style="margin-top:6px">The whole swarm on one board.</h2>
-        <p class="sec-lede">This is the real <b>Canvas</b>, boxed. It builds itself pane by pane — agents, a git lane, the gate, kanban, a live cost meter — all on one board you can drag, pan and zoom.</p>
+        <h2 style="margin-top:6px">A swarm of agents and tools on one board.</h2>
       </div>
       <ul class="hero2-benefits" style="margin:0">
         <li><b>One pane per agent.</b> Every AI agent gets its own terminal pane you can watch, move and resize.</li>
