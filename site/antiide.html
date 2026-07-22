@@ -1446,6 +1446,34 @@ L12  }</div><div class="mg"><div class="who" style="color:var(--dwarn)">📊 str
   </script>
 </section>
 
+<!-- MAXIMIZE — fullscreen any live-demo box -->
+<style>
+  .dm-bar .dm-max{margin-left:10px;background:transparent;border:1px solid var(--line);border-radius:6px;color:var(--muted);cursor:pointer;font-family:var(--mono);font-size:11px;line-height:1;padding:3px 8px;flex-shrink:0;transition:border-color .15s,color .15s}
+  .dm-bar .dm-max:hover{border-color:var(--accent);color:var(--accent)}
+  .dm.dm-full{position:fixed;inset:14px;z-index:400;max-width:none!important;margin:0!important;width:auto!important;box-shadow:0 30px 90px rgba(0,0,0,.7);display:flex;flex-direction:column}
+  .dm.dm-full>.dm-app,.dm.dm-full>.cr-app,.dm.dm-full>.fc-app{flex:1;min-height:0;height:auto!important}
+  body.dm-locked{overflow:hidden}
+  body.dm-locked .anno-cm,body.dm-locked .anno-svg,body.dm-locked .anno-dots{display:none!important}
+</style>
+<script>
+(function(){
+  document.querySelectorAll('.dm').forEach(function(dm){
+    var bar=dm.querySelector('.dm-bar'); if(!bar||bar.querySelector('.dm-max'))return;
+    var b=document.createElement('button'); b.className='dm-max'; b.type='button'; b.title='fullscreen'; b.textContent='⛶';
+    bar.appendChild(b);
+    b.addEventListener('click',function(e){ e.stopPropagation();
+      var on=dm.classList.toggle('dm-full'); document.body.classList.toggle('dm-locked',on);
+      b.textContent=on?'✕':'⛶'; b.title=on?'exit fullscreen':'fullscreen';
+      try{window.dispatchEvent(new Event('resize'));}catch(_){}
+    });
+  });
+  document.addEventListener('keydown',function(e){ if(e.key!=='Escape')return;
+    document.querySelectorAll('.dm.dm-full').forEach(function(dm){dm.classList.remove('dm-full');var b=dm.querySelector('.dm-max');if(b){b.textContent='⛶';b.title='fullscreen';}});
+    document.body.classList.remove('dm-locked');
+  });
+})();
+</script>
+
 <footer>
   <div class="wrap foot-in">
     <a class="brand" href="index.html">antiloki<span class="dot">.</span></a>
