@@ -230,6 +230,7 @@ window.MUNINN = {
     </div>
     <div class="hero2-spec">
       <ul class="hero2-benefits">
+        <li><b>$0 to run — no AI, no tokens.</b> The whole analysis is deterministic, computed straight from your code. AI is an optional deep-dive, only when you ask.</li>
         <li><b>See the blast radius.</b> Click any file and see exactly which files break if you change it.</li>
         <li><b>A real health score.</b> Every file rated on tests, coupling and complexity — counted from the code, not guessed.</li>
         <li><b>Docs that never go stale.</b> Diagrams and docs regenerate from the current code.</li>
@@ -1237,12 +1238,21 @@ L12  }</div><div class="mg"><div class="who" style="color:var(--dwarn)">📊 str
 </script>
 <!-- /ANNOTATIONS -->
 
-    <div class="creed">
+    <style>
+      .creed.epic{max-width:960px;margin:112px auto 0;padding:0 20px}
+      .creed.epic .ln{font-size:clamp(30px,5vw,58px);font-weight:800;letter-spacing:-.02em;line-height:1.15;margin:0 0 14px;color:var(--text);opacity:0;transform:translateY(26px);transition:opacity .9s cubic-bezier(.2,.7,.2,1),transform .9s cubic-bezier(.2,.7,.2,1)}
+      .creed.epic.on .ln{opacity:1;transform:translateY(0)}
+      .creed.epic .ln:nth-child(2){transition-delay:.18s}
+      .creed.epic .ln:nth-child(3){transition-delay:.36s}
+      .creed.epic .ln em{font-style:normal;color:var(--accent);text-shadow:0 0 30px color-mix(in oklch,var(--accent) 55%,transparent)}
+      @media(prefers-reduced-motion:reduce){.creed.epic .ln{opacity:1;transform:none;transition:none}}
+    </style>
+    <div class="creed epic">
       <div class="ln">Pay once. <em>Own it forever.</em></div>
       <div class="ln">We never see your code — <em>completely local</em>, for a lifetime.</div>
       <div class="ln">Small models, <em>frontier capacity</em> — fast, private, yours.</div>
-      <div class="sub2">The harness is the intelligence: <b>counted scores, sealed gates, your verdicts training your router</b> — so the cheap models punch far above their weight, and every dollar of AI you buy goes through <b>your</b> key at cost.</div>
     </div>
+    <script>(function(){var c=document.querySelector('.creed.epic');if(!c)return;var io=new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting){c.classList.add('on');io.disconnect();}});},{threshold:.35});io.observe(c);})();</script>
   </div>
 </section>
 
@@ -1266,43 +1276,7 @@ L12  }</div><div class="mg"><div class="who" style="color:var(--dwarn)">📊 str
 })();
 </script>
 
-<div class="proofstrip">
-  <div class="wrap" style="padding:0"><div class="ps-in">
-    <div class="ps"><div class="v">every file</div><div class="k">mapped from the AST — symbols, imports, connections. not generated docs: recomputed from the code, it can't drift</div></div>
-    <div class="ps"><div class="v">blast radius</div><div class="k">per change — see what depends on the thing you're about to touch, before you touch it</div></div>
-    <div class="ps"><div class="v">read-only</div><div class="k">it never writes to your repository — Not an IDE means zero risk to point it at anything</div></div>
-    <div class="ps"><div class="v">minutes</div><div class="k">from clone to first map — the fastest way to meet a codebase you've never seen</div></div>
-  </div></div>
-</div>
 
-<section id="features">
-  <div class="wrap">
-    <div class="sec-eyebrow" style="color:var(--accent)">What AntiIDE gives you</div>
-    <h2>All the intelligence you need to truly know your code.</h2>
-    <style>.railstrip{display:flex;flex-wrap:wrap;gap:7px;margin-top:18px;max-width:660px}.railstrip span{font-family:var(--mono);font-size:12px;color:var(--muted);border:1px solid var(--line);border-radius:6px;padding:5px 10px}</style>
-    <div class="railstrip"><span>Graph</span><span>Diagram</span><span>Digest</span><span>Docs</span><span>Describe</span><span>Structure</span><span>Snapshot</span><span>Insights</span><span>Constitution</span><span>Agents</span><span>Runner</span><span>Diff</span><span>Git</span></div>
-    <div class="feats">
-      <div class="feat reveal">
-        <div class="fn">01 · the living map</div>
-        <div class="ft">Every file. Every connection.</div>
-        <div class="fd">Files, symbols and imports as one graph, read from the syntax tree. Click any node and see <b>what breaks if you change it</b> — the map a senior carries in their head, drawn.</div>
-        <div class="term"><span class="hi">checkout.tsx</span> → api/client → <span class="hi">auth/guard</span><br><span class="er">⚠ 14 files depend on this one</span></div>
-      </div>
-      <div class="feat reveal">
-        <div class="fn">02 · health &amp; concepts</div>
-        <div class="ft">Where it's weak. What ideas live where.</div>
-        <div class="fd">Every file scored on real signals — tests, coupling, churn. The concept atlas shows <b>which ideas the code embodies</b>, which are scattered across many files, and which are untested.</div>
-        <div class="term">audit chain · <span class="ok">2 files · tested</span><br>token bucket · <span class="er">5 files · scattered</span></div>
-      </div>
-      <div class="feat reveal">
-        <div class="fn">03 · the design surface</div>
-        <div class="ft">The design system you actually shipped.</div>
-        <div class="fd">Tokens, screens and flows extracted from the code — <b>the design your app implements</b>, not the one in a Figma file from last quarter. Read-only truth for designers and reviewers.</div>
-        <div class="term">--brand <span class="hi">#E8623A</span> · 41 uses<br><span class="ok">✓ 12 screens mapped to routes</span></div>
-      </div>
-    </div>
-  </div>
-</section>
 
 <div class="suite">
   <div class="wrap suite-in">
@@ -1345,7 +1319,11 @@ L12  }</div><div class="mg"><div class="who" style="color:var(--dwarn)">📊 str
         <ul>
           <li><b>yours forever</b> — perpetual license, this machine is the cloud</li>
           <li>a year of updates &amp; support included</li>
-          <li>the full 13-panel Explorer — graph, health, design, review</li>
+          <li>the full <b>13-panel Explorer</b> — graph · diagram · docs · structure · runner · diff · git</li>
+          <li>the dependency map + <b>blast radius</b> on every file</li>
+          <li>counted <b>health scores</b> — 7 axes, from the AST, <b>$0 to run</b></li>
+          <li>self-rebuilding docs &amp; the court-grade review with a ranked fix plan</li>
+          <li>run a live dev server in-split</li>
           <li>BYOK — your models, your keys, <b>fully local</b></li>
           <li>the free Chat, with code intelligence, included</li>
           <li><b>we never see your code</b></li>
@@ -1358,9 +1336,11 @@ L12  }</div><div class="mg"><div class="who" style="color:var(--dwarn)">📊 str
         <div class="amt">$499<small>once · $596 value</small></div>
         <ul>
           <li><b>all four Cures</b> — AntiIDE + AntiDocs + AntiVibe + AntiFlow</li>
+          <li>the Explorer, the Knowledge Hub, the Canvas &amp; the Harness</li>
           <li>one license, the whole workshop</li>
           <li>a year of updates on everything</li>
           <li><b>$596 value — you save $97</b></li>
+          <li>the shared control room — models, caps &amp; tagging across every Cure</li>
           <li>BYOK, fully local — <b>we never see your code</b></li>
           <li>30-day trial — every Cure unlocked, no card</li>
         </ul>
@@ -1371,6 +1351,7 @@ L12  }</div><div class="mg"><div class="who" style="color:var(--dwarn)">📊 str
         <div class="amt">$100<small>/year · $80 with the bundle</small></div>
         <ul>
           <li>sync between your machines — P2P; we relay logs, <b>never your code</b></li>
+          <li>encrypted device-to-device — your code never touches our servers</li>
           <li>continued updates &amp; support past year one</li>
           <li><b>$80/year with the bundle</b></li>
           <li>cancel anytime — what you bought keeps working</li>
@@ -1383,19 +1364,62 @@ L12  }</div><div class="mg"><div class="who" style="color:var(--dwarn)">📊 str
 </section>
 
 <section id="waitlist" style="text-align:center;scroll-margin-top:80px">
+  <style>
+    #waitlist .wrap{max-width:660px}
+    #waitlist h2{max-width:22ch;margin:0 auto}
+    .wlterm{margin-top:30px;border:1px solid var(--line);border-radius:12px;background:#0B0A09;overflow:hidden;box-shadow:0 26px 64px rgba(0,0,0,.5);text-align:left}
+    .wlterm-bar{display:flex;align-items:center;gap:7px;padding:10px 14px;border-bottom:1px solid var(--line);background:var(--panel)}
+    .wlterm-bar i{width:11px;height:11px;border-radius:50%;background:var(--line)}
+    .wlterm-bar i:nth-child(1){background:#F0533B}.wlterm-bar i:nth-child(2){background:#F0A93B}.wlterm-bar i:nth-child(3){background:#4ADE80}
+    .wlterm-bar b{margin-left:8px;font-family:var(--mono);font-size:12px;font-weight:400;color:var(--muted)}
+    .wlterm-body{padding:22px 20px;font-family:var(--mono);font-size:14px;line-height:1.95;color:var(--text)}
+    .wlterm-body .cmt{color:var(--muted-2)}
+    .wlterm-body .pr{color:var(--accent);user-select:none}
+    .wl-caret{display:inline-block;width:8px;height:15px;background:var(--accent);vertical-align:-2px;margin-left:1px;animation:wlblink 1.05s steps(1) infinite}
+    @keyframes wlblink{50%{opacity:0}}
+    .wlterm .wl{margin:4px 0 0;display:flex;gap:8px;max-width:none;position:relative;align-items:center}
+    .wlterm .wl input[type=email]{flex:1;background:transparent;border:none;border-radius:0;padding:2px 0;color:var(--text);font-family:var(--mono);font-size:14px;outline:none;caret-color:var(--accent)}
+    .wlterm .wl button{font-family:var(--mono);font-size:12.5px;font-weight:600;background:var(--accent);color:var(--base);padding:6px 14px;border-radius:6px;border:1px solid var(--accent);cursor:pointer;transition:transform .15s;white-space:nowrap}
+    .wlterm .wl button:hover{transform:translateY(-1px)}
+    .wlterm .wl-note{font-family:var(--mono);font-size:11.5px;color:var(--muted-2);margin-top:16px}
+    .wlterm .wl-note a{color:var(--accent)}
+    .wlterm .wl-ok{color:var(--green);margin-top:14px}
+    .wlterm .wl-err{font-size:12.5px;margin-top:10px}
+  </style>
   <div class="wrap">
     <div class="sec-eyebrow" style="color:var(--accent)">Early access</div>
-    <h2 style="margin:0 auto;max-width:22ch">The first thing you'll do is watch your architecture appear.</h2>
-    <p class="sec-lede" style="margin:18px auto 0">30-day trial with every Cure unlocked. Keep what you buy, forever.</p>
-    <form class="wl" id="wlform" novalidate>
-      <input type="text" name="company" id="wlcompany" tabindex="-1" autocomplete="off" aria-hidden="true" style="position:absolute;left:-9999px;width:1px;height:1px;opacity:0" />
-      <input type="email" id="wlemail" placeholder="you@yourcompany.dev" aria-label="Email address" required />
-      <button type="submit" id="wlbtn">Get in line →</button>
-    </form>
-    <div class="wl-note">// no spam · one note when it's your turn · <a href="privacy.html">privacy</a></div>
-    <div class="wl-ok" id="wlok">✓ You're on the list. We'll be in touch.</div>
-    <div class="wl-err" id="wlerr"></div>
+    <h2>The first thing you'll do is watch your architecture appear.</h2>
+    <p class="sec-lede" style="margin:16px auto 0">30-day trial with every Cure unlocked. Keep what you buy, forever.</p>
+    <div class="wlterm">
+      <div class="wlterm-bar"><i></i><i></i><i></i><b>antiloki — join</b></div>
+      <div class="wlterm-body">
+        <div class="cmt"># reserve your seat — we send one note when it's your turn</div>
+        <div><span class="pr">$</span> <span id="wltyped"></span><span class="wl-caret" id="wlcaret"></span></div>
+        <form class="wl" id="wlform" novalidate style="display:none">
+          <input type="text" name="company" id="wlcompany" tabindex="-1" autocomplete="off" aria-hidden="true" style="position:absolute;left:-9999px;width:1px;height:1px;opacity:0" />
+          <span class="pr">&gt;</span>
+          <input type="email" id="wlemail" placeholder="you@yourcompany.dev" aria-label="Email address" required />
+          <button type="submit" id="wlbtn">enter ↵</button>
+        </form>
+        <div class="wl-note">// no spam · one note when it's your turn · <a href="privacy.html">privacy</a></div>
+        <div class="wl-ok" id="wlok">✓ You're on the list. We'll be in touch.</div>
+        <div class="wl-err" id="wlerr"></div>
+      </div>
+    </div>
   </div>
+  <script>
+  (function(){
+    var typed=document.getElementById('wltyped'),caret=document.getElementById('wlcaret'),form=document.getElementById('wlform'),sec=document.getElementById('waitlist');
+    if(!typed||!form||!sec)return;
+    var cmd='antiloki join --waitlist',i=0,started=false;
+    function type(){
+      if(i<=cmd.length){typed.textContent=cmd.slice(0,i);i++;setTimeout(type,52);}
+      else{if(caret)caret.style.display='none';form.style.display='flex';var e=document.getElementById('wlemail');if(e)setTimeout(function(){try{e.focus({preventScroll:true});}catch(_){}}, 150);}
+    }
+    var io=new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting&&!started){started=true;io.disconnect();setTimeout(type,300);}});},{threshold:.4});
+    io.observe(sec);
+  })();
+  </script>
 </section>
 
 <footer>
