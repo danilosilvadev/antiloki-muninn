@@ -878,6 +878,15 @@ window.MUNINN = {
 </script>
 
 <!-- THE CONTROL ROOM — settings (models + cost) and tagging, simulated (2026-07-20) -->
+<style>
+  .creed.epic{max-width:960px;margin:104px auto;padding:0 20px}
+  .creed.epic .ln{font-size:clamp(30px,5vw,58px);font-weight:800;letter-spacing:-.02em;line-height:1.15;margin:0;color:var(--text);opacity:0;transform:translateY(26px);transition:opacity .9s cubic-bezier(.2,.7,.2,1),transform .9s cubic-bezier(.2,.7,.2,1)}
+  .creed.epic.on .ln{opacity:1;transform:translateY(0)}
+  .creed.epic .ln em{font-style:normal;color:var(--accent);text-shadow:0 0 30px color-mix(in oklch,var(--accent) 55%,transparent)}
+  @media(prefers-reduced-motion:reduce){.creed.epic .ln{opacity:1;transform:none;transition:none}}
+</style>
+<section class="creed epic"><div class="ln">Pay once. <em>Own it forever.</em></div></section>
+
 <section id="controlroom" style="padding:24px 0 64px">
 
 <style>
@@ -1351,6 +1360,8 @@ window.MUNINN = {
 </script>
 
 <!-- THE FREE CHAT — the real Chat screen, boxed + the creed (2026-07-20) -->
+<section class="creed epic"><div class="ln">We never see your code — <em>completely local</em>, for a lifetime.</div></section>
+
 <section id="freechat" style="padding:24px 0 56px">
 <style>
   .fc-app{position:relative;height:540px;background:var(--dbg);color:var(--dfg);font-family:'Geist',-apple-system,system-ui,sans-serif;display:flex;overflow:hidden;text-align:left;font-size:13px}
@@ -1569,21 +1580,7 @@ window.MUNINN = {
 })();
 </script>
 <!-- /ANNOTATIONS -->
-    <style>
-      .creed.epic{max-width:960px;margin:112px auto 0;padding:0 20px}
-      .creed.epic .ln{font-size:clamp(30px,5vw,58px);font-weight:800;letter-spacing:-.02em;line-height:1.15;margin:0 0 14px;color:var(--text);opacity:0;transform:translateY(26px);transition:opacity .9s cubic-bezier(.2,.7,.2,1),transform .9s cubic-bezier(.2,.7,.2,1)}
-      .creed.epic.on .ln{opacity:1;transform:translateY(0)}
-      .creed.epic .ln:nth-child(2){transition-delay:.18s}
-      .creed.epic .ln:nth-child(3){transition-delay:.36s}
-      .creed.epic .ln em{font-style:normal;color:var(--accent);text-shadow:0 0 30px color-mix(in oklch,var(--accent) 55%,transparent)}
-      @media(prefers-reduced-motion:reduce){.creed.epic .ln{opacity:1;transform:none;transition:none}}
-    </style>
-    <div class="creed epic">
-      <div class="ln">Pay once. <em>Own it forever.</em></div>
-      <div class="ln">We never see your code — <em>completely local</em>, for a lifetime.</div>
-      <div class="ln">Small models like Qwen, <em>delivering like Claude</em> — fast, private, yours.</div>
-    </div>
-    <script>(function(){var c=document.querySelector('.creed.epic');if(!c)return;var io=new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting){c.classList.add('on');io.disconnect();}});},{threshold:.35});io.observe(c);})();</script>
+
   </div>
 </section>
 
@@ -1621,6 +1618,9 @@ window.MUNINN = {
 
 
 <!-- PRICING — pay once, own it (the sell-Cures model, operator 2026-07-20) -->
+<section class="creed epic"><div class="ln">Small models like Qwen, <em>delivering like Claude</em> — fast, private, yours.</div></section>
+<script>(function(){document.querySelectorAll('.creed.epic').forEach(function(c){var io=new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting){c.classList.add('on');io.disconnect();}});},{threshold:.35});io.observe(c);});})();</script>
+
 <section id="pricing">
   <style>
   .pricing{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:44px}
