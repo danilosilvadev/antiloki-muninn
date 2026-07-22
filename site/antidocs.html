@@ -1375,6 +1375,46 @@ window.MUNINN = {
   </script>
 </section>
 
+<!-- COACH — turns each demo's floating annotations into a bottom coach-bar tour -->
+<style>
+  .anno-svg,.anno-dots{display:none!important}
+  body.coach-on .tour-blink{animation:none!important;box-shadow:none!important}
+  .coachbar{position:absolute;left:10px;right:10px;bottom:10px;z-index:30;display:flex;align-items:center;gap:10px;background:color-mix(in oklch,var(--panel) 95%,transparent);border:1px solid color-mix(in oklch,var(--accent) 45%,var(--line));border-radius:9px;padding:9px 12px;font-family:var(--mono);font-size:12px;line-height:1.35;color:var(--text);box-shadow:0 8px 24px rgba(0,0,0,.45)}
+  .coachbar .cn{width:20px;height:20px;border-radius:50%;background:var(--accent);color:var(--base);display:grid;place-items:center;font-size:11px;font-weight:700;flex-shrink:0}
+  .coachbar .ct{flex:1}.coachbar .ct b{color:var(--text)}
+  .coachbar .cnav{display:flex;align-items:center;gap:6px;flex-shrink:0;color:var(--muted-2);font-size:10px}
+  .coachbar .cnav button{background:transparent;border:1px solid var(--line);border-radius:5px;color:var(--muted);cursor:pointer;width:20px;height:18px;font-size:11px;line-height:1;padding:0}
+  .coachbar .cnav button:hover{border-color:var(--accent);color:var(--accent)}
+  .coach-blink{animation:coachBlink 1.05s ease-in-out infinite}
+  @keyframes coachBlink{50%{box-shadow:0 0 0 2px var(--accent),0 0 14px color-mix(in oklch,var(--accent) 55%,transparent)}}
+  body.dm-locked .coachbar{left:16px;right:16px;bottom:16px}
+</style>
+<script>
+(function(){
+  document.body.classList.add('coach-on');
+  document.querySelectorAll('.dm').forEach(function(dm){
+    if(dm.querySelector('#gcApp'))return; // the canvas already has its own coach
+    var sec=dm.closest('section')||dm.parentNode;
+    var raw=[].slice.call(sec.querySelectorAll('.anno-cm'));
+    if(!raw.length)return;
+    var steps=raw.map(function(c){ return { html:c.innerHTML.replace(/^[①-⑳\s]+/,''), anchor:c.getAttribute('data-anchor')||'' }; });
+    raw.forEach(function(c){ try{c.remove();}catch(e){} });
+    if(getComputedStyle(dm).position==='static')dm.style.position='relative';
+    var bar=document.createElement('div'); bar.className='coachbar';
+    bar.innerHTML='<span class="cn">1</span><span class="ct"></span><span class="cnav"><button class="cp" title="back">‹</button><span class="ci"></span><button class="cnx" title="next">›</button></span>';
+    dm.appendChild(bar);
+    var idx=0, cn=bar.querySelector('.cn'), ct=bar.querySelector('.ct'), ci=bar.querySelector('.ci');
+    function anchorOf(s){ if(!s.anchor)return null; var el=null; s.anchor.split(',').some(function(q){var e;try{e=dm.querySelector(q.trim());}catch(_){e=null;} if(e&&e.offsetParent){el=e;return true;}return false;}); return el; }
+    function clearBlink(){ [].slice.call(dm.querySelectorAll('.coach-blink')).forEach(function(e){e.classList.remove('coach-blink');}); }
+    function show(i){ idx=((i%steps.length)+steps.length)%steps.length; clearBlink(); var s=steps[idx]; ct.innerHTML=s.html; cn.textContent=(idx+1); ci.textContent=(idx+1)+'/'+steps.length; var a=anchorOf(s); if(a)a.classList.add('coach-blink'); }
+    bar.querySelector('.cnx').addEventListener('click',function(e){e.stopPropagation();show(idx+1);});
+    bar.querySelector('.cp').addEventListener('click',function(e){e.stopPropagation();show(idx-1);});
+    dm.addEventListener('click',function(e){ if(e.target.closest('.coachbar'))return; var s=steps[idx]; var a=anchorOf(s); if(a&&(a===e.target||a.contains(e.target))){ setTimeout(function(){show(idx+1);},300); } });
+    show(0);
+  });
+})();
+</script>
+
 <!-- MAXIMIZE — fullscreen any live-demo box -->
 <style>
   .dm-bar .dm-max{margin-left:10px;background:transparent;border:1px solid var(--line);border-radius:6px;color:var(--muted);cursor:pointer;font-family:var(--mono);font-size:11px;line-height:1;padding:3px 8px;flex-shrink:0;transition:border-color .15s,color .15s}
