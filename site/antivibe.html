@@ -413,27 +413,43 @@ window.MUNINN = {
   .gc-lane .br{color:var(--dblue)} .gc-lane .tr{flex:1;height:5px;border-radius:3px;background:var(--dborder);overflow:hidden}.gc-lane .tr b{display:block;height:100%;background:var(--dok)}
   .gc-kan{display:grid;grid-template-columns:1fr 1fr 1fr;gap:5px} .gc-kan s{display:block;text-decoration:none;color:var(--dmuted);font-size:8px;margin-bottom:3px} .gc-kan .c{background:var(--dpanel2);border:1px solid var(--dborder);border-radius:4px;padding:3px 5px;margin-bottom:4px;font-size:8.5px;color:var(--dfg)}
   .gc-row{display:flex;align-items:center;gap:6px;margin:3px 0;font-size:9px} .gc-row .n{width:70px;color:var(--dmuted)} .gc-row .tr{flex:1;height:5px;border-radius:3px;background:var(--dborder);overflow:hidden} .gc-row .tr b{display:block;height:100%;background:var(--dwarn)} .gc-row .v{color:var(--dfg)}
-  .gc-coach{position:absolute;left:12px;bottom:12px;right:12px;z-index:7;display:flex;align-items:center;gap:9px;background:color-mix(in oklch,var(--dpanel) 92%,transparent);border:1px solid color-mix(in oklch,var(--dbrand) 40%,var(--dborder));border-radius:9px;padding:9px 12px;font-size:12px;color:var(--dfg);box-shadow:0 8px 24px rgba(0,0,0,.4)}
+  .gc-coach{position:absolute;left:12px;bottom:12px;right:12px;z-index:8;display:flex;align-items:center;gap:9px;background:color-mix(in oklch,var(--dpanel) 94%,transparent);border:1px solid color-mix(in oklch,var(--dbrand) 45%,var(--dborder));border-radius:9px;padding:9px 12px;font-size:12px;color:var(--dfg);box-shadow:0 8px 24px rgba(0,0,0,.45)}
   .gc-coach .n{width:20px;height:20px;border-radius:50%;background:var(--dbrand);color:var(--dbg);display:grid;place-items:center;font-size:11px;font-weight:700;flex-shrink:0}
-  .gc-coach.done{border-color:color-mix(in oklch,var(--dok) 50%,var(--dborder))} .gc-coach.done .n{background:var(--dok)}
-  .gc-wiz{position:absolute;inset:0;z-index:9;display:none;place-items:center;background:color-mix(in oklch,var(--dbg) 62%,transparent)}
-  .gc-wiz.on{display:grid}
-  .gc-wizbox{width:min(88%,560px);max-height:82%;overflow:auto;background:var(--dpanel);border:1px solid var(--dborder);border-radius:12px;box-shadow:0 24px 60px rgba(0,0,0,.6)}
-  .gc-wizh{display:flex;align-items:center;padding:11px 14px;border-bottom:1px solid var(--dborder);font-size:12px;color:var(--dfg);font-weight:600}
-  .gc-wizx{margin-left:auto;background:transparent;border:none;color:var(--dmuted);cursor:pointer;font-size:13px}
+  .gc-coach b{color:var(--dbrand);font-weight:600}
+  .gc-coach.done{border-color:color-mix(in oklch,var(--dok) 50%,var(--dborder))} .gc-coach.done .n{background:var(--dok)} .gc-coach.done b{color:var(--dok)}
+  .gc-wiz,.gc-acfg{position:absolute;inset:0;z-index:9;display:none;place-items:center;background:color-mix(in oklch,var(--dbg) 62%,transparent)}
+  .gc-wiz.on,.gc-acfg.on{display:grid}
+  .gc-wizbox,.gc-acbox{width:min(90%,560px);max-height:84%;overflow:auto;background:var(--dpanel);border:1px solid var(--dborder);border-radius:12px;box-shadow:0 24px 60px rgba(0,0,0,.6)}
+  .gc-acbox{width:min(92%,520px)}
+  .gc-wizh,.gc-ach{display:flex;align-items:center;padding:11px 14px;border-bottom:1px solid var(--dborder);font-size:12px;color:var(--dfg);font-weight:600}
+  .gc-wizx,.gc-acx{margin-left:auto;background:transparent;border:none;color:var(--dmuted);cursor:pointer;font-size:13px}
   .gc-wizsub{padding:8px 14px 4px;font-size:10.5px;color:var(--dmuted)}
   .gc-wizgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:9px;padding:10px 14px 16px}
   .gc-card{border:1px solid var(--dborder);border-radius:9px;overflow:hidden;background:var(--dbg);cursor:pointer;transition:border-color .15s}
   .gc-card:hover{border-color:var(--dbrand)}
-  .gc-card.blink{animation:gcCardB 1.05s ease-in-out infinite}
+  .gc-card.blink,.gc-sig.blink,.gc-tree.blink{animation:gcCardB 1.05s ease-in-out infinite}
   @keyframes gcCardB{50%{border-color:var(--dbrand);box-shadow:0 0 0 2px var(--dbrand),0 0 16px color-mix(in oklch,var(--dbrand) 55%,transparent)}}
   .gc-card .im{height:42px;display:grid;place-items:center;background:var(--dpanel2);border-bottom:1px solid var(--dborder)}
   .gc-card .im svg{width:100%;height:42px}
   .gc-card .cl{padding:5px 8px;font-size:10px;color:var(--dfg);font-weight:600}
+  .gc-acbody{padding:12px 14px 16px;display:flex;flex-direction:column;gap:6px}
+  .gc-aclabel{font-size:8.5px;letter-spacing:1px;text-transform:uppercase;color:var(--dmuted);margin-top:6px}
+  .gc-acnote{font-size:9.5px;color:var(--ddim);line-height:1.4}
+  .gc-sigs{display:grid;grid-template-columns:1fr 1fr;gap:7px}
+  .gc-sig{text-align:left;border:1px solid var(--dborder);border-radius:8px;background:var(--dbg);color:var(--dfg);cursor:pointer;font-family:var(--mono);font-size:10.5px;padding:7px 9px;transition:border-color .15s}
+  .gc-sig s{display:block;text-decoration:none;color:var(--dmuted);font-size:8.5px;margin-top:2px}
+  .gc-sig:hover{border-color:var(--dbrand)}
+  .gc-sig.on{border-color:var(--dbrand);background:color-mix(in oklch,var(--dbrand) 12%,var(--dbg))}
+  .gc-tree{border:1px solid var(--dborder);border-radius:8px;padding:5px 4px;background:var(--dbg);font-size:10.5px}
+  .gc-tree label{display:flex;align-items:center;gap:7px;padding:3px 8px;cursor:pointer;color:var(--dfg);border-radius:5px}
+  .gc-tree label:hover{background:var(--dpanel2)}
+  .gc-tree label.ind{padding-left:26px;color:var(--ddim)}
+  .gc-tree input{accent-color:var(--dbrand);cursor:pointer}
+  .gc-acadd{margin-top:8px;align-self:flex-start;font-family:var(--mono);font-size:11px;font-weight:600;color:var(--dbg);background:var(--dbrand);border:1px solid var(--dbrand);border-radius:7px;padding:7px 15px;cursor:pointer}
+  .gc-acadd.blink{animation:gcBlink 1.05s ease-in-out infinite}
   .gc-split{position:absolute;inset:0;z-index:11;display:none;flex-direction:column;background:var(--dbg)}
   .gc-split.on{display:flex}
   .gc-splitbar{display:flex;align-items:center;gap:8px;padding:8px 12px;border-bottom:1px solid var(--dborder);background:var(--dpanel);font-size:11px;color:var(--dmuted)}
-  .gc-splittabs{display:flex;gap:5px} .gc-splittabs span{border:1px solid var(--dborder);border-radius:6px;padding:2px 9px;cursor:pointer;color:var(--dmuted)} .gc-splittabs span.on{border-color:var(--dbrand);color:var(--dbrand)}
   .gc-splitx{background:transparent;border:1px solid var(--dborder);border-radius:6px;color:var(--dmuted);cursor:pointer;font-size:10px;padding:3px 9px}
   .gc-splitbody{flex:1;display:flex;min-height:0}
   .gc-splitbody>div{flex:1;min-width:0;border-right:1px solid var(--dborder);display:flex;flex-direction:column}
@@ -447,6 +463,14 @@ window.MUNINN = {
   <div class="gc-vp" id="gcVp"><div class="gc-cv" id="gcCv"><svg class="gc-edges" id="gcEdges" width="2000" height="1300"></svg></div></div>
   <div class="gc-coach" id="gcCoach"><span class="n" id="gcN">1</span><span id="gcTxt">Click <b>＋ add pane</b> to add your first panel.</span></div>
   <div class="gc-wiz" id="gcWiz"><div class="gc-wizbox"><div class="gc-wizh">add a pane<button class="gc-wizx" id="gcWizX">✕</button></div><div class="gc-wizsub">pick a panel type — it opens on the canvas</div><div class="gc-wizgrid" id="gcWizGrid"></div></div></div>
+  <div class="gc-acfg" id="gcAcfg"><div class="gc-acbox"><div class="gc-ach">🤖 configure the agent<button class="gc-acx" id="gcAcX">✕</button></div><div class="gc-acbody">
+    <div class="gc-aclabel">Signature — the engine it runs as</div>
+    <div class="gc-sigs" id="gcSigs"><button class="gc-sig" data-sig="✦ Claude Code">✦ Claude Code<s>your subscription · its own CLI</s></button><button class="gc-sig" data-sig="◇ Codex">◇ Codex<s>OpenAI subscription · CLI</s></button><button class="gc-sig" data-sig="❯ OpenCode">❯ OpenCode<s>BYOK · your OpenRouter key</s></button><button class="gc-sig" data-sig="🤖 native">🤖 antiloki native<s>staged plans · auto-apply</s></button></div>
+    <div class="gc-aclabel">Write scope — files it may change</div>
+    <div class="gc-acnote">it <b style="color:var(--dfg)">reads the whole repo</b>; edits outside these folders are blocked at the gate</div>
+    <div class="gc-tree" id="gcTree"><label><input type="checkbox" data-p="src/"> 📁 src/</label><label class="ind"><input type="checkbox" data-p="src/auth/"> 📂 src/auth/</label><label class="ind"><input type="checkbox" data-p="src/ui/"> 📂 src/ui/</label><label><input type="checkbox" data-p="api/"> 📁 api/</label><label><input type="checkbox" data-p="tests/"> 📁 tests/</label></div>
+    <button class="gc-acadd" id="gcAcAdd">add agent →</button>
+  </div></div></div>
   <div class="gc-split" id="gcSplit"><div class="gc-splitbar"><b>⛶ split view</b><span>— bound panels, side by side · ← → to switch</span><span class="gc-sp"></span><button class="gc-splitx" id="gcSplitX">✕ close</button></div><div class="gc-splitbody" id="gcSplitBody"></div></div>
 </div></div>
 <script>
@@ -454,54 +478,55 @@ window.MUNINN = {
   var app=document.getElementById('gcApp'); if(!app)return;
   var cv=document.getElementById('gcCv'), vp=document.getElementById('gcVp'), edges=document.getElementById('gcEdges');
   var addBtn=document.getElementById('gcAdd'), wiz=document.getElementById('gcWiz'), grid=document.getElementById('gcWizGrid'), wizX=document.getElementById('gcWizX');
+  var acfg=document.getElementById('gcAcfg'), sigs=document.getElementById('gcSigs'), tree=document.getElementById('gcTree'), acAdd=document.getElementById('gcAcAdd'), acX=document.getElementById('gcAcX');
   var coach=document.getElementById('gcCoach'), coachN=document.getElementById('gcN'), coachT=document.getElementById('gcTxt'), countEl=document.getElementById('gcCount');
   var split=document.getElementById('gcSplit'), splitBody=document.getElementById('gcSplitBody'), splitX=document.getElementById('gcSplitX');
   var W=250;
-  // ── pane kinds (faithful to the real cockpit gallery) ──
   var KINDS={
-    agent:{glyph:'🤖',col:'var(--dbrand)',label:'Agent',im:'<svg viewBox="0 0 120 42"><rect x="46" y="6" width="28" height="20" rx="5" fill="none" stroke="var(--dbrand)"/><circle cx="55" cy="16" r="2" fill="var(--dbrand)"/><circle cx="65" cy="16" r="2" fill="var(--dbrand)"/><line x1="60" y1="6" x2="60" y2="2" stroke="var(--dbrand)"/><path d="M52 30 h16 l-4 5 z" fill="var(--dbrand)" opacity=".5"/></svg>',body:'<div class="mu">$ read the mission brief</div><div class="wr">✎ writing LoginForm.tsx</div><div>· its own copy of the repo — never steps on other agents</div><div class="ok">✓ build passed · 14 tests</div>'},
+    agent:{glyph:'🤖',col:'var(--dbrand)',label:'Agent',im:'<svg viewBox="0 0 120 42"><rect x="46" y="6" width="28" height="20" rx="5" fill="none" stroke="var(--dbrand)"/><circle cx="55" cy="16" r="2" fill="var(--dbrand)"/><circle cx="65" cy="16" r="2" fill="var(--dbrand)"/><line x1="60" y1="6" x2="60" y2="2" stroke="var(--dbrand)"/><path d="M52 30 h16 l-4 5 z" fill="var(--dbrand)" opacity=".5"/></svg>',body:''},
     gate:{glyph:'✓',col:'var(--dok)',label:'Gate',im:'<svg viewBox="0 0 120 42"><path d="M60 6 l14 5 v9 q0 11 -14 16 q-14 -5 -14 -16 v-9 z" fill="none" stroke="var(--dok)"/><path d="M53 21 l5 5 l10 -10" fill="none" stroke="var(--dok)" stroke-width="2"/></svg>',body:'<div class="mu">builds + tests before anything merges</div><div style="margin-top:4px">build <span class="chip" style="background:color-mix(in oklch,var(--dok) 18%,transparent);color:var(--dok)">✓ PASS</span></div><div>test <span class="chip" style="background:color-mix(in oklch,var(--dbad) 18%,transparent);color:var(--dbad)">✗ HELD</span></div><div class="mu" style="margin-top:4px">a broken change never lands</div>'},
     git:{glyph:'⎇',col:'var(--dblue)',label:'Git graph',im:'<svg viewBox="0 0 120 42"><line x1="40" y1="8" x2="40" y2="34" stroke="var(--dmuted)"/><circle cx="40" cy="10" r="3.5" fill="none" stroke="var(--dbrand)"/><circle cx="40" cy="21" r="3.5" fill="none" stroke="var(--dbrand)"/><circle cx="40" cy="33" r="3.5" fill="none" stroke="var(--dbrand)"/><path d="M40 21 q20 0 20 -11" fill="none" stroke="var(--dmuted)"/><circle cx="62" cy="10" r="3.5" fill="none" stroke="var(--dok)"/></svg>',body:'<div class="mu">base main · one lane per agent</div><div class="gc-lane"><span class="br">wt/login-a</span><span class="tr"><b style="width:60%"></b></span><span>↑2</span></div><div class="gc-lane"><span class="br">wt/login-b</span><span class="tr"><b style="width:40%"></b></span><span>↑1</span></div>'},
     kanban:{glyph:'▦',col:'var(--dviolet)',label:'Kanban',im:'<svg viewBox="0 0 120 42"><rect x="18" y="6" width="26" height="30" rx="2" fill="none" stroke="var(--dmuted)"/><rect x="48" y="6" width="26" height="30" rx="2" fill="none" stroke="var(--dbrand)"/><rect x="78" y="6" width="26" height="30" rx="2" fill="none" stroke="var(--dok)"/><rect x="22" y="12" width="18" height="3.5" rx="1.75" fill="var(--dmuted)"/><rect x="52" y="12" width="18" height="3.5" rx="1.75" fill="var(--dbrand)"/><rect x="82" y="12" width="18" height="3.5" rx="1.75" fill="var(--dok)"/></svg>',body:'<div class="gc-kan"><div><s>to do</s><div class="c">error states</div></div><div><s>doing</s><div class="c">login form</div></div><div><s>done</s><div class="c">session store</div></div></div>'},
     fuel:{glyph:'⛽',col:'var(--dwarn)',label:'Fuel',im:'<svg viewBox="0 0 120 42"><rect x="22" y="8" width="76" height="10" rx="5" fill="none" stroke="var(--dborder)"/><rect x="22" y="8" width="46" height="10" rx="5" fill="var(--dok)" opacity=".8"/><rect x="22" y="26" width="30" height="3.5" rx="1.75" fill="var(--dbrand)"/><rect x="22" y="33" width="20" height="3.5" rx="1.75" fill="var(--dwarn)"/></svg>',body:'<div class="mu">live spend · plan $2.00</div><div class="gc-row"><span class="n">session</span><span class="tr"><b style="width:8%"></b></span><span class="v">$0.16</span></div><div class="gc-row"><span class="n">#1 agent</span><span class="tr"><b style="width:9%"></b></span><span class="v">$0.07</span></div><div class="mu" style="margin-top:3px">advisory — never blocks</div>'},
     context:{glyph:'🧠',col:'var(--dbrand)',label:'Context',im:'<svg viewBox="0 0 120 42"><path d="M60 8 q-14 0 -14 10 q0 8 6 10 q0 6 8 6 q8 0 8 -6 q6 -2 6 -10 q0 -10 -14 -10 z" fill="none" stroke="var(--dbrand)"/><rect x="52" y="18" width="16" height="3.5" rx="1.75" fill="var(--dbrand)" opacity=".5"/><rect x="52" y="24" width="12" height="3.5" rx="1.75" fill="var(--dbrand)" opacity=".5"/></svg>',body:'<div class="mu">shared memory — every agent reads it</div><div style="margin-top:4px">· mission: ship the login screen</div><div>· contract: mount behind auth/guard.ts</div><div>· design tokens ride along</div>'}
   };
+  KINDS.agent.body='<div class="mu">$ read the mission brief</div><div class="wr">✎ writing LoginForm.tsx</div><div class="ok">✓ build passed · 14 tests</div>';
   var ORDER=['agent','gate','context','kanban','git','fuel'];
-  // wizard cards
-  ORDER.forEach(function(k){
-    var K=KINDS[k];
-    var c=document.createElement('div'); c.className='gc-card'; c.setAttribute('data-k',k);
-    c.innerHTML='<div class="im">'+K.im+'</div><div class="cl">'+K.glyph+' '+K.label+'</div>';
-    c.addEventListener('click',function(){ pick(k); });
-    grid.appendChild(c);
-  });
-  // ── state ──
-  var panes=[], binds=[], nextId=1, addPos=0;
+  ORDER.forEach(function(k){ var K=KINDS[k]; var c=document.createElement('div'); c.className='gc-card'; c.setAttribute('data-k',k); c.innerHTML='<div class="im">'+K.im+'</div><div class="cl">'+K.glyph+' '+K.label+'</div>'; c.addEventListener('click',function(){ pick(k); }); grid.appendChild(c); });
+  var panes=[], binds=[], nextId=1;
   function tint(col,p){ return 'color-mix(in oklch,'+col+' '+p+'%,transparent)'; }
-  function makePane(k){
+  function makePane(k,cfg){
     var K=KINDS[k]; var id=nextId++;
-    var slot=panes.length; var col=(slot%3), row=Math.floor(slot/3);
+    var slot=panes.length, col=(slot%3), row=Math.floor(slot/3);
     var x=40+col*(W+34), y=30+row*250;
-    var el=document.createElement('div'); el.className='gc-pane'; el.setAttribute('data-id',id); el.setAttribute('data-k',k);
-    el.style.left=x+'px'; el.style.top=y+'px';
-    el.innerHTML='<div class="gc-ph"><span class="drag">⠿</span><span class="kind" style="background:'+tint(K.col,16)+';border:1px solid '+tint(K.col,45)+';color:'+K.col+'">'+K.glyph+'</span><span class="lbl">'+K.label+'</span><button class="pbtn exp" title="expand">⛶</button><button class="pbtn cl" title="close">✕</button></div><div class="gc-pb">'+K.body+'</div><div class="gc-bindh" title="drag onto another panel to bind">⛓</div>';
+    var glyph=K.glyph, label=K.label, body=K.body;
+    if(k==='agent'&&cfg){
+      var sig=cfg.sig||'🤖 native', scope=(cfg.scope&&cfg.scope.length)?cfg.scope.join(', '):'(read-only)';
+      glyph=(sig.split(' ')[0])||'🤖';
+      body='<div class="mu">'+sig+' · writes <span style="color:var(--dfg)">'+scope+'</span></div><div class="mu" style="margin-bottom:3px">reads the whole repo</div><div>$ read the mission brief</div><div class="wr">✎ writing LoginForm.tsx</div><div class="ok">✓ build passed · 14 tests</div>';
+    }
+    var el=document.createElement('div'); el.className='gc-pane'; el.setAttribute('data-id',id); el.setAttribute('data-k',k); el.style.left=x+'px'; el.style.top=y+'px';
+    el.innerHTML='<div class="gc-ph"><span class="drag">⠿</span><span class="kind" style="background:'+tint(K.col,16)+';border:1px solid '+tint(K.col,45)+';color:'+K.col+'">'+glyph+'</span><span class="lbl">'+label+'</span><button class="pbtn exp" title="expand">⛶</button><button class="pbtn cl" title="close">✕</button></div><div class="gc-pb">'+body+'</div><div class="gc-bindh" title="drag onto another panel to bind">⛓</div>';
     cv.appendChild(el);
-    var p={id:id,k:k,el:el,x:x,y:y};
-    panes.push(p);
-    wirePane(p);
-    countEl.textContent=panes.length+(panes.length===1?' pane':' panes');
-    drawEdges();
-    return p;
+    var p={id:id,k:k,el:el,x:x,y:y}; panes.push(p); wirePane(p);
+    countEl.textContent=panes.length+(panes.length===1?' pane':' panes'); drawEdges(); return p;
   }
-  function pick(k){ wiz.classList.remove('on'); var p=makePane(k); onAction('pick',k,p); }
-  // ── drag panes + pan ──
+  // wizard pick: an Agent opens its config; a tool drops directly
+  function pick(k){ wiz.classList.remove('on'); if(k==='agent'){ acfg.classList.add('on'); onAction('pick','agent'); } else { makePane(k); onAction('pick',k); } }
+  // agent config
+  var chosenSig=null;
+  [].slice.call(sigs.querySelectorAll('.gc-sig')).forEach(function(b){ b.addEventListener('click',function(){ [].slice.call(sigs.querySelectorAll('.gc-sig')).forEach(function(x){x.classList.remove('on');}); b.classList.add('on'); chosenSig=b.getAttribute('data-sig'); onAction('sig'); }); });
+  [].slice.call(tree.querySelectorAll('input')).forEach(function(cb){ cb.addEventListener('change',function(){ if(tree.querySelector('input:checked'))onAction('scope'); }); });
+  acAdd.addEventListener('click',function(){ var scope=[].slice.call(tree.querySelectorAll('input:checked')).map(function(c){return c.getAttribute('data-p');}); makePane('agent',{sig:chosenSig,scope:scope}); acfg.classList.remove('on'); onAction('confirm'); });
+  acX.addEventListener('click',function(){ acfg.classList.remove('on'); });
+  // drag panes + pan + bind
   var drag=null, pan=null, binding=null;
   function wirePane(p){
     var ph=p.el.querySelector('.gc-ph'), bh=p.el.querySelector('.gc-bindh');
     ph.addEventListener('mousedown',function(e){ if(e.target.closest('.pbtn'))return; e.preventDefault(); drag={p:p,sx:e.clientX,sy:e.clientY,ox:p.x,oy:p.y,moved:false}; });
     p.el.querySelector('.exp').addEventListener('click',function(e){ e.stopPropagation(); expand(p); });
     p.el.querySelector('.cl').addEventListener('click',function(e){ e.stopPropagation(); removePane(p); });
-    bh.addEventListener('mousedown',function(e){ e.stopPropagation(); e.preventDefault(); var r=p.el.getBoundingClientRect(); binding={from:p,x1:e.clientX,y1:e.clientY,x2:e.clientX,y2:e.clientY}; });
+    bh.addEventListener('mousedown',function(e){ e.stopPropagation(); e.preventDefault(); binding={from:p,x1:e.clientX,y1:e.clientY,x2:e.clientX,y2:e.clientY}; });
   }
   vp.addEventListener('mousedown',function(e){ if(e.target.closest('.gc-pane'))return; pan={x:e.clientX,y:e.clientY,l:vp.scrollLeft,t:vp.scrollTop}; vp.classList.add('panning'); });
   window.addEventListener('mousemove',function(e){
@@ -514,87 +539,57 @@ window.MUNINN = {
     if(pan){ pan=null; vp.classList.remove('panning'); }
     if(binding){ var tgt=e.target.closest('.gc-pane'); if(tgt&&+tgt.getAttribute('data-id')!==binding.from.id){ createBind(binding.from.id, +tgt.getAttribute('data-id')); } binding=null; clearBindLine(); }
   });
-  // ── binds + edges ──
   function bindOf(id){ for(var i=0;i<binds.length;i++){ if(binds[i].indexOf(id)>=0)return i; } return -1; }
   function createBind(a,b){
-    var ia=bindOf(a), ib=bindOf(b);
-    if(ia>=0&&ia===ib)return;
-    if(ia<0&&ib<0)binds.push([a,b]);
-    else if(ia>=0&&ib<0)binds[ia].push(b);
-    else if(ib>=0&&ia<0)binds[ib].push(a);
-    else { binds[ia]=binds[ia].concat(binds[ib]); binds.splice(ib,1); }
-    panes.forEach(function(p){ p.el.classList.toggle('bound', bindOf(p.id)>=0); });
-    drawEdges(); onAction('bind');
+    var ia=bindOf(a), ib=bindOf(b); if(ia>=0&&ia===ib)return;
+    if(ia<0&&ib<0)binds.push([a,b]); else if(ia>=0&&ib<0)binds[ia].push(b); else if(ib>=0&&ia<0)binds[ib].push(a); else { binds[ia]=binds[ia].concat(binds[ib]); binds.splice(ib,1); }
+    panes.forEach(function(p){ p.el.classList.toggle('bound', bindOf(p.id)>=0); }); drawEdges(); onAction('bind');
   }
-  function centerOf(p){ return {x:p.x+W/2, y:p.y+ (p.el.offsetHeight||150)/2}; }
-  function drawEdges(){
-    var ns='http://www.w3.org/2000/svg'; while(edges.firstChild)edges.removeChild(edges.firstChild);
-    binds.forEach(function(g){
-      for(var i=0;i<g.length-1;i++){
-        var pa=byId(g[i]), pb=byId(g[i+1]); if(!pa||!pb)continue;
-        var a=centerOf(pa), b=centerOf(pb);
-        var mx=(a.x+b.x)/2, my=(a.y+b.y)/2-40;
-        var path=document.createElementNS(ns,'path');
-        path.setAttribute('d','M '+a.x+' '+a.y+' Q '+mx+' '+my+' '+b.x+' '+b.y);
-        path.setAttribute('fill','none'); path.setAttribute('stroke','var(--dbrand)'); path.setAttribute('stroke-width','1.8'); path.setAttribute('opacity','.7'); path.setAttribute('stroke-dasharray','5 4');
-        edges.appendChild(path);
-      }
-    });
+  function centerOf(p){ return {x:p.x+W/2, y:p.y+(p.el.offsetHeight||150)/2}; }
+  function drawEdges(){ var ns='http://www.w3.org/2000/svg'; while(edges.firstChild)edges.removeChild(edges.firstChild);
+    binds.forEach(function(g){ for(var i=0;i<g.length-1;i++){ var pa=byId(g[i]), pb=byId(g[i+1]); if(!pa||!pb)continue; var a=centerOf(pa), b=centerOf(pb); var mx=(a.x+b.x)/2, my=(a.y+b.y)/2-40; var path=document.createElementNS(ns,'path'); path.setAttribute('d','M '+a.x+' '+a.y+' Q '+mx+' '+my+' '+b.x+' '+b.y); path.setAttribute('fill','none'); path.setAttribute('stroke','var(--dbrand)'); path.setAttribute('stroke-width','1.8'); path.setAttribute('opacity','.7'); path.setAttribute('stroke-dasharray','5 4'); edges.appendChild(path); } });
   }
   var bindLineEl=null;
   function drawBindLine(){ var ns='http://www.w3.org/2000/svg'; if(!bindLineEl){ bindLineEl=document.createElementNS(ns,'path'); bindLineEl.setAttribute('fill','none'); bindLineEl.setAttribute('stroke','var(--dbrand)'); bindLineEl.setAttribute('stroke-width','1.8'); bindLineEl.setAttribute('stroke-dasharray','4 3'); edges.appendChild(bindLineEl); }
-    var r=cv.getBoundingClientRect(); var s=scaleNow();
-    var x1=(binding.x1-r.left)/s, y1=(binding.y1-r.top)/s, x2=(binding.x2-r.left)/s, y2=(binding.y2-r.top)/s;
-    bindLineEl.setAttribute('d','M '+x1+' '+y1+' L '+x2+' '+y2); }
+    var r=cv.getBoundingClientRect(); var s=scaleNow(); var x1=(binding.x1-r.left)/s, y1=(binding.y1-r.top)/s, x2=(binding.x2-r.left)/s, y2=(binding.y2-r.top)/s; bindLineEl.setAttribute('d','M '+x1+' '+y1+' L '+x2+' '+y2); }
   function clearBindLine(){ if(bindLineEl){ bindLineEl.remove(); bindLineEl=null; } }
   function scaleNow(){ var t=cv.style.transform.match(/scale\(([^)]+)\)/); return t?parseFloat(t[1]):1; }
   function byId(id){ for(var i=0;i<panes.length;i++)if(panes[i].id===id)return panes[i]; return null; }
   function removePane(p){ var bi=bindOf(p.id); if(bi>=0){ binds[bi]=binds[bi].filter(function(x){return x!==p.id;}); if(binds[bi].length<2)binds.splice(bi,1);} p.el.remove(); panes=panes.filter(function(x){return x!==p;}); countEl.textContent=panes.length+(panes.length===1?' pane':' panes'); panes.forEach(function(q){q.el.classList.toggle('bound',bindOf(q.id)>=0);}); drawEdges(); }
-  // ── expand a bound pane → split view ──
-  function expand(p){
-    var bi=bindOf(p.id); var ids = bi>=0? binds[bi] : [p.id];
-    splitBody.innerHTML='';
-    ids.forEach(function(id){ var q=byId(id); if(!q)return; var K=KINDS[q.k];
-      var d=document.createElement('div'); d.innerHTML='<div class="sh"><span style="color:'+K.col+'">'+K.glyph+'</span> '+K.label+'</div><div class="sb">'+K.body+'</div>'; splitBody.appendChild(d); });
-    split.classList.add('on'); onAction('expand');
-  }
+  function expand(p){ var bi=bindOf(p.id); var ids=bi>=0?binds[bi]:[p.id]; splitBody.innerHTML='';
+    ids.forEach(function(id){ var q=byId(id); if(!q)return; var K=KINDS[q.k]; var d=document.createElement('div'); d.innerHTML='<div class="sh"><span style="color:'+K.col+'">'+K.glyph+'</span> '+K.label+'</div><div class="sb">'+q.el.querySelector('.gc-pb').innerHTML+'</div>'; splitBody.appendChild(d); });
+    split.classList.add('on'); onAction('expand'); }
   splitX.addEventListener('click',function(){ split.classList.remove('on'); });
-  // ── zoom (ctrl+wheel) ──
-  var zoom=1;
-  vp.addEventListener('wheel',function(e){ if(!e.ctrlKey)return; e.preventDefault(); zoom=Math.max(.6,Math.min(1.5,zoom*(e.deltaY<0?1.07:0.93))); cv.style.transform='scale('+zoom+')'; },{passive:false});
-  // ── wizard open/close ──
+  var zoom=1; vp.addEventListener('wheel',function(e){ if(!e.ctrlKey)return; e.preventDefault(); zoom=Math.max(.6,Math.min(1.5,zoom*(e.deltaY<0?1.07:0.93))); cv.style.transform='scale('+zoom+')'; },{passive:false});
   addBtn.addEventListener('click',function(){ wiz.classList.add('on'); onAction('add'); });
   wizX.addEventListener('click',function(){ wiz.classList.remove('on'); });
-  // ── the GUIDED FLOW ──
+  // ── the GUIDED FLOW — clear, plain comments ──
   var STEPS=[
-    {n:'1',t:'Click <b>＋ add pane</b> to add your first panel.', blink:function(){bl(addBtn);}, want:'add'},
-    {n:'2',t:'Pick a panel — start with an <b>Agent</b>.', blink:function(){blCard('agent');}, want:'pick', k:'agent'},
-    {n:'3',t:'Add a second, different panel — a <b>Gate</b> that builds &amp; tests.', blink:function(){bl(addBtn);}, want:'add'},
-    {n:'4',t:'Pick the <b>Gate</b>.', blink:function(){blCard('gate');}, want:'pick', k:'gate'},
-    {n:'5',t:'One more — add any panel you like.', blink:function(){bl(addBtn);}, want:'add'},
-    {n:'6',t:'Pick any panel.', blink:function(){blAllCards();}, want:'pick'},
-    {n:'7',t:'Now <b>drag a panel</b> — grab its ⠿ header and move it anywhere.', blink:function(){blHeaders();}, want:'drag'},
-    {n:'8',t:'<b>Bind them:</b> drag from a panel’s ⛓ onto another panel.', blink:function(){blBindh();}, want:'bind'},
-    {n:'9',t:'Click <b>⛶ expand</b> on a bound panel — they open as a split screen.', blink:function(){blExp();}, want:'expand'},
-    {n:'✓',t:'That’s the Canvas — your whole workspace, built the way you work.', blink:function(){}, want:null, done:true}
+    {n:'1',t:'Click <b>＋ add pane</b> to open the panel picker.', blink:function(){bl(addBtn);}, want:'add'},
+    {n:'2',t:'Add an <b>Agent</b> — an AI teammate that writes code for you.', blink:function(){blCard('agent');}, want:'pick', k:'agent'},
+    {n:'3',t:'Pick its <b>signature</b> — run it as Claude Code, Codex, or OpenCode on your own OpenRouter key.', blink:function(){blAll(sigs,'.gc-sig');}, want:'sig'},
+    {n:'4',t:'Set its <b>write scope</b> — tick the folders it may change. It reads the whole repo, but edits outside these are blocked at the gate.', blink:function(){tree.classList.add('blink');}, want:'scope'},
+    {n:'5',t:'<b>Add the agent</b> to the canvas.', blink:function(){bl(acAdd);}, want:'confirm'},
+    {n:'6',t:'Add a second panel — a <b>Gate</b> that builds &amp; tests before anything merges.', blink:function(){bl(addBtn);}, want:'add'},
+    {n:'7',t:'Pick the <b>Gate</b>.', blink:function(){blCard('gate');}, want:'pick', k:'gate'},
+    {n:'8',t:'One more — add <b>Context</b>, the shared memory every agent reads.', blink:function(){bl(addBtn);}, want:'add'},
+    {n:'9',t:'Pick <b>Context</b>.', blink:function(){blCard('context');}, want:'pick', k:'context'},
+    {n:'10',t:'Now <b>drag a panel</b> — grab its ⠿ header and move it anywhere.', blink:function(){blHeaders();}, want:'drag'},
+    {n:'11',t:'<b>Bind them:</b> drag from a panel’s ⛓ handle onto another panel to link them.', blink:function(){blBindh();}, want:'bind'},
+    {n:'12',t:'Click <b>⛶ expand</b> on a bound panel — they open together as a <b>split screen</b>.', blink:function(){blExp();}, want:'expand'},
+    {n:'✓',t:'That’s the Canvas — agents scoped to the files you choose, tools beside them, all on one board.', blink:function(){}, want:null, done:true}
   ];
   var step=0;
-  function clearBlink(){ [].slice.call(app.querySelectorAll('.blink')).forEach(function(e){e.classList.remove('blink');}); }
+  function clearBlink(){ [].slice.call(app.querySelectorAll('.blink')).forEach(function(e){e.classList.remove('blink');}); tree.classList.remove('blink'); }
   function bl(el){ if(el)el.classList.add('blink'); }
+  function blAll(root,sel){ [].slice.call(root.querySelectorAll(sel)).forEach(bl); }
   function blCard(k){ var c=grid.querySelector('.gc-card[data-k="'+k+'"]'); if(c)c.classList.add('blink'); }
-  function blAllCards(){ [].slice.call(grid.querySelectorAll('.gc-card')).forEach(bl); }
-  function blHeaders(){ panes.forEach(function(p){ bl(p.el.querySelector('.gc-ph .drag').parentNode); }); }
+  function blHeaders(){ panes.forEach(function(p){ bl(p.el.querySelector('.gc-ph')); }); }
   function blBindh(){ panes.forEach(function(p){ bl(p.el.querySelector('.gc-bindh')); }); }
   function blExp(){ panes.forEach(function(p){ if(bindOf(p.id)>=0)bl(p.el.querySelector('.exp')); }); }
   function renderStep(){ var s=STEPS[step]; if(!s)return; coachN.textContent=s.n; coachT.innerHTML=s.t; coach.classList.toggle('done',!!s.done); clearBlink(); s.blink(); }
-  function onAction(kind,k,p){
-    var s=STEPS[step]; if(!s||!s.want)return;
-    if(s.want!==kind)return;
-    if(s.k && k!==s.k)return; // must pick the specific kind
-    clearBlink(); step++; setTimeout(renderStep,260);
-  }
-  // start on scroll-in
-  var started=false, sec=app.closest('section')||app;
+  function onAction(kind,k){ var s=STEPS[step]; if(!s||!s.want)return; if(s.want!==kind)return; if(s.k&&k!==s.k)return; clearBlink(); step++; setTimeout(renderStep,240); }
+  var started=false;
   var io=new IntersectionObserver(function(es){es.forEach(function(e){ if(e.isIntersecting&&!started){ started=true; renderStep(); } });},{threshold:.2});
   io.observe(app);
 })();
