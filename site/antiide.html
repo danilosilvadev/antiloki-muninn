@@ -254,23 +254,6 @@ window.MUNINN = {
   </div>
 </header>
 
-<style>
-  .trust{border-top:1px solid var(--line);border-bottom:1px solid var(--line);background:var(--panel)}
-  .trust-in{display:grid;grid-template-columns:repeat(3,1fr);gap:36px;padding:34px 0}
-  .tcol .th{font-family:var(--mono);font-weight:700;font-size:13.5px;color:var(--accent);margin-bottom:7px}
-  .tcol .tk{font-size:13.5px;color:var(--muted);line-height:1.55}
-  .tcol .tk b{color:var(--text)}
-  @media(max-width:820px){.trust-in{grid-template-columns:1fr;gap:22px}}
-</style>
-<div class="trust">
-  <div class="wrap trust-in">
-    <div class="tcol"><div class="th">Built with its own pipeline</div><div class="tk">antiloki wrote, gated and sealed <b>1,000+ of its own commits</b>. If it can build itself, it can read your code.</div></div>
-    <div class="tcol"><div class="th">Nothing leaves your machine</div><div class="tk">No servers, no cloud, no telemetry of your code. <b>Pull the plug and it still runs</b> — fully offline.</div></div>
-    <div class="tcol"><div class="th">Your keys, at cost</div><div class="tk">Bring your own model keys; every call goes through them at provider price. <b>No markup, no lock-in.</b></div></div>
-  </div>
-</div>
-
-
 <!-- THE DEMO — the real Explorer screen, boxed: tree · editor · the 13-split rail · the File review (2026-07-20 v4, copied from the real FilesIDE) -->
 <section id="demo" style="padding:64px 0">
   <style>
