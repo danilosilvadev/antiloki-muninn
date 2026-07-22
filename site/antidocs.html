@@ -1689,6 +1689,7 @@ window.MUNINN = {
   .mob-ov{position:fixed;inset:0;z-index:2000;background:#0b0908}
   .mob-stage{position:absolute;top:0;left:0;overflow:auto;-webkit-overflow-scrolling:touch}
   .mob-stage .dm{margin:0 !important;max-width:none !important;border-radius:0;box-shadow:none;border-left:none;border-right:none}
+  .mob-stage .dm-reveal{display:none!important}
   .mob-x{position:fixed;top:10px;left:10px;z-index:2001;width:38px;height:38px;border-radius:50%;border:1px solid var(--line);background:rgba(20,16,12,.85);color:var(--text);font-size:15px;display:grid;place-items:center}
   .mob-hint2{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);z-index:2002;display:flex;flex-direction:column;align-items:center;gap:10px;background:rgba(14,11,9,.72);border:1px solid rgba(255,255,255,.14);border-radius:18px;padding:22px 26px;pointer-events:none;backdrop-filter:blur(4px);animation:mobBlink 6.5s ease forwards}
   .mob-hint2 span{font-family:var(--mono);font-size:13px;color:rgba(255,255,255,.92);text-align:center;line-height:1.5}
@@ -1759,7 +1760,7 @@ window.MUNINN = {
     relayout=function(){if(ov)layout(dm,stage,inner);};
     window.addEventListener('resize',relayout);
     window.addEventListener('orientationchange',relayout);
-    layout(dm,stage,inner);
+    layout(dm,stage,inner); try{dm.dispatchEvent(new CustomEvent('dmfs',{detail:{on:true}}));}catch(_){}
   }
   function close(){
     if(!ov)return;
@@ -1767,7 +1768,7 @@ window.MUNINN = {
     try{if(screen.orientation&&screen.orientation.unlock)screen.orientation.unlock();}catch(e){}
     window.removeEventListener('resize',relayout);
     window.removeEventListener('orientationchange',relayout);
-    curDm.style.display='';
+    try{curDm.dispatchEvent(new CustomEvent('dmfs',{detail:{on:false}}));}catch(_){} curDm.style.display='';
     ph.parentNode.insertBefore(curDm,ph);
     ph.parentNode.removeChild(ph);
     document.body.removeChild(ov);
