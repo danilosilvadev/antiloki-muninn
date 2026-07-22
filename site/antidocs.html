@@ -1374,36 +1374,38 @@ window.MUNINN = {
     <h2>Buy it once. It's yours.</h2>
     <p class="sec-lede">No login, no credit card — <b>completely private</b>. We don't store your data.</p>
     <style>
-  .own-math{display:grid;grid-template-columns:1fr 1fr;gap:16px;max-width:900px;margin:24px 0 10px}
-  .om-col{border:1px solid var(--line);border-radius:14px;padding:17px 20px;background:var(--panel)}
-  .om-col.rent{border-color:color-mix(in oklch,var(--red) 32%,var(--line))}
-  .om-col.own{border-color:color-mix(in oklch,var(--accent) 42%,var(--line))}
-  .om-h{font-family:var(--mono);font-size:10.5px;letter-spacing:1px;text-transform:uppercase;margin-bottom:11px}
-  .om-col.rent .om-h{color:var(--red)} .om-col.own .om-h{color:var(--accent)}
-  .om-row{display:flex;justify-content:space-between;align-items:baseline;gap:12px;font-size:13.5px;color:var(--muted);padding:6px 0;border-bottom:1px solid color-mix(in oklch,var(--line) 55%,transparent)}
-  .om-row b{color:var(--text);font-family:var(--mono);font-size:12.5px;white-space:nowrap}
-  .om-tot{display:flex;justify-content:space-between;align-items:baseline;gap:12px;margin-top:11px;font-size:13.5px}
-  .om-tot span{color:var(--muted-2)} .om-tot b{font-family:var(--mono)}
-  .om-col.rent .om-tot b{color:var(--red);font-size:18px} .om-col.own .om-tot b{color:var(--accent);font-size:15px}
-  .own-note{max-width:900px;font-size:14px;color:var(--muted);line-height:1.65;margin:6px 0 4px}
-  .own-note b{color:var(--text)}
-  @media(max-width:720px){.own-math{grid-template-columns:1fr}}
+  .cmp-table{max-width:920px;margin:24px 0 12px;border:1px solid var(--line);border-radius:14px;overflow:hidden;background:var(--panel)}
+  .cmp-head,.cmp-row{display:grid;grid-template-columns:1.05fr 1fr 1.25fr;gap:12px;padding:9px 18px;align-items:baseline}
+  .cmp-head{background:color-mix(in oklch,var(--line) 45%,transparent);font-family:var(--mono);font-size:10.5px;text-transform:uppercase;letter-spacing:.5px}
+  .cmp-head .rent{color:var(--red)} .cmp-head .own{color:var(--accent);font-weight:700}
+  .cmp-sec{padding:9px 18px 5px;font-family:var(--mono);font-size:9.5px;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted-2);background:color-mix(in oklch,var(--line) 20%,transparent)}
+  .cmp-row{border-top:1px solid color-mix(in oklch,var(--line) 40%,transparent);font-size:13px;line-height:1.4}
+  .cmp-row>span:first-child{color:var(--text);font-weight:600}
+  .cmp-row .rc{color:var(--muted)} .cmp-row .oc{color:var(--text)}
+  .cmp-row.tot{background:color-mix(in oklch,var(--accent) 8%,transparent);font-family:var(--mono);font-size:12.5px}
+  .cmp-row.tot .rc{color:var(--red);font-weight:700} .cmp-row.tot .oc{color:var(--accent);font-weight:700}
+  @media(max-width:720px){.cmp-head,.cmp-row{grid-template-columns:1fr;gap:1px;padding:8px 14px}.cmp-head span:first-child{display:none}.cmp-row .rc::before{content:"× ";color:var(--red)}.cmp-row .oc::before{content:"✓ ";color:var(--accent)}}
 </style>
-    <div class="own-math">
-      <div class="om-col rent">
-        <div class="om-h">&times; Rent — frontier subscriptions</div>
-        <div class="om-row"><span>Claude Max</span><b>$200/mo</b></div>
-        <div class="om-row"><span>ChatGPT Pro &middot; Codex</span><b>$200/mo</b></div>
-        <div class="om-tot"><span>every year — <b style="color:var(--red)">forever</b></span><b>~$4,800/yr</b></div>
-      </div>
-      <div class="om-col own">
-        <div class="om-h">&check; Own — antiloki, once</div>
-        <div class="om-row"><span>AntiDocs</span><b>$199 once</b></div>
-        <div class="om-row"><span>+ Qwen / local, your keys</span><b>at cost · ~$0</b></div>
-        <div class="om-tot"><span>pays for itself in ~2 weeks</span><b>then it's yours</b></div>
-      </div>
+    <div class="cmp-table">
+      <div class="cmp-head"><span>rent vs own</span><span class="rent">&times; Frontier subscriptions</span><span class="own">&check; antiloki &middot; AntiDocs</span></div>
+      <div class="cmp-sec">Features</div>
+      <div class="cmp-row"><span>Models</span><span class="rc">one vendor, cloud-only</span><span class="oc">any — Claude, GPT, Qwen, local &middot; BYOK</span></div>
+      <div class="cmp-row"><span>Runs local / offline</span><span class="rc">&times; cloud only</span><span class="oc">&check; fully local</span></div>
+      <div class="cmp-row"><span>Your code</span><span class="rc">&times; sent to the vendor</span><span class="oc">&check; never leaves your machine</span></div>
+      <div class="cmp-row"><span>Agents &amp; tools</span><span class="rc">one chat</span><span class="oc">a swarm on one board</span></div>
+      <div class="cmp-row"><span>Audit &amp; gates</span><span class="rc">&times; none</span><span class="oc">&check; every AI decision audited</span></div>
+      <div class="cmp-sec">Value</div>
+      <div class="cmp-row"><span>Ownership</span><span class="rc">rented — stops when you stop paying</span><span class="oc">bought once — yours forever</span></div>
+      <div class="cmp-row"><span>Cost over time</span><span class="rc">rises, every year</span><span class="oc">one-time, then near-$0 usage</span></div>
+      <div class="cmp-row"><span>Lock-in</span><span class="rc">locked to the vendor</span><span class="oc">your keys — swap models anytime</span></div>
+      <div class="cmp-sec">Price</div>
+      <div class="cmp-row"><span>Claude Max</span><span class="rc">$200/mo</span><span class="oc">—</span></div>
+      <div class="cmp-row"><span>ChatGPT Pro &middot; Codex</span><span class="rc">$200/mo</span><span class="oc">—</span></div>
+      <div class="cmp-row"><span>AntiDocs</span><span class="rc">—</span><span class="oc">$199 once</span></div>
+      <div class="cmp-row"><span>Cheap models &middot; Qwen / local</span><span class="rc">included, fixed</span><span class="oc">your keys, at cost &middot; ~$0</span></div>
+      <div class="cmp-row tot"><span>Total</span><span class="rc">~$4,800 / yr — forever</span><span class="oc">$199 once — pays for itself in ~2 weeks</span></div>
     </div>
-    <p class="own-note">A subscription bills again every month. A license is <b>bought once</b> — pair it with cheap local or OpenRouter models (Qwen &amp; co., your keys at cost) and <b>the money you paid comes back in weeks, not years</b>. After that, every month is money you keep.</p>
+    <p class="own-note">A subscription bills again every month. A license is <b>bought once</b> — run cheap local or OpenRouter models (Qwen &amp; co., your keys at cost) and <b>the money you paid comes back in weeks, not years</b>. After that, every month is money you keep.</p>
     <div class="pricing">
       <div class="price hero-card reveal">
         <div class="tag">AntiDocs · this Cure</div>
